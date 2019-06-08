@@ -1,0 +1,12 @@
+#page-title-line {
+    background-color: darkgreen;
+}
+h1 {
+    color: white;
+    text-align: center;
+    font-size: 35px;
+}
+
+#map {
+    height: 800px;
+}

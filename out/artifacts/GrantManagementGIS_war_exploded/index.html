@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Grant Management</title>
+
+    <!-- Style Sheets needed -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css"
+          integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+          crossorigin=""/>
+    <!-- Custom style sheet -->
+    <link rel="stylesheet" href="css/style.css" />
+
+
+
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row" id="page-title-line">
+        <div class="col-6"><h1>Arkansas Funded Parks</h1></div>
+        <div class="col-6"><h1>ORGP Grants</h1></div>
+    </div>
+    <div class="row">
+        <div class="col-6" id="map">
+            Map Content!
+        </div>
+        <div class="col-6" id="grant-info-box">
+            <div>
+                <strong>Search</strong>
+                <input title="Search for grants and sponsors here" type="text" placeholder="i.e. Little Rock, A-10587">
+                <button id="grant-info-search">Search</button>
+            </div>
+            <div id="grant-results-box">
+                <p>No Results currently, Please select a park or search for a sponsor or project number</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- external libraries needed -->
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"
+        integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og=="
+        crossorigin=""></script>
+<!-- Load Esri Leaflet from CDN -->
+<script src="https://unpkg.com/esri-leaflet@2.2.4/dist/esri-leaflet.js"
+        integrity="sha512-tyPum7h2h36X52O2gz+Pe8z/3l+Y9S1yEUscbVs5r5aEY5dFmP1WWRY/WLLElnFHa+k1JBQZSCDGwEAnm2IxAQ=="
+        crossorigin=""></script>
+
+<!-- create map after the HTML elements are loaded before they are acted on -->
+<script src="js/parksmap.js" ></script>
+
+</body>
+</html>
