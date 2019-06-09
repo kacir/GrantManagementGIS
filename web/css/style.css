@@ -10,3 +10,12 @@ h1 {
 #map {
     height: 800px;
 }
+
+.hidden {
+    display: none;
+}
+
+.legend-control {
+    background-color : rgba(255,255,255,0.9);
+    padding: 10px;
+}
