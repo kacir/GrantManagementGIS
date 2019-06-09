@@ -16,11 +16,21 @@ var Esri_WorldImagery = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest
 var stateparkslayer = L.esri.dynamicMapLayer({
     url: "http://gis.arkansas.gov/arcgis/rest/services/ADPT/ADPT_MapService_2017/MapServer"
 });
-var parkPolygon = L.esri.featureLayer({url : "http://gis.arkansas.gov/arcgis/rest/services/ADPT/ADPT_ORGP_scratch/FeatureServer/1",
+var parkPolygon = L.esri.featureLayer({url : "http://gis.arkansas.gov/arcgis/rest/services/ADPT/ADPT_ORGP_MASTER2/MapServer/38",
     where : "type = 'funded park'",
     style : {fillColor : "#003300", stroke : false, fillOpacity : 1}
 }).bindPopup(function(layer){
-    return layer.feature.properties.currentNam;
+    console.log(layer.feature.properties);
+    var popupText = "<h3>" + layer.feature.properties.currentNam + "</h3><table>" +
+        "<tr><td>Previously:</td><td>" +layer.feature.properties.pastName + "</td></tr>" +
+        "<tr><td>Sponsor:</td><td>" +layer.feature.properties.sponsorshi + "</td></tr>" +
+        "<tr><td>Inspection Date:</td><td>" + new Date(layer.feature.properties.inspDate).toDateString()  + "</td></tr>" +
+        "<tr><td>LWCF Area:</td><td>50 Acres</td></tr>" +
+        "<tr><td>State Area:</td><td>60 Acres</td></tr>" +
+        "<tr><td>Total Park Area:</td><td>" + parseFloat(layer.feature.properties.calc_acre).toFixed(2) + " Acres</td></tr>" +
+        "</table>" +
+        "<div class='container'><div class='row'><div class='col popup-button'><span>Grants in Park</span></div><a target='_blank' href='" + layer.feature.properties.boxlink + "'><div class='col popup-button'><span>Doc Scans</span></div></a><a target='_blank' href='" + layer.feature.properties.googleLink + "'><div class='col popup-button'><span>Driving Directions</span></div></a></div></div>";
+    return popupText;
 }).addTo(map);
 
 var parkIcon = L.icon({
@@ -158,13 +168,13 @@ legendControl.update = function (props) {
         var regionsClass = "hidden"
     }
 
-    this._div.innerHTML = "<h4>Legend</h4><div class='" + parkPolygonClass + " '><span>Funded Park</span></div>" +
+    this._div.innerHTML = "<h4>Legend</h4><div class='" + parkPolygonClass + " '><span>Funded Park</span><svg width='25' height='25'><rect width='25' height='25' style='fill:green;stroke:green;stroke-width:3;fill-opacity:0.9'></rect></svg></div>" +
         "<div class='" + grantPointClass + "'><span>Park Point</span><img src='img/greenpark.png' width='25' height='25' /></div>" +
         "<div class='" + stateProjectBoundaryClass + "'><span>State Project Boundary</span> <svg width='25' height='25'><rect width='25' height='25' style='fill:none;stroke:red;stroke-width:3'></rect></svg> </div>" +
         "<div class='" + federalProjectClass + "' ><span>Federal Project Boundary</span> <svg width='25' height='25'><rect width='25' height='25' style='fill:none;stroke:yellow;stroke-width:3'></rect></svg> </div>" +
         "<div class='" + conversionPolygonClass + "' ><span>Converted Area</span><svg width='25' height='25'><rect width='25' height='25' style='fill:deeppink;stroke:deeppink;stroke-width:3'></rect></svg></div> " +
         "<div class='" + conversionPolygonClass + "' ><span>Replacement Property</span> <svg width='25' height='25'><rect width='25' height='25' style='fill:lawngreen;stroke:lawngreen;stroke-width:3'></rect></svg></div>" +
-        "<div class='" + conversionPolygonClass + "' ><span>Converted Replacement Property</span> <svg width='25' height='25'><rect width='25' height='25' style='fill:lawngreen;stroke:deeppink;stroke-width:3'></rect></svg></div>" +
+        "<div class='" + conversionPolygonClass + "' ><span>Converted Replacement Property</span> <svg width='25' height='25'><rect width='25' height='25' style='fill:deeppink;stroke:lawngreen;stroke-width:3'></rect></svg></div>" +
         "<div class='" + houseDistrictClass + "' ><span>House District</span> <svg width='25' height='25'><rect width='25' height='25' style='fill:blue;stroke:blue;stroke-width:3;fill-opacity:0.5'></rect></svg></div>" +
         "<div class='" + senateDistrictClass + "' ><span>Senate District</span> <svg width='25' height='25'><rect width='25' height='25' style='fill:blue;stroke:blue;stroke-width:3;fill-opacity:0.5'></rect></svg></div>" +
         "<div class='" + regionsClass + "' ><span>Northwest Region</span> <svg width='25' height='25'><rect width='25' height='25' style='fill:blue;stroke:white;stroke-width:3;fill-opacity:0.9'></rect></svg></div>" +

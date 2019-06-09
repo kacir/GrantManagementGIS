@@ -19,3 +19,22 @@ h1 {
     background-color : rgba(255,255,255,0.9);
     padding: 10px;
 }
+
+
+
+/*referring to popup contents*/
+.popup-button{
+    background-color: darkgreen;
+    border-radius: 15px;
+    margin: 2px;
+}
+.popup-button span {
+    color: white;
+}
+.leaflet-popup-content h3 {
+    background-color: green;
+    color: white;
+}
+table {
+    margin-bottom: 10px;
+}
