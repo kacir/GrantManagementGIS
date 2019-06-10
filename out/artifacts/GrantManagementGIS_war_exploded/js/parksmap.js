@@ -20,16 +20,41 @@ var parkPolygon = L.esri.featureLayer({url : "http://gis.arkansas.gov/arcgis/res
     where : "type = 'funded park'",
     style : {fillColor : "#003300", stroke : false, fillOpacity : 1}
 }).bindPopup(function(layer){
-    console.log(layer.feature.properties);
-    var popupText = "<h3>" + layer.feature.properties.currentNam + "</h3><table>" +
-        "<tr><td>Previously:</td><td>" +layer.feature.properties.pastName + "</td></tr>" +
-        "<tr><td>Sponsor:</td><td>" +layer.feature.properties.sponsorshi + "</td></tr>" +
-        "<tr><td>Inspection Date:</td><td>" + new Date(layer.feature.properties.inspDate).toDateString()  + "</td></tr>" +
-        "<tr><td>LWCF Area:</td><td>50 Acres</td></tr>" +
-        "<tr><td>State Area:</td><td>60 Acres</td></tr>" +
-        "<tr><td>Total Park Area:</td><td>" + parseFloat(layer.feature.properties.calc_acre).toFixed(2) + " Acres</td></tr>" +
+    console.log(layer);
+    var popupText = "<h3>" + layer.feature.properties.currentNam + "</h3><table>";
+    if (!(layer.feature.properties.pastName === undefined || layer.feature.properties.pastName === null || layer.feature.properties.pastName === "" || layer.feature.properties.pastName === " ")){
+        popupText = popupText + "<tr><td>Previously:</td><td>" +layer.feature.properties.pastName + "</td></tr>";
+    };
+    popupText = popupText + "<tr><td>Sponsor:</td><td>" +layer.feature.properties.sponsorshi + "</td></tr>" +
+        "<tr><td>Inspection Date:</td><td>" + new Date(layer.feature.properties.inspDate).toDateString()  + "</td></tr>";
+    if (layer.feature.properties.fed6f3Stat === "has 6(f)3 boundary") {
+
+        if (!layer.feature.properties.hasOwnProperty("stateprojectarea")){
+            layer.feature.properties.stateprojectarea = "Calculating LWCF";
+        };
+        popupText = popupText + "<tr><td>LWCF Area:</td><td><span id='lwcf-acres'>" + layer.feature.properties.stateprojectarea + "</span> Acres</td></tr>";
+        
+        if (layer.feature.properties.fed6f3Stat === "has 6(f)3 boundary"){
+            L.esri.query({ url : "http://gis.arkansas.gov/arcgis/rest/services/ADPT/ADPT_ORGP_MASTER2/MapServer/25"})
+                .where("type = 'federal'")
+                .intersects(layer.feature.geometry)
+                .run(function(error, featureCollection, response){
+                    console.log("geometry query has been run");
+
+                    var selectedGeometry = featureCollection.features[0].geometry;
+                    var squaremetersArea = turf.area(selectedGeometry);
+                    var acresOfProjectArea = turf.convertArea(squaremetersArea, "meters", "acres").toFixed(2);
+                    layer.feature.properties.stateprojectarea = acresOfProjectArea;
+                    $("#lwcf-acres").text(acresOfProjectArea);
+                });
+        }
+    };
+    if (layer.feature.properties.state6f3St === "has 6(f)3 boundary"){
+        popupText = popupText + "<tr><td>State Area:</td><td>60 Acres</td></tr>";
+    };
+    popupText = popupText + "<tr><td>Total Park Area:</td><td>" + parseFloat(layer.feature.properties.calc_acre).toFixed(2) + " Acres</td></tr>" +
         "</table>" +
-        "<div class='container'><div class='row'><div class='col popup-button'><span>ind Grant in Park</span></div><a href='" + layer.feature.properties.boxlink + "'><div class='col popup-button'><span>Doc Scans</span></div></a><a href='" + layer.feature.properties.googleLink + "'><div class='col popup-button'><span>Driving Directions</span></div></a></div></div>";
+        "<div class='container'><div class='row'><div class='col popup-button'><span>Grants in Park</span></div><a target='_blank' href='" + layer.feature.properties.boxlink + "'><div class='col popup-button'><span>Doc Scans</span></div></a><a target='_blank' href='" + layer.feature.properties.googleLink + "'><div class='col popup-button'><span>Driving Directions</span></div></a></div></div>";
     return popupText;
 }).addTo(map);
 
