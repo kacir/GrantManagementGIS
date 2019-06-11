@@ -29,28 +29,47 @@ var parkPolygon = L.esri.featureLayer({url : "http://gis.arkansas.gov/arcgis/res
         "<tr><td>Inspection Date:</td><td>" + new Date(layer.feature.properties.inspDate).toDateString()  + "</td></tr>";
     if (layer.feature.properties.fed6f3Stat === "has 6(f)3 boundary") {
 
-        if (!layer.feature.properties.hasOwnProperty("stateprojectarea")){
-            layer.feature.properties.stateprojectarea = "Calculating LWCF";
-        };
-        popupText = popupText + "<tr><td>LWCF Area:</td><td><span id='lwcf-acres'>" + layer.feature.properties.stateprojectarea + "</span> Acres</td></tr>";
-        
-        if (layer.feature.properties.fed6f3Stat === "has 6(f)3 boundary"){
+        if (!layer.feature.properties.hasOwnProperty("fedeprojectarea")){
+            layer.feature.properties.fedeprojectarea = "Calculating LWCF";
+
             L.esri.query({ url : "http://gis.arkansas.gov/arcgis/rest/services/ADPT/ADPT_ORGP_MASTER2/MapServer/25"})
                 .where("type = 'federal'")
                 .intersects(layer.feature.geometry)
                 .run(function(error, featureCollection, response){
-                    console.log("geometry query has been run");
+                    if (featureCollection.features.legnth == 0){
+                        alert("Query returned no features!");
+                    };
+                    var selectedGeometry = featureCollection.features[0].geometry;
+                    var squaremetersArea = turf.area(selectedGeometry);
+                    var acresOfProjectArea = turf.convertArea(squaremetersArea, "meters", "acres").toFixed(2);
+                    layer.feature.properties.fedeprojectarea = acresOfProjectArea;
+                    $("#lwcf-acres").text(acresOfProjectArea);
+                });
+        };
+        popupText = popupText + "<tr><td>LWCF Area:</td><td><span id='lwcf-acres'>" + layer.feature.properties.fedeprojectarea + "</span> Acres</td></tr>";
 
+    };
+    if (layer.feature.properties.state6f3St === "has 6(f)3 boundary"){
+        if (!layer.feature.properties.hasOwnProperty("stateprojectarea")){
+            layer.feature.properties.stateprojectarea = "Calculating ANCRC";
+
+            L.esri.query({ url : "http://gis.arkansas.gov/arcgis/rest/services/ADPT/ADPT_ORGP_MASTER2/MapServer/25"})
+                .where("type = 'state'")
+                .intersects(layer.feature.geometry)
+                .run(function(error, featureCollection, response){
+                    if (featureCollection.features.legnth == 0){
+                        alert("Query returned no features!");
+                    };
                     var selectedGeometry = featureCollection.features[0].geometry;
                     var squaremetersArea = turf.area(selectedGeometry);
                     var acresOfProjectArea = turf.convertArea(squaremetersArea, "meters", "acres").toFixed(2);
                     layer.feature.properties.stateprojectarea = acresOfProjectArea;
-                    $("#lwcf-acres").text(acresOfProjectArea);
+                    $("#anrc-acres").text(acresOfProjectArea);
                 });
-        }
-    };
-    if (layer.feature.properties.state6f3St === "has 6(f)3 boundary"){
-        popupText = popupText + "<tr><td>State Area:</td><td>60 Acres</td></tr>";
+        };
+        popupText = popupText + "<tr><td>State Area:</td><td><span id='anrc-acres'>" + layer.feature.properties.stateprojectarea + "</span> Acres</td></tr>";
+
+
     };
     popupText = popupText + "<tr><td>Total Park Area:</td><td>" + parseFloat(layer.feature.properties.calc_acre).toFixed(2) + " Acres</td></tr>" +
         "</table>" +
@@ -63,11 +82,29 @@ var parkIcon = L.icon({
     iconSize : [12,12],
     iconAnchor : [6,6]
 });
-var grantPoint = L.esri.featureLayer({url : "http://gis.arkansas.gov/arcgis/rest/services/ADPT/ADPT_ORGP_scratch/FeatureServer/0",
-    pointToLayer : function(feature, latlng){
+
+var parkCentroidLayer = L.geoJSON(null, {pointToLayer : function(feature, latlng){
         return L.marker(latlng, {icon : parkIcon});
-    }
-}).addTo(map);
+    }});
+parkCentroidLayer.addTo(map);
+
+//attempt to find the centorid of all funded parks
+L.esri.query({url : "http://gis.arkansas.gov/arcgis/rest/services/ADPT/ADPT_ORGP_MASTER2/MapServer/38"})
+    .where("type = 'funded park'")
+    .run(function(error, featureCollection, response){
+        featureCollection.features.forEach(function(feature){
+            var pointFeature = turf.centerOfMass(feature.geometry);
+            pointFeature.properties.pastName = feature.pastName;
+            pointFeature.properties.currentNam = feature.currentNam;
+            pointFeature.properties.sponsorshi = feature.sponsorshi;
+            pointFeature.properties.fed6f3Stat = feature.fed6f3Stat;
+            pointFeature.properties.state6f3St = feature.state6f3St;
+            pointFeature.properties.calc_acre = feature.calc_acre;
+
+            parkCentroidLayer.addData(pointFeature);
+        });
+    });
+
 var stateProjectBoundary = L.esri.featureLayer({url : "http://gis.arkansas.gov/arcgis/rest/services/ADPT/ADPT_ORGP_MASTER2/MapServer/25",
     where : "type = 'state'",
     style : {fill : false, stroke : true, opacity : 1.0, color : "#FF0000", weight : 4.0}
@@ -120,15 +157,15 @@ var regions = L.esri.featureLayer({url : "http://gis.arkansas.gov/arcgis/rest/se
 
 
 
-var overlayMaps = {"State Parks" : stateparkslayer ,
-    "Park Polygon" : parkPolygon,
-    "Park Point" : grantPoint,
+var overlayMaps = {"Park Polygon" : parkPolygon,
+    "Park Point" : parkCentroidLayer,
     "State Project Boundary" : stateProjectBoundary,
     "Federal Project Boundary" : federalProjectBoundary,
+    "Project Officier Regions" : regions,
     "Conversion Polygon" : conversionpolygons,
     "House Districts" : houseDistricts,
     "Senate Districts" : senateDistricts,
-    "Project Officier Regions" : regions
+    "State Parks" : stateparkslayer
 };
 var baseMaps = { "Streets" : parklessStreetBasemap, "Aerial" : Esri_WorldImagery};
 L.control.layers(baseMaps, overlayMaps).addTo(map);
@@ -151,7 +188,7 @@ legendControl.update = function (props) {
         var parkPolygonClass = "hidden"
     }
 
-    if (map.hasLayer(grantPoint)){
+    if (map.hasLayer(parkCentroidLayer)){
         var grantPointClass = "";
     } else {
         var grantPointClass = "hidden"
