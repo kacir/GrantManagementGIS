@@ -205,7 +205,9 @@ var overlayMaps = {"Park Polygon" : parkPolygon,
 var baseMaps = { "Streets" : parklessStreetBasemap, "Aerial" : Esri_WorldImagery};
 L.control.layers(baseMaps, overlayMaps).addTo(map);
 
-L.Control.geocoder({position : "topleft"}).addTo(map);
+
+var myCoderEngine = new L.Control.Geocoder.CustomGeocoder();
+L.Control.geocoder({position : "topleft", geocoder : myCoderEngine}).addTo(map);
 
 
 var legendControl = L.control({position : "bottomright"});
