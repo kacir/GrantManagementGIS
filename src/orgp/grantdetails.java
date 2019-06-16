@@ -23,10 +23,11 @@ public class grantdetails extends HttpServlet {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
 
-        String sponsorcode = request.getParameter("sponsorcode");
+        String sponsor = request.getParameter("sponsor");
         DBUtility dbutil = new DBUtility();
 
-        String sql = "SELECT * FROM grantdisplay WHERE sponsorcode = " + sponsorcode + ";";
+        String sql = "SELECT * FROM grantdisplay WHERE UPPER(sponsor) = UPPER('" + sponsor +"');";
+        System.out.println("Follwing is SQL code submitted " + sql);
         ResultSet res = dbutil.queryDB(sql);
 
         //the output is going to be json so a JSONArray object will be used to hold the output given to the response object

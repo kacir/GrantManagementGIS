@@ -42,7 +42,7 @@ L.Control.Geocoder.CustomGeocoder = L.Class.extend({
                             if (featureCollection.features[a].properties.pastName === " " || featureCollection.features[a].properties.pastName === "" || featureCollection.features[a].properties.pastName === undefined || featureCollection.features[a].properties.pastName === null){
                                 suggestion.name = featureCollection.features[a].properties.currentNam;
                             } else {
-                                suggestion.name = featureCollection.features[a].properties.currentNam + "(Prev " + featureCollection.features[a].properties.pastName + ")";
+                                suggestion.name = featureCollection.features[a].properties.currentNam + " (Prev " + featureCollection.features[a].properties.pastName + ")";
                             };
                             var turCenter = turf.centerOfMass(featureCollection.features[a]);
                             suggestion.center = L.latLng( turCenter.geometry.coordinates[1], turCenter.geometry.coordinates[0]);

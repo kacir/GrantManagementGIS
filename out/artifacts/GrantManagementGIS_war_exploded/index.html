@@ -30,7 +30,7 @@
         </div>
         <div class="col-6" id="grant-info-box">
             <div>
-                <label><strong>Search</strong></label>
+                <label for="sponsor-search"><strong>Search</strong></label>
                 <input id="sponsor-search" title="Search for grants and sponsors here" type="text" placeholder="i.e. Little Rock, A-10587">
                 <button id="grant-info-search-button">Search</button>
             </div>
@@ -54,11 +54,13 @@
         integrity="sha512-tyPum7h2h36X52O2gz+Pe8z/3l+Y9S1yEUscbVs5r5aEY5dFmP1WWRY/WLLElnFHa+k1JBQZSCDGwEAnm2IxAQ=="
         crossorigin=""></script>
 <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
-<!-- turf for area calculation -->
+<!-- turf for area and centriod calculation -->
 <script src="https://cdn.jsdelivr.net/npm/@turf/turf@5/turf.min.js"></script>
-
 <!-- jquery UI link -->
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+<!-- d3 library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.2.2/d3.min.js"></script>
 
 <!-- create map after the HTML elements are loaded before they are acted on -->
 <script src="js/customgeocoder.js" ></script>
