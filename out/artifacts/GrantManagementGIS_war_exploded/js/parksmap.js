@@ -1,5 +1,8 @@
 console.log("Testing. Does this Work!");
 
+parkmap = {};
+
+parkmap.start = function(){
 
 var map = L.map('map', {minZoom : 7, maxBounds : [ [ 30.232947, -98.151799], [ 38.872223, -87.048198] ]})
     .setView([ 34.7517595, -92.329416], 7);
@@ -286,3 +289,8 @@ map.on("overlayadd overlayremove", function(eo){
     legendControl.update();
     console.log("updating legend contents");
 });
+
+};
+
+//run the contents of the script within a function rather than global scope
+parkmap.start();

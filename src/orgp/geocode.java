@@ -35,7 +35,7 @@ public class geocode extends HttpServlet {
             while (res.next()) {
                 JSONObject suggestion = new JSONObject();
                 suggestion.put("sponsor" , res.getString("sponsor"));
-                suggestion.put("sponsor" , res.getString("displayname"));
+                suggestion.put("displayname" , res.getString("displayname"));
                 suggestion.put("lat" , res.getString("lat"));
                 suggestion.put("lon" , res.getString("lon"));
                 suggestion.put("sponsorcode" , res.getString("sponsorcode"));
