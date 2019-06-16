@@ -17,6 +17,10 @@ L.Control.Geocoder.CustomGeocoder = L.Class.extend({
         ]);
         var centerpoint = L.latLng( 34.758854, -92.326194);
 
+        /*use this geocoding engine if the homebase one does not return results
+        https://nominatim.openstreetmap.org/search?q=little&countrycodes=us&state=arkansas&format=json
+         */
+
         results[0] = {
             name : "Town",
             bbox : bounds,

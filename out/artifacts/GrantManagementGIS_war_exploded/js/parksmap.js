@@ -207,7 +207,7 @@ L.control.layers(baseMaps, overlayMaps).addTo(map);
 
 
 var myCoderEngine = new L.Control.Geocoder.CustomGeocoder();
-L.Control.geocoder({position : "topleft", geocoder : myCoderEngine}).addTo(map);
+L.Control.geocoder({position : "topleft", geocoder : myCoderEngine, placeholder : "Town, Park, or Street Address"}).addTo(map);
 
 
 var legendControl = L.control({position : "bottomright"});
