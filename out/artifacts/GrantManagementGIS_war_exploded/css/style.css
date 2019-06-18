@@ -41,3 +41,13 @@ table {
 div.leaflet-popup-content {
     width : 250px;
 }
+
+
+/*refering to the accordan stuffs*/
+.ui-accordion-content {
+    height: auto;
+}
+
+.ui-state-active {
+    background-color: green;
+}
