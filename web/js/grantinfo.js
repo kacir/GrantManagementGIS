@@ -18,7 +18,6 @@ function makeResults (sponsorcode){
 
 
     function displayGrantDetails (sponsor, projectNumbers){
-        console.log("going to search for grants related to - " + sponsor);
         //change the url parameters based on if its a request of a particular sponsor or a particular project number set
         var parameters = {};
         if (sponsor === null || sponsor === undefined){
@@ -39,59 +38,109 @@ function makeResults (sponsorcode){
 
             for (var i = 0; i < data.length; i++){
                 var grant = data[i];
-                resultsElement.append("<h3>" + grant.projectnum + "-" + grant.year.slice(2,4)  + "</h3><div><div class='container'>" +
+
+                //in the grant is withdrawn include that info in the title of the accordion
+                var withdrawnHeader = "";
+                if (grant.hasOwnProperty("status")){
+                    if (grant.status.toUpperCase() == "WITHDRAWN"){
+                        withdrawnHeader = "<span class='withdrawn'>WITHDRAWN</span>";
+                    } else if (grant.status.toUpperCase() == "TRANSFERED"){
+                        withdrawnHeader = "<span class='transfered'><strong>TRANSFERED</strong></span>";
+                    };
+                } else {
+                    grant.status = "Unknown";
+                };
+                if (!grant.hasOwnProperty("projecttype")){
+                    grant.projecttype = "Unknown";
+                };
+                if (grant.hasOwnProperty("awardamount")){
+                    grant.awardamount = formatter.format(Number(grant.awardamount));
+                } else {
+                    grant.awardamount = "Unknown";
+                };
+
+
+                var grantContent = "<h3>" + grant.projectnum + "-" + grant.year.slice(2,4) + " " + withdrawnHeader  + "</h3>";
+                grantContent += "<div><div class='container'>" +
                     "<div class='row'><div class='col-12'><strong>Project Name: </strong><span>" + grant.projectname + "</span></div></div>" +
-                    "<div class='row'><div class='col-12'><strong>Park Name: </strong><span>Insert Park names here</span></div></div>" +
-                    "<div class='row'><div class='col-md-6 col-sm-12 col-lg-6 col-xl-4'><strong>Award Amount: </strong><span>" + formatter.format(Number(grant.awardamount)) + "</span></div><div class='col-md-6 col-sm-12 col-lg-6 col-xl-4'><strong>Project Status: </strong><span>" + grant.status + "</span></div><div class='col-md-6 col-sm-12 col-lg-6 col-xl-4'><strong>Project Type: </strong><span>" + grant.projecttype + "</span></div></div>" +
-                    "<div class='row'><div class='col-12'><strong>Items Completed</strong><p>" + grant.itemscompleted + "</p></div></div>" +
-                    "<div class='row'><div class='col-12'><strong>Items on Application</strong><p>" + grant.itemsapplication + "</p></div></div>" +
-                    "</div></div>");//closes the containing and content div
+                    "<div class='row'><div class='col-12'><strong>Park Name: </strong><div id='park-hover-for-" + grant.projectnum + "'></div></div></div>" +
+                    "<div class='row'><div class='col-md-6 col-sm-12 col-lg-6 col-xl-4'><strong>Award Amount: </strong><span>" + grant.awardamount + "</span></div><div class='col-md-6 col-sm-12 col-lg-6 col-xl-4'><strong>Project Status: </strong><span>" + grant.status + "</span></div><div class='col-md-6 col-sm-12 col-lg-6 col-xl-4'><strong>Project Type: </strong><span>" + grant.projecttype + "</span></div></div>";
 
-                //"<label>Project Name: </label><span>" + grant.projectname + "</span><label>Park Name: </label><span>Insert Park names here</span>" +
-                //"<label>Award Amount: </label><span>" + grant.awardamount + "</span><label>Project Status: </label><span>" + grant.status + "</span>" +
-                //"<label>Project Type: </label><span>" + grant.projecttype + "</span><label>Items Completed</label><p>" + grant.itemscompleted + "</p>" +
-                //"<label>Items on Application</label><p>" + grant.itemsapplication +"</p><button>Edit Grant</button>
+                //depending on the completion status or withrawn status. grant may not have certain properties. do not include in table if they are not needed
+                if (grant.hasOwnProperty("itemsapplication")){
+                    if (grant.hasOwnProperty("itemscompleted")){
+                        if (grant.itemsapplication === grant.itemscompleted){
+                            grant.itemscompleted = "Same as application";
+                        };
+                        grantContent += "<div class='row'><div class='col-12'><strong>Items Completed</strong><p>" + grant.itemscompleted + "</p></div></div>";
+                    };
+                    grantContent += "<div class='row'><div class='col-12'><strong>Items on Application</strong><p>" + grant.itemsapplication + "</p></div></div>";
+                };
 
+                grantContent += "</div></div>";
+                resultsElement.append(grantContent);//closes the containing and content div
                 console.log("looping through results to make div elements");
+
+                insertParkNames(grant.projectnum);
+
             };
-            resultsElement.accordion();
+            resultsElement.accordion({heightStyle : "content"});
             accordionApplied = true;
+
+
+
 
         });
     };
 
+    function insertParkNames (projectnum){
+        //for the intersted element make a ESRI query which get the park name and park number and adds to the park span of the accordion
+        L.esri.query({"url": "http://gis.arkansas.gov/arcgis/rest/services/ADPT/ADPT_ORGP_MASTER2/MapServer/28"})
+            .where("projectNum = '" + projectnum + "'")
+            .run(function(error, gPointfeatureCollection, response){
+
+                for (var x = 0; x < gPointfeatureCollection.features.length; x++){
+                    var point = gPointfeatureCollection.features[x].geometry;
+                    L.esri.query({"url": "http://gis.arkansas.gov/arcgis/rest/services/ADPT/ADPT_ORGP_MASTER2/MapServer/38"})
+                        .intersects(point)
+                        .run(function(error, parkFeatureCollection, response){
+                            console.log("parks returned from backend for grant " + projectnum);
+                            console.log(parkFeatureCollection);
+                            var park = parkFeatureCollection.features[0];
+                            $("#park-hover-for-" + projectnum).append("<span> " + park.properties.currentNam + " </span>");
+                            //bind a function to zoom into the right part of the map on click
+                            //bind function which heights on hover, and hover gives grant details
+                        });
+                };
+            });
+    };
+
 
     sponsorSearchinputBox.on("keypress", function(event){
-        console.log("some kind of key was pressed!");
        if (event.key === "Enter"){
            displayGrantDetails(sponsorSearchinputBox.val(), null);
-           console.log("enter key has been pressed!");
        };
     });
 
     var grantinfosearchButton = $("#grant-info-search-button");
     grantinfosearchButton.on("click", function(){
         displayGrantDetails(sponsorSearchinputBox.val(), null);
-        console.log("search has been clicked on!");
     });
 
     sponsorSearchinputBox.autocomplete({autoFocus : true, minLength: 2, source :
             function(request, response){
-                console.log("request for autocomplete has been made");
                 $.getJSON("/api/sponsorsearch?searchterm=" + request.term, function(data){
 
-                    var maxResults = 10
+                    var maxResults = 10;
                     if (data.length > maxResults){
                         data = data.slice(0, maxResults -1);
-                    }
+                    };
 
                     var i;
                     for (i = 0; i < data.length; i++){
                         data[i].label = data[i].sponsor;
                         data[i].value = data[i].sponsor;
                     };
-                    console.log("sending data into the autocomplete for use!");
-                    console.log(data);
                     response(data);
                 });
             }});

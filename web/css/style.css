@@ -44,10 +44,6 @@ div.leaflet-popup-content {
 
 
 /*refering to the accordan stuffs*/
-.ui-accordion-content {
-    height: auto;
-}
-
 .ui-state-active {
     background-color: green;
 }
