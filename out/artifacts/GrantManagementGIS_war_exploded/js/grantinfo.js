@@ -33,7 +33,8 @@ function makeResults (sponsorcode){
             //if the accordion exists then get rid of it and all of the contents of the div element
             if (!accordionApplied === false){
                 resultsElement.accordion("destroy");
-            }
+                $(".park-tooltip").tooltip("destroy");
+            };
             resultsElement.html("");
 
             for (var i = 0; i < data.length; i++){
@@ -89,7 +90,6 @@ function makeResults (sponsorcode){
 
 
 
-
         });
     };
 
@@ -98,7 +98,7 @@ function makeResults (sponsorcode){
         L.esri.query({"url": "http://gis.arkansas.gov/arcgis/rest/services/ADPT/ADPT_ORGP_MASTER2/MapServer/28"})
             .where("projectNum = '" + projectnum + "'")
             .run(function(error, gPointfeatureCollection, response){
-
+                //loop through each gpoint for a grant
                 for (var x = 0; x < gPointfeatureCollection.features.length; x++){
                     var point = gPointfeatureCollection.features[x].geometry;
                     L.esri.query({"url": "http://gis.arkansas.gov/arcgis/rest/services/ADPT/ADPT_ORGP_MASTER2/MapServer/38"})
@@ -107,7 +107,19 @@ function makeResults (sponsorcode){
                             console.log("parks returned from backend for grant " + projectnum);
                             console.log(parkFeatureCollection);
                             var park = parkFeatureCollection.features[0];
-                            $("#park-hover-for-" + projectnum).append("<span> " + park.properties.currentNam + " </span>");
+                            if (park.properties.hasOwnProperty("pastName") && !(park.properties.pastName === " " || park.properties.pastName === "")){
+                                var title = "Previously called: " + park.properties.pastName;
+                            } else {
+                                var title = "Park has only had one name";
+                            };
+
+                            $("#park-hover-for-" + projectnum).append("<span __parknum='" + park.properties.parkNum + "' __projectnum='" + projectnum +  "' title='" + title  + "' OBJECTID='" + park.properties.OBJECTID + "' class='park-tooltip'> " + park.properties.currentNam + " </span>");
+                            //bind the tooltip at this point because we can't time something after all the ESRI query's finish
+
+
+                            var parkSelector = $("span[__parknum='" + park.properties.parkNum + "'][__projectnum='" + projectnum + "']")
+                            parkSelector.tooltip();
+                            parkmap.parkHover(parkSelector);
                             //bind a function to zoom into the right part of the map on click
                             //bind function which heights on hover, and hover gives grant details
                         });

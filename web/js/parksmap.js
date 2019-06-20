@@ -4,12 +4,12 @@ parkmap = {};
 
 parkmap.start = function(){
 
-var map = L.map('map', {minZoom : 7, maxBounds : [ [ 30.232947, -98.151799], [ 38.872223, -87.048198] ]})
+parkmap.map = L.map('map', {minZoom : 7, maxBounds : [ [ 30.232947, -98.151799], [ 38.872223, -87.048198] ]})
     .setView([ 34.7517595, -92.329416], 7);
-map.zoomControl.setPosition("bottomleft");
+parkmap.map.zoomControl.setPosition("bottomleft");
 
 var mapboxlink = "https://api.mapbox.com/styles/v1/robertkaciradpt/cjjrecba50sae2snpvqcw8ylq/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1Ijoicm9iZXJ0a2FjaXJhZHB0IiwiYSI6ImNqZ3BoODQ2NTAwM20ycXJ1OWpkZnh1emkifQ.MBfZdxZljkG8_JeivKerxw";
-var parklessStreetBasemap = L.tileLayer(mapboxlink).addTo(map);
+var parklessStreetBasemap = L.tileLayer(mapboxlink).addTo(parkmap.map);
 var Esri_WorldImagery = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
     attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
 });
@@ -77,13 +77,13 @@ function parkPopupBuild (feature) {
     return popupText;
 }
 
-var parkPolygon = L.esri.featureLayer({url : "http://gis.arkansas.gov/arcgis/rest/services/ADPT/ADPT_ORGP_MASTER2/MapServer/38",
+parkmap.parkPolygon = L.esri.featureLayer({url : "http://gis.arkansas.gov/arcgis/rest/services/ADPT/ADPT_ORGP_MASTER2/MapServer/38",
     where : "type = 'funded park'",
     style : {fillColor : "#003300", stroke : false, fillOpacity : 1}
 }).bindPopup(function(layer){
     var feature = layer.feature;
     return parkPopupBuild(feature);
-}).addTo(map);
+}).addTo(parkmap.map);
 
 var parkIcon = L.icon({
     iconUrl : "/img/greenpark.png",
@@ -91,7 +91,7 @@ var parkIcon = L.icon({
     iconAnchor : [6,6]
 });
 
-var parkCentroidLayer = L.geoJSON(null, {pointToLayer : function(feature, latlng){
+parkmap.parkCentroidLayer = L.geoJSON(null, {pointToLayer : function(feature, latlng){
         return L.marker(latlng, {icon : parkIcon});
     }}).bindPopup(function(layer){
 
@@ -124,7 +124,7 @@ var parkCentroidLayer = L.geoJSON(null, {pointToLayer : function(feature, latlng
             });
         return "<div id='park-point-popup'> Loading! </div>";
 });
-parkCentroidLayer.addTo(map);
+parkmap.parkCentroidLayer.addTo(parkmap.map);
 
 //attempt to find the centorid of all funded parks
 L.esri.query({url : "http://gis.arkansas.gov/arcgis/rest/services/ADPT/ADPT_ORGP_MASTER2/MapServer/38"})
@@ -133,13 +133,14 @@ L.esri.query({url : "http://gis.arkansas.gov/arcgis/rest/services/ADPT/ADPT_ORGP
         featureCollection.features.forEach(function(feature){
             var pointFeature = turf.centerOfMass(feature.geometry);
             pointFeature.properties.pastName = feature.pastName;
+            pointFeature.properties.parkNum = feature.parkNum;
             pointFeature.properties.currentNam = feature.currentNam;
             pointFeature.properties.sponsorshi = feature.sponsorshi;
             pointFeature.properties.fed6f3Stat = feature.fed6f3Stat;
             pointFeature.properties.state6f3St = feature.state6f3St;
             pointFeature.properties.calc_acre = feature.calc_acre;
 
-            parkCentroidLayer.addData(pointFeature);
+            parkmap.parkCentroidLayer.addData(pointFeature);
         });
     });
 
@@ -195,8 +196,8 @@ var regions = L.esri.featureLayer({url : "http://gis.arkansas.gov/arcgis/rest/se
 
 
 
-var overlayMaps = {"Park Polygon" : parkPolygon,
-    "Park Point" : parkCentroidLayer,
+var overlayMaps = {"Park Polygon" : parkmap.parkPolygon,
+    "Park Point" : parkmap.parkCentroidLayer,
     "State Project Boundary" : stateProjectBoundary,
     "Federal Project Boundary" : federalProjectBoundary,
     "Project Officier Regions" : regions,
@@ -206,11 +207,11 @@ var overlayMaps = {"Park Polygon" : parkPolygon,
     "State Parks" : stateparkslayer
 };
 var baseMaps = { "Streets" : parklessStreetBasemap, "Aerial" : Esri_WorldImagery};
-L.control.layers(baseMaps, overlayMaps).addTo(map);
+L.control.layers(baseMaps, overlayMaps).addTo(parkmap.map);
 
 
 var myCoderEngine = new L.Control.Geocoder.CustomGeocoder();
-L.Control.geocoder({position : "topleft", geocoder : myCoderEngine, placeholder : "Town, Park, or Street Address"}).addTo(map);
+L.Control.geocoder({position : "topleft", geocoder : myCoderEngine, placeholder : "Town, Park, or Street Address"}).addTo(parkmap.map);
 
 
 var legendControl = L.control({position : "bottomright"});
@@ -222,49 +223,49 @@ legendControl.onAdd = function (map) {
 // method that we will use to update the control based on feature properties passed
 legendControl.update = function (props) {
 
-    if (map.hasLayer(parkPolygon)){
+    if (parkmap.map.hasLayer(parkmap.parkPolygon)){
         var parkPolygonClass = "";
     } else {
         var parkPolygonClass = "hidden"
     }
 
-    if (map.hasLayer(parkCentroidLayer)){
+    if (parkmap.map.hasLayer(parkmap.parkCentroidLayer)){
         var grantPointClass = "";
     } else {
         var grantPointClass = "hidden"
     }
 
-    if (map.hasLayer(stateProjectBoundary)){
+    if (parkmap.map.hasLayer(stateProjectBoundary)){
         var stateProjectBoundaryClass = "";
     } else {
         var stateProjectBoundaryClass = "hidden"
     }
 
-    if (map.hasLayer(federalProjectBoundary)){
+    if (parkmap.map.hasLayer(federalProjectBoundary)){
         var federalProjectClass = "";
     } else {
         var federalProjectClass = "hidden"
     }
 
-    if (map.hasLayer(conversionpolygons)){
+    if (parkmap.map.hasLayer(conversionpolygons)){
         var conversionPolygonClass = "";
     } else {
         var conversionPolygonClass = "hidden"
     }
 
-    if (map.hasLayer(houseDistricts)){
+    if (parkmap.map.hasLayer(houseDistricts)){
         var houseDistrictClass = "";
     } else {
         var houseDistrictClass = "hidden"
     }
 
-    if (map.hasLayer(senateDistricts)){
+    if (parkmap.map.hasLayer(senateDistricts)){
         var senateDistrictClass = "";
     } else {
         var senateDistrictClass = "hidden"
     }
 
-    if (map.hasLayer(regions)){
+    if (parkmap.map.hasLayer(regions)){
         var regionsClass = "";
     } else {
         var regionsClass = "hidden"
@@ -283,13 +284,22 @@ legendControl.update = function (props) {
         "<div class='" + regionsClass + "' ><span>Northeast Region</span> <svg width='25' height='25'><rect width='25' height='25' style='fill:deeppink;stroke:white;stroke-width:3;fill-opacity:0.9'></rect></svg></div>" +
         "<div class='" + regionsClass + "' ><span>Southern Region</span> <svg width='25' height='25'><rect width='25' height='25' style='fill:green;stroke:white;stroke-width:3;fill-opacity:0.9'></rect></svg></div>";
 };
-legendControl.addTo(map);
+legendControl.addTo(parkmap.map);
 
-map.on("overlayadd overlayremove", function(eo){
+parkmap.map.on("overlayadd overlayremove", function(eo){
     legendControl.update();
     console.log("updating legend contents");
 });
 
+};
+
+parkmap.parkHover = function(parkSelector){
+    var OBJECTID = parkSelector.attr("OBJECTID");
+    parkSelector.on("click", function(event){
+        var selectedPark = parkmap.parkPolygon.getFeature(OBJECTID);
+        var parkBounds = selectedPark.getBounds();
+        parkmap.map.flyToBounds(parkBounds);
+    });
 };
 
 //run the contents of the script within a function rather than global scope

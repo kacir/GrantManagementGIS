@@ -47,3 +47,21 @@ div.leaflet-popup-content {
 .ui-state-active {
     background-color: green;
 }
+
+.park-tooltip:hover{
+    background-color: green;
+    color: white;
+    -webkit-transition: width 2s; /* Safari prior 6.1 */
+    transition: background-color 1s, color 1s;
+    transition-timing-function : ease-out;
+}
+
+.park-tooltip{
+    padding: 4px;
+    border-radius: 2px;
+    cursor: pointer;
+}
+
+.park-tooltip::after{
+    content: ",";
+}
