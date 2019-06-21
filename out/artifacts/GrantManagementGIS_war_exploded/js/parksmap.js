@@ -77,9 +77,10 @@ function parkPopupBuild (feature) {
     return popupText;
 }
 
+parkmap.parkPolygonStyle = {fillColor : "#008000", stroke : false, fillOpacity : 1};
 parkmap.parkPolygon = L.esri.featureLayer({url : "http://gis.arkansas.gov/arcgis/rest/services/ADPT/ADPT_ORGP_MASTER2/MapServer/38",
     where : "type = 'funded park'",
-    style : {fillColor : "#003300", stroke : false, fillOpacity : 1}
+    style : parkmap.parkPolygonStyle
 }).bindPopup(function(layer){
     var feature = layer.feature;
     return parkPopupBuild(feature);
@@ -132,13 +133,14 @@ L.esri.query({url : "http://gis.arkansas.gov/arcgis/rest/services/ADPT/ADPT_ORGP
     .run(function(error, featureCollection, response){
         featureCollection.features.forEach(function(feature){
             var pointFeature = turf.centerOfMass(feature.geometry);
-            pointFeature.properties.pastName = feature.pastName;
-            pointFeature.properties.parkNum = feature.parkNum;
-            pointFeature.properties.currentNam = feature.currentNam;
-            pointFeature.properties.sponsorshi = feature.sponsorshi;
-            pointFeature.properties.fed6f3Stat = feature.fed6f3Stat;
-            pointFeature.properties.state6f3St = feature.state6f3St;
-            pointFeature.properties.calc_acre = feature.calc_acre;
+            pointFeature.properties.pastName = feature.properties.pastName;
+            pointFeature.properties.parkNum = feature.properties.parkNum;
+            pointFeature.properties.OBJECTID = feature.properties.OBJECTID;
+            pointFeature.properties.currentNam = feature.properties.currentNam;
+            pointFeature.properties.sponsorshi = feature.properties.sponsorshi;
+            pointFeature.properties.fed6f3Stat = feature.properties.fed6f3Stat;
+            pointFeature.properties.state6f3St = feature.properties.state6f3St;
+            pointFeature.properties.calc_acre = feature.properties.calc_acre;
 
             parkmap.parkCentroidLayer.addData(pointFeature);
         });
@@ -295,11 +297,55 @@ parkmap.map.on("overlayadd overlayremove", function(eo){
 
 parkmap.parkHover = function(parkSelector){
     var OBJECTID = parkSelector.attr("OBJECTID");
+    var parkNum = parkSelector.attr("__parknum");
     parkSelector.on("click", function(event){
         var selectedPark = parkmap.parkPolygon.getFeature(OBJECTID);
         var parkBounds = selectedPark.getBounds();
         parkmap.map.flyToBounds(parkBounds);
     });
+
+    parkSelector.on("mouseover", function(event){
+        //var selectedPark = parkmap.parkPolygon.getFeature(OBJECTID);
+        //selectedPark.setStyle({
+        //    color : "#003D02",
+        //    fillColor : "#003D02",
+        //    stroke : true,
+        //    weight : 3
+        //});
+        //possibly highlight the park marker as well.
+        parkmap.parkCentroidLayer.eachLayer(function(layer){
+            if (layer.feature.properties.parkNum === parkNum){
+                layer.setOpacity(1.0);
+            } else {
+                layer.setOpacity(0.1);
+            };
+        });
+        parkmap.parkPolygon.eachActiveFeature(function(layer){
+            if (layer.feature.properties.parkNum == parkNum){
+                layer.setStyle({
+                    color : "#003D02",
+                    fillColor : "#003D02",
+                    stroke : true,
+                    weight : 3,
+                    fillOpacity : 1.0,
+                    opacity : 1.0
+                });
+            } else {
+                layer.setStyle({opacity : 0.3, fillOpacity : 0.3});
+            };
+        });
+    });
+
+    parkSelector.on("mouseleave", function(event){
+        parkmap.parkPolygon.resetStyle(OBJECTID);
+        parkmap.parkCentroidLayer.eachLayer(function(layer){
+            layer.setOpacity(1.0);
+        });
+        parkmap.parkPolygon.eachActiveFeature(function(layer){
+            layer.setStyle(parkmap.parkPolygonStyle);
+        });
+    });
+
 };
 
 //run the contents of the script within a function rather than global scope
