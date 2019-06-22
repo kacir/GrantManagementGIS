@@ -26,9 +26,10 @@ function makeResults (sponsorcode){
             parameters.sponsor = sponsor;
         };
 
-        $.getJSON("/api/grantdetails?sponsor=" + sponsor , function(data){
+        $.getJSON("/api/grantdetails?sponsor=" + sponsor , function(fullData){
             console.log("Grant Results back from server are: ");
             console.log(data);
+            var data = data.grants;
 
             //if the accordion exists then get rid of it and all of the contents of the div element
             if (!accordionApplied === false){
