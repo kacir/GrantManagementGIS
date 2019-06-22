@@ -42,6 +42,10 @@ div.leaflet-popup-content {
     width : 250px;
 }
 
+#cross-reference-park-to-grant{
+    cursor: pointer;
+}
+
 
 /*refering to the accordan stuffs*/
 .ui-state-active {

@@ -27,7 +27,7 @@ public class grantdetails extends HttpServlet {
         DBUtility dbutil = new DBUtility();
 
         String sql = "SELECT * FROM grantdisplay WHERE UPPER(sponsor) = UPPER('" + sponsor +"') ORDER BY year DESC;";
-        System.out.println("Follwing is SQL code submitted " + sql);
+        System.out.println("following is SQL code submitted " + sql);
         ResultSet res = dbutil.queryDB(sql);
 
         //the output is going to be json so a JSONArray object will be used to hold the output given to the response object

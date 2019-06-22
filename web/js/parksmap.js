@@ -73,9 +73,24 @@ function parkPopupBuild (feature) {
     };
     popupText = popupText + "<tr><td>Total Park Area:</td><td>" + parseFloat(feature.properties.calc_acre).toFixed(2) + " Acres</td></tr>" +
         "</table>" +
-        "<div class='container'><div class='row'><div class='col popup-button'><span>Grants in Park</span></div><a target='_blank' href='" + feature.properties.boxlink + "'><div class='col popup-button'><span>Doc Scans</span></div></a><a target='_blank' href='" + feature.properties.googleLink + "'><div class='col popup-button'><span>Driving Directions</span></div></a></div></div>";
+        "<div class='container'><div class='row'><div id='cross-reference-park-to-grant' onclick='parkmap.crossReferenceParkToGrant()' OBJECTID='" + feature.properties.OBJECTID + "' class='col popup-button'><span>Grants in Park</span></div><a target='_blank' href='" + feature.properties.boxlink + "'><div class='col popup-button'><span>Doc Scans</span></div></a><a target='_blank' href='" + feature.properties.googleLink + "'><div class='col popup-button'><span>Driving Directions</span></div></a></div></div>";
     return popupText;
-}
+};
+
+parkmap.crossReferenceParkToGrant = function(){
+    var OBJECTID = $("#cross-reference-park-to-grant").attr("OBJECTID");
+    var selectedPark = parkmap.parkPolygon.getFeature(OBJECTID);
+    //find each of the related grant numbers
+    L.esri.query({url : "http://gis.arkansas.gov/arcgis/rest/services/ADPT/ADPT_ORGP_MASTER2/MapServer/28"})
+        .intersects(selectedPark)
+        .run(function(error, featureCollection, response){
+            var projectNumbersList = [];
+            for (var t = 0; t < featureCollection.features.length; t++){
+                projectNumbersList.push(featureCollection.features[t].properties.projectNum);
+            };
+            console.log(projectNumbersList);
+        });
+};
 
 parkmap.parkPolygonStyle = {fillColor : "#008000", stroke : false, fillOpacity : 1};
 parkmap.parkPolygon = L.esri.featureLayer({url : "http://gis.arkansas.gov/arcgis/rest/services/ADPT/ADPT_ORGP_MASTER2/MapServer/38",
@@ -86,14 +101,14 @@ parkmap.parkPolygon = L.esri.featureLayer({url : "http://gis.arkansas.gov/arcgis
     return parkPopupBuild(feature);
 }).addTo(parkmap.map);
 
-var parkIcon = L.icon({
+parkmap.parkIcon = L.icon({
     iconUrl : "/img/greenpark.png",
     iconSize : [12,12],
     iconAnchor : [6,6]
 });
 
 parkmap.parkCentroidLayer = L.geoJSON(null, {pointToLayer : function(feature, latlng){
-        return L.marker(latlng, {icon : parkIcon});
+        return L.marker(latlng, {icon : parkmap.parkIcon});
     }}).bindPopup(function(layer){
 
 
@@ -316,6 +331,13 @@ parkmap.parkHover = function(parkSelector){
         parkmap.parkCentroidLayer.eachLayer(function(layer){
             if (layer.feature.properties.parkNum === parkNum){
                 layer.setOpacity(1.0);
+                //Change size of icon temporarily
+                var multiplyfactor = 3;
+                var largeParkIcon = L.icon({iconSize : [parkmap.parkIcon.options.iconSize[0]*multiplyfactor ,parkmap.parkIcon.options.iconSize[1]*multiplyfactor],
+                    iconAnchor : [parkmap.parkIcon.options.iconAnchor[0]*multiplyfactor, parkmap.parkIcon.options.iconAnchor[1]*multiplyfactor],
+                    iconUrl : parkmap.parkIcon.options.iconUrl
+                });
+                layer.setIcon(largeParkIcon);
             } else {
                 layer.setOpacity(0.1);
             };
@@ -340,6 +362,7 @@ parkmap.parkHover = function(parkSelector){
         parkmap.parkPolygon.resetStyle(OBJECTID);
         parkmap.parkCentroidLayer.eachLayer(function(layer){
             layer.setOpacity(1.0);
+            layer.setIcon(parkmap.parkIcon);
         });
         parkmap.parkPolygon.eachActiveFeature(function(layer){
             layer.setStyle(parkmap.parkPolygonStyle);

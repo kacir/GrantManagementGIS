@@ -142,7 +142,7 @@ function makeResults (sponsorcode){
     sponsorSearchinputBox.autocomplete({autoFocus : true, minLength: 2, source :
             function(request, response){
                 $.getJSON("/api/sponsorsearch?searchterm=" + request.term, function(data){
-
+                    console.log(data);
                     var maxResults = 10;
                     if (data.length > maxResults){
                         data = data.slice(0, maxResults -1);
@@ -150,8 +150,14 @@ function makeResults (sponsorcode){
 
                     var i;
                     for (i = 0; i < data.length; i++){
-                        data[i].label = data[i].sponsor;
-                        data[i].value = data[i].sponsor;
+                        if (data[i].type === "sponsor"){
+                            data[i].label = data[i].sponsor;
+                            data[i].value = data[i].sponsor;
+                        } else {
+                            data[i].label = data[i].projectnum + "-" + data[i].year.slice(2,4) + "  -  " + data[i].sponsor;
+                            data[i].value = data[i].projectnum;
+                        };
+
                     };
                     response(data);
                 });

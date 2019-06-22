@@ -39,6 +39,28 @@ public class sponsorsearch extends HttpServlet {
                 suggestion.put("sponsor" , res.getString("sponsor"));
                 suggestion.put("displayname" , res.getString("displayname"));
                 suggestion.put("sponsorcode" , res.getString("sponsorcode"));
+                suggestion.put("type", "sponsor");
+                list.put(suggestion);
+            }
+        } catch (SQLException e){
+            e.printStackTrace();
+        } catch (JSONException e){
+            e.printStackTrace();
+        }
+
+        //try and get a list of project numbers to that fit the search term
+        String ProjectNumSQL = "SELECT projectnum, year, sponsor FROM grantdisplay WHERE UPPER(projectnum) LIKE UPPER('%" + searchterm  + "%');";
+
+        ResultSet projectRes = dbutil.queryDB(ProjectNumSQL);
+        System.out.println("about to search grants");
+        try {
+            while (projectRes.next()) {
+                System.out.println("found a single grant suggestion");
+                JSONObject suggestion = new JSONObject();
+                suggestion.put("sponsor", projectRes.getString("sponsor"));
+                suggestion.put("year", projectRes.getString("year"));
+                suggestion.put("projectnum", projectRes.getString("projectnum"));
+                suggestion.put("type", "grant");
                 list.put(suggestion);
             }
         } catch (SQLException e){
