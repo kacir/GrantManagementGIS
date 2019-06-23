@@ -9,13 +9,12 @@ var grantInfoWindow = {};
 //make a function that populates the results panel with information
 grantInfoWindow.makeResults =  function (){
     //make a json request to the backend for the info
-    var sponsorsummary = $("#sponsor-summary");
     var resultsElement = $("#grant-results-box");
     var accordionApplied = false;
 
     var sponsorSearchinputBox = $("#sponsor-search");
 
-    grantInfoWindow.displayGrantDetails = function  (sponsor, projectNumbers){
+    grantInfoWindow.displayGrantDetails = function  (sponsor, projectNumbers, searchTitle){
         //change the url parameters based on if its a request of a particular sponsor or a particular project number set
         var requestURL;
         if (!(sponsor === null || sponsor === undefined || sponsor === "" || sponsor === " ")){
@@ -24,6 +23,14 @@ grantInfoWindow.makeResults =  function (){
         if (!(projectNumbers === null || projectNumbers === undefined || projectNumbers === "" || projectNumbers === " ")){
             requestURL = "/api/grantdetails?projectnumbers=" + projectNumbers;
         }
+        if (searchTitle === null || searchTitle === undefined || searchTitle === "" || searchTitle === " "){
+            searchTitle = "<h3>Unknown Search</h3>"
+        }
+        console.log("stuff going to be written into search title");
+        console.log(searchTitle);
+        $("#search-title").html(searchTitle);
+
+        sponsorSearchinputBox.val("");
 
         $.getJSON(requestURL , function(fullData){
             console.log("Grant Results back from server are: ");
@@ -46,6 +53,27 @@ grantInfoWindow.makeResults =  function (){
             //zoom to the extent of the
             if (fullData.hasOwnProperty("sponsorDetails")) {
                 parkmap.zoomToSponsor(fullData.sponsorDetails);
+
+                var sponsorContent = "</h2><table class='sponsor-summary-details'><tr><td>Type: </td><td>" + fullData.sponsorDetails.type + "</td></tr>";
+
+                if (fullData.sponsorDetails.hasOwnProperty("website")){
+                    if (!(fullData.sponsorDetails.website.includes("http://") || fullData.sponsorDetails.website.includes("https://"))){
+                        fullData.sponsorDetails.website = "http://" + fullData.sponsorDetails.website;
+                        sponsorContent += "<tr><td>Website</td><td><a target='_blank' href='" + fullData.sponsorDetails.website + "'>" + fullData.sponsorDetails.website + "</a></td></tr>";
+                    }
+                }
+
+                if (fullData.sponsorDetails.hasOwnProperty("pop2010")){
+                    sponsorContent += "<tr><td>2010 Census Population</td><td>" + parseInt(fullData.sponsorDetails.pop2010).toLocaleString() + "</td></tr>";
+                }
+                sponsorContent += "</table>";
+
+                //fill in the grant sponsor details at the top of the results panel
+                $("#sponsor-summary").html(sponsorContent);
+
+
+            } else {
+                $("#sponsor-summary").html("");
             }
 
             for (var i = 0; i < data.length; i++){
@@ -141,13 +169,13 @@ grantInfoWindow.makeResults =  function (){
 
     sponsorSearchinputBox.on("keypress", function(event){
        if (event.key === "Enter"){
-           grantInfoWindow.displayGrantDetails(sponsorSearchinputBox.val(), null);
+           grantInfoWindow.displayGrantDetails(sponsorSearchinputBox.val(), null, "<h3>" + sponsorSearchinputBox.val() + "</h3><p>Grants sponsored by</p>");
        }
     });
 
     var grantinfosearchButton = $("#grant-info-search-button");
     grantinfosearchButton.on("click", function(){
-        grantInfoWindow.displayGrantDetails(sponsorSearchinputBox.val(), null);
+        grantInfoWindow.displayGrantDetails(sponsorSearchinputBox.val(), null, "<h3>" + sponsorSearchinputBox.val() + "</h3><p>Grants sponsored by</p>");
     });
 
     sponsorSearchinputBox.autocomplete({autoFocus : true, minLength: 2, source :

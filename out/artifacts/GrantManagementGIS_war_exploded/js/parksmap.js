@@ -80,6 +80,7 @@ function parkPopupBuild (feature) {
 parkmap.crossReferenceParkToGrant = function(){
     var OBJECTID = $("#cross-reference-park-to-grant").attr("OBJECTID");
     var selectedPark = parkmap.parkPolygon.getFeature(OBJECTID);
+    console.log(selectedPark);
     //find each of the related grant numbers
     L.esri.query({url : "http://gis.arkansas.gov/arcgis/rest/services/ADPT/ADPT_ORGP_MASTER2/MapServer/28"})
         .intersects(selectedPark)
@@ -92,7 +93,7 @@ parkmap.crossReferenceParkToGrant = function(){
             };
             console.log(projectNumbersList);
             //make request to postgresSQL for data
-            grantInfoWindow.displayGrantDetails(null, stringNumerList);
+            grantInfoWindow.displayGrantDetails(null, stringNumerList, "<h3>" + selectedPark.feature.properties.currentNam + "</h3><p>given on this park</p>");
 
         });
 };

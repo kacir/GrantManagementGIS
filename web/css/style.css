@@ -69,3 +69,12 @@ div.leaflet-popup-content {
 .park-tooltip::after{
     content: ",";
 }
+
+.sponsor-summary-details tr, .sponsor-summary-details tr td{
+    border: 1px solid dimgrey;
+}
+
+.sponsor-summary-details tr td {
+    padding-left: 5px;
+    padding-right: 5px;
+}
