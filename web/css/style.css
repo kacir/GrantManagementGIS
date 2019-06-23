@@ -47,12 +47,12 @@ div.leaflet-popup-content {
 }
 
 
-/*refering to the accordan stuffs*/
+/*referring to the accordion stuffs*/
 .ui-state-active {
     background-color: green;
 }
 
-.park-tooltip:hover{
+.park-tooltip:hover, .join-sponsors:hover{
     background-color: green;
     color: white;
     -webkit-transition: width 2s; /* Safari prior 6.1 */
@@ -60,13 +60,13 @@ div.leaflet-popup-content {
     transition-timing-function : ease-out;
 }
 
-.park-tooltip{
+.park-tooltip, .join-sponsors{
     padding: 4px;
     border-radius: 2px;
     cursor: pointer;
 }
 
-.park-tooltip::after{
+.park-tooltip::after, .join-sponsors::after{
     content: ",";
 }
 

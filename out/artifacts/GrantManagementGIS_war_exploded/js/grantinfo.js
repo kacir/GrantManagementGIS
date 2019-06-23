@@ -82,9 +82,9 @@ grantInfoWindow.makeResults =  function (){
                 //in the grant is withdrawn include that info in the title of the accordion
                 var withdrawnHeader = "";
                 if (grant.hasOwnProperty("status")){
-                    if (grant.status.toUpperCase() == "WITHDRAWN"){
+                    if (grant.status.toUpperCase() === "WITHDRAWN"){
                         withdrawnHeader = "<span class='withdrawn'>WITHDRAWN</span>";
-                    } else if (grant.status.toUpperCase() == "TRANSFERED"){
+                    } else if (grant.status.toUpperCase() === "TRANSFERED"){
                         withdrawnHeader = "<span class='transfered'><strong>TRANSFERED</strong></span>";
                     }
                 } else {
@@ -106,6 +106,13 @@ grantInfoWindow.makeResults =  function (){
                     "<div class='row'><div class='col-12'><strong>Park Name: </strong><div id='park-hover-for-" + grant.projectnum + "'></div></div></div>" +
                     "<div class='row'><div class='col-md-6 col-sm-12 col-lg-6 col-xl-4'><strong>Award Amount: </strong><span>" + grant.awardamount + "</span></div><div class='col-md-6 col-sm-12 col-lg-6 col-xl-4'><strong>Project Status: </strong><span>" + grant.status + "</span></div><div class='col-md-6 col-sm-12 col-lg-6 col-xl-4'><strong>Project Type: </strong><span>" + grant.projecttype + "</span></div></div>";
 
+                grantContent += "<div class='row'><div class='col'><strong>Sponsors: </strong></div><div class='col'>";
+                for (var u = 0; u < grant.sponsorList.length; u++){
+                    grantContent += "<span class='join-sponsors' sponsor='" + grant.sponsorList[u].sponsor + "' sponsorcode='" + grant.sponsorList[u].sponsorcode +"'>" + grant.sponsorList[u].sponsor + "</span>";
+                }
+
+                grantContent += "</div></div>";
+
                 //depending on the completion status or withrawn status. grant may not have certain properties. do not include in table if they are not needed
                 if (grant.hasOwnProperty("itemsapplication")){
                     if (grant.hasOwnProperty("itemscompleted")){
@@ -117,7 +124,7 @@ grantInfoWindow.makeResults =  function (){
                     grantContent += "<div class='row'><div class='col-12'><strong>Items on Application</strong><p>" + grant.itemsapplication + "</p></div></div>";
                 }
 
-                grantContent += "</div></div>";
+                grantContent += "</div></div>";//close out the accordon div and boostrap container class
                 resultsElement.append(grantContent);//closes the containing and content div
                 console.log("looping through results to make div elements");
 
@@ -126,6 +133,14 @@ grantInfoWindow.makeResults =  function (){
             }
             resultsElement.accordion({heightStyle : "content"});
             accordionApplied = true;
+
+            //function called when a sponsor button is click on in the details of an individual grant
+            $(".join-sponsors").on("click", function(){
+                var sponsorcode = $(this).attr("sponsorcode");
+                var sponsor = $(this).attr("sponsor");
+
+                grantInfoWindow.displayGrantDetails(sponsor, null, "<h3>" + sponsor +  "</h3><p>Grants sponsored by</p>")
+            });
 
 
 
