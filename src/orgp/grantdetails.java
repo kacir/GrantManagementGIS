@@ -38,10 +38,10 @@ public class grantdetails extends HttpServlet {
         }
 
         String[] projectNumbersArray = {};
-        if (!(request.getParameter("projectNumbers") == null)){
+        if (!(request.getParameter("projectnumbers") == null)){
             //check to see if the array can actually be split if it contains the split character
-            if (request.getParameter("projectNumbers").contains(splitchar)){
-                projectNumbersArray = request.getParameter("projectNumbers").split(splitchar);
+            if (request.getParameter("projectnumbers").contains(splitchar)){
+                projectNumbersArray = request.getParameter("projectnumbers").split(splitchar);
             }
         }
 

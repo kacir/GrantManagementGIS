@@ -4,11 +4,10 @@ var formatter = new Intl.NumberFormat('en-US', {
     minimumFractionDigits: 2
 });
 
-//bind and event to the auto suggestion to get results
-//bind an event to the search button and enter key for these results
+var grantInfoWindow = {};
 
 //make a function that populates the results panel with information
-function makeResults (sponsorcode){
+grantInfoWindow.makeResults =  function (){
     //make a json request to the backend for the info
     var sponsorsummary = $("#sponsor-summary");
     var resultsElement = $("#grant-results-box");
@@ -16,17 +15,17 @@ function makeResults (sponsorcode){
 
     var sponsorSearchinputBox = $("#sponsor-search");
 
-
-    function displayGrantDetails (sponsor, projectNumbers){
+    grantInfoWindow.displayGrantDetails = function  (sponsor, projectNumbers){
         //change the url parameters based on if its a request of a particular sponsor or a particular project number set
-        var parameters = {};
-        if (sponsor === null || sponsor === undefined){
-            parameters.projectNumbers = projectNumbers;
-        } else {
-            parameters.sponsor = sponsor;
-        };
+        var requestURL;
+        if (!(sponsor === null || sponsor === undefined || sponsor === "" || sponsor === " ")){
+            requestURL = "/api/grantdetails?term=" + sponsor;
+        }
+        if (!(projectNumbers === null || projectNumbers === undefined || projectNumbers === "" || projectNumbers === " ")){
+            requestURL = "/api/grantdetails?projectnumbers=" + projectNumbers;
+        }
 
-        $.getJSON("/api/grantdetails?term=" + sponsor , function(fullData){
+        $.getJSON(requestURL , function(fullData){
             console.log("Grant Results back from server are: ");
             console.log(fullData);
             var data = fullData.grants;
@@ -35,7 +34,7 @@ function makeResults (sponsorcode){
             if (!accordionApplied === false){
                 resultsElement.accordion("destroy");
                 $(".park-tooltip").tooltip("destroy");
-            };
+            }
             resultsElement.html("");
 
             if (data.length > 0){
@@ -43,7 +42,7 @@ function makeResults (sponsorcode){
             } else {
                 $("#no-results-text").removeClass("hidden");
             }
-            
+
             //zoom to the extent of the
             if (fullData.hasOwnProperty("sponsorDetails")) {
                 parkmap.zoomToSponsor(fullData.sponsorDetails);
@@ -59,18 +58,18 @@ function makeResults (sponsorcode){
                         withdrawnHeader = "<span class='withdrawn'>WITHDRAWN</span>";
                     } else if (grant.status.toUpperCase() == "TRANSFERED"){
                         withdrawnHeader = "<span class='transfered'><strong>TRANSFERED</strong></span>";
-                    };
+                    }
                 } else {
                     grant.status = "Unknown";
-                };
+                }
                 if (!grant.hasOwnProperty("projecttype")){
                     grant.projecttype = "Unknown";
-                };
+                }
                 if (grant.hasOwnProperty("awardamount")){
                     grant.awardamount = formatter.format(Number(grant.awardamount));
                 } else {
                     grant.awardamount = "Unknown";
-                };
+                }
 
 
                 var grantContent = "<h3>" + grant.projectnum + "-" + grant.year.slice(2,4) + " " + withdrawnHeader  + "</h3>";
@@ -84,11 +83,11 @@ function makeResults (sponsorcode){
                     if (grant.hasOwnProperty("itemscompleted")){
                         if (grant.itemsapplication === grant.itemscompleted){
                             grant.itemscompleted = "Same as application";
-                        };
+                        }
                         grantContent += "<div class='row'><div class='col-12'><strong>Items Completed</strong><p>" + grant.itemscompleted + "</p></div></div>";
-                    };
+                    }
                     grantContent += "<div class='row'><div class='col-12'><strong>Items on Application</strong><p>" + grant.itemsapplication + "</p></div></div>";
-                };
+                }
 
                 grantContent += "</div></div>";
                 resultsElement.append(grantContent);//closes the containing and content div
@@ -96,14 +95,14 @@ function makeResults (sponsorcode){
 
                 insertParkNames(grant.projectnum);
 
-            };
+            }
             resultsElement.accordion({heightStyle : "content"});
             accordionApplied = true;
 
 
 
         });
-    };
+    }
 
     function insertParkNames (projectnum){
         //for the intersted element make a ESRI query which get the park name and park number and adds to the park span of the accordion
@@ -123,7 +122,7 @@ function makeResults (sponsorcode){
                                 var title = "Previously called: " + park.properties.pastName;
                             } else {
                                 var title = "Park has only had one name";
-                            };
+                            }
 
                             $("#park-hover-for-" + projectnum).append("<span __parknum='" + park.properties.parkNum + "' __projectnum='" + projectnum +  "' title='" + title  + "' OBJECTID='" + park.properties.OBJECTID + "' class='park-tooltip'> " + park.properties.currentNam + " </span>");
                             //bind the tooltip at this point because we can't time something after all the ESRI query's finish
@@ -135,20 +134,20 @@ function makeResults (sponsorcode){
                             //bind a function to zoom into the right part of the map on click
                             //bind function which heights on hover, and hover gives grant details
                         });
-                };
+                }
             });
-    };
+    }
 
 
     sponsorSearchinputBox.on("keypress", function(event){
        if (event.key === "Enter"){
-           displayGrantDetails(sponsorSearchinputBox.val(), null);
-       };
+           grantInfoWindow.displayGrantDetails(sponsorSearchinputBox.val(), null);
+       }
     });
 
     var grantinfosearchButton = $("#grant-info-search-button");
     grantinfosearchButton.on("click", function(){
-        displayGrantDetails(sponsorSearchinputBox.val(), null);
+        grantInfoWindow.displayGrantDetails(sponsorSearchinputBox.val(), null);
     });
 
     sponsorSearchinputBox.autocomplete({autoFocus : true, minLength: 2, source :
@@ -168,13 +167,13 @@ function makeResults (sponsorcode){
                         } else {
                             data[i].label = data[i].projectnum + "-" + data[i].year.slice(2,4) + "  -  " + data[i].sponsor;
                             data[i].value = data[i].projectnum;
-                        };
+                        }
 
-                    };
+                    }
                     response(data);
                 });
             }});
-};
+}
 
 //run the contents of the mod
-makeResults();
+grantInfoWindow.makeResults();

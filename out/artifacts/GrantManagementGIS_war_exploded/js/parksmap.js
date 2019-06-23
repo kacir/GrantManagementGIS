@@ -85,10 +85,15 @@ parkmap.crossReferenceParkToGrant = function(){
         .intersects(selectedPark)
         .run(function(error, featureCollection, response){
             var projectNumbersList = [];
+            var stringNumerList = "";
             for (var t = 0; t < featureCollection.features.length; t++){
                 projectNumbersList.push(featureCollection.features[t].properties.projectNum);
+                stringNumerList += featureCollection.features[t].properties.projectNum + " ";
             };
             console.log(projectNumbersList);
+            //make request to postgresSQL for data
+            grantInfoWindow.displayGrantDetails(null, stringNumerList);
+
         });
 };
 
