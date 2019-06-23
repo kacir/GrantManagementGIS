@@ -26,9 +26,10 @@ function makeResults (sponsorcode){
             parameters.sponsor = sponsor;
         };
 
-        $.getJSON("/api/grantdetails?sponsor=" + sponsor , function(data){
+        $.getJSON("/api/grantdetails?term=" + sponsor , function(fullData){
             console.log("Grant Results back from server are: ");
-            console.log(data);
+            console.log(fullData);
+            var data = fullData.grants;
 
             //if the accordion exists then get rid of it and all of the contents of the div element
             if (!accordionApplied === false){
@@ -36,6 +37,17 @@ function makeResults (sponsorcode){
                 $(".park-tooltip").tooltip("destroy");
             };
             resultsElement.html("");
+
+            if (data.length > 0){
+                $("#no-results-text").addClass("hidden");
+            } else {
+                $("#no-results-text").removeClass("hidden");
+            }
+            
+            //zoom to the extent of the
+            if (fullData.hasOwnProperty("sponsorDetails")) {
+                parkmap.zoomToSponsor(fullData.sponsorDetails);
+            }
 
             for (var i = 0; i < data.length; i++){
                 var grant = data[i];

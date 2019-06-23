@@ -371,5 +371,24 @@ parkmap.parkHover = function(parkSelector){
 
 };
 
+parkmap.zoomToSponsor = function(sponsorDetails){
+    if (sponsorDetails.hasOwnProperty("city_fips_")){
+        L.esri.query({url : "http://gis.arkansas.gov/arcgis/rest/services/FEATURESERVICES/Boundaries/FeatureServer/41"})
+            .where("city_fips = " + sponsorDetails.city_fips_)
+            .run(function(error, featureCollection, response){
+                if (featureCollection.features.length > 0){
+                    var municipalExtent = L.geoJSON(featureCollection).getBounds();
+                    parkmap.map.flyToBounds(municipalExtent);
+                } else {
+                    var sponsorLocation = L.latLng(sponsorDetails.lat, sponsorDetails.lon);
+                    parkmap.map.flyTo(sponsorLocation);
+                }
+            });
+    } else {
+        var sponsorLocation = L.latLng(sponsorDetails.lat, sponsorDetails.lon);
+        parkmap.map.flyTo(sponsorLocation);
+    }
+};
+
 //run the contents of the script within a function rather than global scope
 parkmap.start();

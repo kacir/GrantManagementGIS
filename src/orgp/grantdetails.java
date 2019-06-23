@@ -4,7 +4,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -15,21 +14,39 @@ import java.sql.SQLException;
 
 @WebServlet("/api/grantdetails")
 public class grantdetails extends HttpServlet {
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
     }
 
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
+        System.out.println("request for data has been recived!");
 
         //get the parameter information
-        String splitchar = request.getParameter("splitchar");
-        String sponsor = request.getParameter("sponsor");
-        String[] projectNumbersArray = request.getParameter("projectNumbers").split(splitchar);
+        //give the parameter a default value if the url parameter was not used in the request
+        String splitchar = " ";
+        if (!(request.getParameter("splitchar") == null)){
+            splitchar = request.getParameter("splitchar");
+            System.out.println("split character of " + splitchar + " has been found");
+        }
+
+        String term = "";
+        if (!(request.getParameter("term") == null)){
+            term = request.getParameter("term");
+            System.out.println("term of " + term + " has been found");
+        }
+
+        String[] projectNumbersArray = {};
+        if (!(request.getParameter("projectNumbers") == null)){
+            //check to see if the array can actually be split if it contains the split character
+            if (request.getParameter("projectNumbers").contains(splitchar)){
+                projectNumbersArray = request.getParameter("projectNumbers").split(splitchar);
+            }
+        }
 
         //send the data back to the end user
-        JSONObject fullDataset = processRequest(sponsor, projectNumbersArray);
+        JSONObject fullDataset = processRequest(term, projectNumbersArray);
         response.getWriter().write(fullDataset.toString());
     }
 
@@ -57,7 +74,8 @@ public class grantdetails extends HttpServlet {
                     sponsorDetails.put("pop2010", res.getString("pop2010"));
                     sponsorDetails.put("website", res.getString("website"));
                     sponsorDetails.put("folder", res.getString("folder"));
-                    sponsorDetails.put("lat", res.getString("lon"));
+                    sponsorDetails.put("lat", res.getString("lat"));
+                    sponsorDetails.put("lon", res.getString("lon"));
                     sponsorDetails.put("city_fips_", res.getString("city_fips_"));
                     fullDataset.put("sponsorDetails", sponsorDetails);
 
