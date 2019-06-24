@@ -50,6 +50,7 @@ public class grantdetails extends HttpServlet {
         response.getWriter().write(fullDataset.toString());
     }
 
+    //function does the main legwork for constructing sql strings based on the post processed serlvet parameters
     protected  JSONObject processRequest(String projectnumberOrSponsor, String[] projectNumbersArray){
         JSONObject fullDataset = new JSONObject();
 
@@ -57,8 +58,9 @@ public class grantdetails extends HttpServlet {
         //regardless of how the project grant details are found they will be appended to this JSON list
         JSONArray projectsDetailsList = new JSONArray();
 
-
+        //string used to search useing the search term assuming the input is a sponsor name
         String sqlGrantDetailsViaSponsor = "SELECT * FROM grantdisplay WHERE UPPER(sponsor) = UPPER('" + projectnumberOrSponsor +"') ORDER BY year DESC;";
+        //string used to search using the search term assuming the input is a project number
         String sqlGrantDetailsViaProjectNumber = "SELECT * FROM grantdisplay WHERE UPPER(projectnum) = UPPER('" + projectnumberOrSponsor + "') ORDER BY year DESC;";
         try {
             projectsDetailsList = processGrantDetailsQuery(projectsDetailsList, sqlGrantDetailsViaSponsor, dbutil);
