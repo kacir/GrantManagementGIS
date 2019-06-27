@@ -7,8 +7,13 @@ h1 {
     font-size: 35px;
 }
 
-#map {
+#map, #grant-info-box {
     height: 800px;
+}
+
+#grant-info-box {
+    overflow: scroll;
+    overflow-x: hidden;
 }
 
 .hidden {

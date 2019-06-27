@@ -25,7 +25,7 @@ public class sponsorsearch extends HttpServlet {
         String searchterm = request.getParameter("searchterm");
         DBUtility dbutil = new DBUtility();
 
-        String sql = "SELECT sponsor, displayname, sponsorcode FROM sponsor WHERE UPPER(sponsor) LIKE UPPER('%" + searchterm + "%') ORDER BY sponsor ASC;";
+        String sql = "SELECT sponsor, displayname, sponsorcode FROM sponsor WHERE UPPER(sponsor) LIKE UPPER('%" + searchterm + "%') AND (type = 'Community' OR type = 'City' OR type = 'County' OR type = 'State' OR type = 'School District') ORDER BY sponsor ASC;";
 
         ResultSet res = dbutil.queryDB(sql);
 

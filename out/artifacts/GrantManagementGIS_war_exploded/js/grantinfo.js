@@ -1,3 +1,4 @@
+//formatter is used to change the grant award amount from the float into a money string
 var formatter = new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',
@@ -15,7 +16,7 @@ grantInfoWindow.makeResults =  function (){
     var sponsorSearchinputBox = $("#sponsor-search");
 
     grantInfoWindow.displayGrantDetails = function  (sponsor, projectNumbers, searchTitle){
-        //change the url parameters based on if its a request of a particular sponsor or a particular project number set
+        //change the url parameters based on if its a request of a particular sponsor or a particular project number set. need to deal with missing or null inputs to function
         var requestURL;
         if (!(sponsor === null || sponsor === undefined || sponsor === "" || sponsor === " ")){
             requestURL = "/api/grantdetails?term=" + sponsor;
@@ -26,10 +27,8 @@ grantInfoWindow.makeResults =  function (){
         if (searchTitle === null || searchTitle === undefined || searchTitle === "" || searchTitle === " "){
             searchTitle = "<h3>Unknown Search</h3>"
         }
-        console.log("stuff going to be written into search title");
-        console.log(searchTitle);
-        $("#search-title").html(searchTitle);
 
+        $("#search-title").html(searchTitle);
         sponsorSearchinputBox.val("");
 
         $.getJSON(requestURL , function(fullData){
@@ -44,25 +43,23 @@ grantInfoWindow.makeResults =  function (){
             }
             resultsElement.html("");
 
+            //If there are no results then display text explaining that to the end user
             if (data.length > 0){
                 $("#no-results-text").addClass("hidden");
             } else {
                 $("#no-results-text").removeClass("hidden");
             }
 
-            //zoom to the extent of the
+            //fill in the sponsor details box
             if (fullData.hasOwnProperty("sponsorDetails")) {
                 parkmap.zoomToSponsor(fullData.sponsorDetails);
-
                 var sponsorContent = "</h2><table class='sponsor-summary-details'><tr><td>Type: </td><td>" + fullData.sponsorDetails.type + "</td></tr>";
-
                 if (fullData.sponsorDetails.hasOwnProperty("website")){
                     if (!(fullData.sponsorDetails.website.includes("http://") || fullData.sponsorDetails.website.includes("https://"))){
                         fullData.sponsorDetails.website = "http://" + fullData.sponsorDetails.website;
                         sponsorContent += "<tr><td>Website</td><td><a target='_blank' href='" + fullData.sponsorDetails.website + "'>" + fullData.sponsorDetails.website + "</a></td></tr>";
                     }
                 }
-
                 if (fullData.sponsorDetails.hasOwnProperty("pop2010")){
                     sponsorContent += "<tr><td>2010 Census Population</td><td>" + parseInt(fullData.sponsorDetails.pop2010).toLocaleString() + "</td></tr>";
                 }
@@ -107,6 +104,7 @@ grantInfoWindow.makeResults =  function (){
                     "<div class='row'><div class='col-md-6 col-sm-12 col-lg-6 col-xl-4'><strong>Award Amount: </strong><span>" + grant.awardamount + "</span></div><div class='col-md-6 col-sm-12 col-lg-6 col-xl-4'><strong>Project Status: </strong><span>" + grant.status + "</span></div><div class='col-md-6 col-sm-12 col-lg-6 col-xl-4'><strong>Project Type: </strong><span>" + grant.projecttype + "</span></div></div>";
 
                 grantContent += "<div class='row'><div class='col'><strong>Sponsors: </strong></div><div class='col'>";
+                //for each of the joint sponsor on a project, add them to the list
                 for (var u = 0; u < grant.sponsorList.length; u++){
                     grantContent += "<span class='join-sponsors' sponsor='" + grant.sponsorList[u].sponsor + "' sponsorcode='" + grant.sponsorList[u].sponsorcode +"'>" + grant.sponsorList[u].sponsor + "</span>";
                 }
@@ -132,23 +130,24 @@ grantInfoWindow.makeResults =  function (){
 
             }
             resultsElement.accordion({heightStyle : "content"});
+            //this attribute is needed because, if the accordion is destroyed before its created it
+            // launches an exception. This variable keeps track of if it exists so the exception does not occur
             accordionApplied = true;
 
             //function called when a sponsor button is click on in the details of an individual grant
             $(".join-sponsors").on("click", function(){
                 var sponsorcode = $(this).attr("sponsorcode");
                 var sponsor = $(this).attr("sponsor");
-
                 grantInfoWindow.displayGrantDetails(sponsor, null, "<h3>" + sponsor +  "</h3><p>Grants sponsored by</p>")
             });
 
 
 
         });
-    }
+    };
 
     function insertParkNames (projectnum){
-        //for the intersted element make a ESRI query which get the park name and park number and adds to the park span of the accordion
+        //for the selected grant element make a ESRI query which get the park name and park numbers related to the grant and adds to the park span of the grant details parks field.
         L.esri.query({"url": "http://gis.arkansas.gov/arcgis/rest/services/ADPT/ADPT_ORGP_MASTER2/MapServer/28"})
             .where("projectNum = '" + projectnum + "'")
             .run(function(error, gPointfeatureCollection, response){

@@ -1,13 +1,13 @@
-console.log("Testing. Does this Work!");
-
 parkmap = {};
 
+//an initializer function that sets up the map and most of events and event listeners
 parkmap.start = function(){
 
 parkmap.map = L.map('map', {minZoom : 7, maxBounds : [ [ 30.232947, -98.151799], [ 38.872223, -87.048198] ]})
     .setView([ 34.7517595, -92.329416], 7);
 parkmap.map.zoomControl.setPosition("bottomleft");
 
+//load the basemap information
 var mapboxlink = "https://api.mapbox.com/styles/v1/robertkaciradpt/cjjrecba50sae2snpvqcw8ylq/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1Ijoicm9iZXJ0a2FjaXJhZHB0IiwiYSI6ImNqZ3BoODQ2NTAwM20ycXJ1OWpkZnh1emkifQ.MBfZdxZljkG8_JeivKerxw";
 var parklessStreetBasemap = L.tileLayer(mapboxlink).addTo(parkmap.map);
 var Esri_WorldImagery = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
@@ -15,11 +15,12 @@ var Esri_WorldImagery = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest
 });
 
 
-
+//the ADPT state parks master layer maintained by Darin
 var stateparkslayer = L.esri.dynamicMapLayer({
     url: "http://gis.arkansas.gov/arcgis/rest/services/ADPT/ADPT_MapService_2017/MapServer"
 });
 
+//function feeds both the park point and park polygon popup construction.
 function parkPopupBuild (feature) {
     var popupText = "<h3>" + feature.properties.currentNam + "</h3><table>";
     if (!(feature.properties.pastName === undefined || feature.properties.pastName === null || feature.properties.pastName === "" || feature.properties.pastName === " ")){
@@ -27,8 +28,9 @@ function parkPopupBuild (feature) {
     };
     popupText = popupText + "<tr><td>Sponsor:</td><td>" +feature.properties.sponsorshi + "</td></tr>" +
         "<tr><td>Inspection Date:</td><td>" + new Date(feature.properties.inspDate).toDateString()  + "</td></tr>";
-    if (feature.properties.fed6f3Stat === "has 6(f)3 boundary") {
 
+    //Some features lack federal boundary. Do not include the table row if its not needed.
+    if (feature.properties.fed6f3Stat === "has 6(f)3 boundary") {
         if (!feature.properties.hasOwnProperty("fedeprojectarea")){
             feature.properties.fedeprojectarea = "<img height='20' src='img/loading.gif' />";
 
@@ -38,17 +40,18 @@ function parkPopupBuild (feature) {
                 .run(function(error, featureCollection, response){
                     if (featureCollection.features.legnth == 0){
                         alert("Query returned no features!");
-                    };
+                    }
                     var selectedGeometry = featureCollection.features[0].geometry;
                     var squaremetersArea = turf.area(selectedGeometry);
                     var acresOfProjectArea = turf.convertArea(squaremetersArea, "meters", "acres").toFixed(2);
                     feature.properties.fedeprojectarea = acresOfProjectArea;
                     $("#lwcf-acres").text(acresOfProjectArea);
                 });
-        };
+        }
         popupText = popupText + "<tr><td>LWCF Area:</td><td><span id='lwcf-acres'>" + feature.properties.fedeprojectarea + "</span> Acres</td></tr>";
+    }
 
-    };
+    //Some features lack state boundary. Do not include the table row if its not needed.
     if (feature.properties.state6f3St === "has 6(f)3 boundary"){
         if (!feature.properties.hasOwnProperty("stateprojectarea")){
             feature.properties.stateprojectarea = "\"<img height='20' src='img/loading.gif' />\"";
@@ -59,14 +62,14 @@ function parkPopupBuild (feature) {
                 .run(function(error, featureCollection, response){
                     if (featureCollection.features.legnth == 0){
                         alert("Query returned no features!");
-                    };
+                    }
                     var selectedGeometry = featureCollection.features[0].geometry;
                     var squaremetersArea = turf.area(selectedGeometry);
                     var acresOfProjectArea = turf.convertArea(squaremetersArea, "meters", "acres").toFixed(2);
                     feature.properties.stateprojectarea = acresOfProjectArea;
                     $("#anrc-acres").text(acresOfProjectArea);
                 });
-        };
+        }
         popupText = popupText + "<tr><td>State Area:</td><td><span id='anrc-acres'>" + feature.properties.stateprojectarea + "</span> Acres</td></tr>";
 
 
@@ -74,30 +77,29 @@ function parkPopupBuild (feature) {
     popupText = popupText + "<tr><td>Total Park Area:</td><td>" + parseFloat(feature.properties.calc_acre).toFixed(2) + " Acres</td></tr>" +
         "</table>" +
         "<div class='container'><div class='row'><div id='cross-reference-park-to-grant' onclick='parkmap.crossReferenceParkToGrant()' OBJECTID='" + feature.properties.OBJECTID + "' class='col popup-button'><span>Grants in Park</span></div><a target='_blank' href='" + feature.properties.boxlink + "'><div class='col popup-button'><span>Doc Scans</span></div></a><a target='_blank' href='" + feature.properties.googleLink + "'><div class='col popup-button'><span>Driving Directions</span></div></a></div></div>";
+        //the on click function is very important. When the button is pressed, the grant info window searches for the grants related to the park that the popup represents
     return popupText;
 };
 
+//on click function referenced in the park popup
 parkmap.crossReferenceParkToGrant = function(){
     var OBJECTID = $("#cross-reference-park-to-grant").attr("OBJECTID");
     var selectedPark = parkmap.parkPolygon.getFeature(OBJECTID);
-    console.log(selectedPark);
     //find each of the related grant numbers
     L.esri.query({url : "http://gis.arkansas.gov/arcgis/rest/services/ADPT/ADPT_ORGP_MASTER2/MapServer/28"})
         .intersects(selectedPark)
         .run(function(error, featureCollection, response){
-            var projectNumbersList = [];
-            var stringNumerList = "";
+            var stringNumerList = "";//the backend can't directly handel array objects but it can handel strings. The backend splits the string into an array using the space character
             for (var t = 0; t < featureCollection.features.length; t++){
-                projectNumbersList.push(featureCollection.features[t].properties.projectNum);
                 stringNumerList += featureCollection.features[t].properties.projectNum + " ";
-            };
-            console.log(projectNumbersList);
-            //make request to postgresSQL for data
+            }
+            //make request to the grant window to search for the grants related to the park.
             grantInfoWindow.displayGrantDetails(null, stringNumerList, "<h3>" + selectedPark.feature.properties.currentNam + "</h3><p>given on this park</p>");
 
         });
 };
-
+//park polygon style needed to be refferended by a few functions that change layer symbology based on hover affects.
+//These hover effects need to be result by referencing the style that first created the layer
 parkmap.parkPolygonStyle = {fillColor : "#008000", stroke : false, fillOpacity : 1};
 parkmap.parkPolygon = L.esri.featureLayer({url : "http://gis.arkansas.gov/arcgis/rest/services/ADPT/ADPT_ORGP_MASTER2/MapServer/38",
     where : "type = 'funded park'",
@@ -107,6 +109,7 @@ parkmap.parkPolygon = L.esri.featureLayer({url : "http://gis.arkansas.gov/arcgis
     return parkPopupBuild(feature);
 }).addTo(parkmap.map);
 
+//the park icon needed to be referenced by another function so hover effects on the markers can be reset.
 parkmap.parkIcon = L.icon({
     iconUrl : "/img/greenpark.png",
     iconSize : [12,12],
@@ -116,9 +119,6 @@ parkmap.parkIcon = L.icon({
 parkmap.parkCentroidLayer = L.geoJSON(null, {pointToLayer : function(feature, latlng){
         return L.marker(latlng, {icon : parkmap.parkIcon});
     }}).bindPopup(function(layer){
-
-
-
         //query for the park footprint below the point
         L.esri.query({url : "http://gis.arkansas.gov/arcgis/rest/services/ADPT/ADPT_ORGP_MASTER2/MapServer/38"})
             .where("type = 'funded park'")
@@ -126,7 +126,7 @@ parkmap.parkCentroidLayer = L.geoJSON(null, {pointToLayer : function(feature, la
             .run(function(error, featureCollection, response){
                 if (featureCollection.features.length === 0){
 
-                    //buffer the centroid out if it did not catch the footprint
+                    //buffer the centroid out if it did not catch the footprint because the center of the park is actually outside of the park
                     var bufferedPoint = turf.buffer(layer.feature.geometry, 0.04572, {units : "kilometers"});
                     L.esri.query({url : "http://gis.arkansas.gov/arcgis/rest/services/ADPT/ADPT_ORGP_MASTER2/MapServer/38"})
                         .where("type = 'funded park'")
@@ -144,11 +144,13 @@ parkmap.parkCentroidLayer = L.geoJSON(null, {pointToLayer : function(feature, la
                     $("#park-point-popup").html(popupcontents);
                 }
             });
-        return "<div id='park-point-popup'> Loading! </div>";
+        return "<div id='park-point-popup'> Loading! </div>";//there is a time delay because of the chained ESRI query requests to the parks layer. This is a placeholder until the information is loaded
 });
 parkmap.parkCentroidLayer.addTo(parkmap.map);
 
-//attempt to find the centorid of all funded parks
+//attempt to find the centorid of all funded parks and then add all those park centers to the park points layer
+// could not use the grantpoint ESRI layer because it was not flexible enough to use the same popup as the park polygon
+// The speed is reasonable based on the fact there are less than 1k of point features
 L.esri.query({url : "http://gis.arkansas.gov/arcgis/rest/services/ADPT/ADPT_ORGP_MASTER2/MapServer/38"})
     .where("type = 'funded park'")
     .run(function(error, featureCollection, response){
@@ -232,7 +234,7 @@ var overlayMaps = {"Park Polygon" : parkmap.parkPolygon,
 var baseMaps = { "Streets" : parklessStreetBasemap, "Aerial" : Esri_WorldImagery};
 L.control.layers(baseMaps, overlayMaps).addTo(parkmap.map);
 
-
+//implemented a custom geocoder for this project which uses custom grant sponsor information for arkansas.
 var myCoderEngine = new L.Control.Geocoder.CustomGeocoder();
 L.Control.geocoder({position : "topleft", geocoder : myCoderEngine, placeholder : "Town, Park, or Street Address"}).addTo(parkmap.map);
 
@@ -316,24 +318,20 @@ parkmap.map.on("overlayadd overlayremove", function(eo){
 
 };
 
+//function binds event listeners to the park span elements listed in the grant info window when results are shown
 parkmap.parkHover = function(parkSelector){
     var OBJECTID = parkSelector.attr("OBJECTID");
     var parkNum = parkSelector.attr("__parknum");
+
+    //zoom to the park when it is click on
     parkSelector.on("click", function(event){
         var selectedPark = parkmap.parkPolygon.getFeature(OBJECTID);
         var parkBounds = selectedPark.getBounds();
         parkmap.map.flyToBounds(parkBounds);
     });
 
+    //change opacity and size of selected park on hover
     parkSelector.on("mouseover", function(event){
-        //var selectedPark = parkmap.parkPolygon.getFeature(OBJECTID);
-        //selectedPark.setStyle({
-        //    color : "#003D02",
-        //    fillColor : "#003D02",
-        //    stroke : true,
-        //    weight : 3
-        //});
-        //possibly highlight the park marker as well.
         parkmap.parkCentroidLayer.eachLayer(function(layer){
             if (layer.feature.properties.parkNum === parkNum){
                 layer.setOpacity(1.0);
@@ -364,6 +362,7 @@ parkmap.parkHover = function(parkSelector){
         });
     });
 
+    //revert the opacity, size, and color settings for the park point and park polygon layers
     parkSelector.on("mouseleave", function(event){
         parkmap.parkPolygon.resetStyle(OBJECTID);
         parkmap.parkCentroidLayer.eachLayer(function(layer){
@@ -377,6 +376,7 @@ parkmap.parkHover = function(parkSelector){
 
 };
 
+//zooms to the sponsor function. called when grant search window stuff is launched
 parkmap.zoomToSponsor = function(sponsorDetails){
     var sponsorLocation = L.latLng(sponsorDetails.lat, sponsorDetails.lon);
 
