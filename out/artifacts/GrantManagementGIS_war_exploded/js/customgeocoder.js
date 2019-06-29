@@ -12,7 +12,7 @@ L.Control.Geocoder.CustomGeocoder = L.Class.extend({
         $.getJSON("/api/geocode?searchterm=" + query, function(data){
             var i;
             for (i = 0; i < data.length; i++){
-                data[i].name = data[i].sponsor;
+                data[i].name = data[i].displayname;
 
                 data[i].center = L.latLng( data[i].lat, data[i].lon);
                 var pointGeoJSON = turf.point([data[i].lon, data[i].lat]);

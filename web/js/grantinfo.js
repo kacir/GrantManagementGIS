@@ -31,16 +31,21 @@ grantInfoWindow.makeResults =  function (){
         $("#search-title").html(searchTitle);
         sponsorSearchinputBox.val("");
 
+        //if the accordion exists then get rid of it and all of the contents of the div element
+        if (!accordionApplied === false){
+            resultsElement.accordion("destroy");
+            $(".park-tooltip").tooltip("destroy");
+        }
+
+        //insert a loading giff while the data from the backend loads
+        resultsElement.html("<img src='img/loading_large.gif' width='60%'/>");
+
+
         $.getJSON(requestURL , function(fullData){
             console.log("Grant Results back from server are: ");
             console.log(fullData);
             var data = fullData.grants;
 
-            //if the accordion exists then get rid of it and all of the contents of the div element
-            if (!accordionApplied === false){
-                resultsElement.accordion("destroy");
-                $(".park-tooltip").tooltip("destroy");
-            }
             resultsElement.html("");
 
             //If there are no results then display text explaining that to the end user
@@ -60,6 +65,12 @@ grantInfoWindow.makeResults =  function (){
                         sponsorContent += "<tr><td>Website</td><td><a target='_blank' href='" + fullData.sponsorDetails.website + "'>" + fullData.sponsorDetails.website + "</a></td></tr>";
                     }
                 }
+                if (fullData.sponsorDetails.hasOwnProperty("projcount")){
+                    sponsorContent += "<tr><td>Grants Awarded: </td><td>" + parseInt(fullData.sponsorDetails.projcount).toLocaleString() + "</td></tr>";
+                } else {
+                    sponsorContent += "<tr><td>Grants Awarded: </td><td>0</td></tr>";
+                }
+
                 if (fullData.sponsorDetails.hasOwnProperty("pop2010")){
                     sponsorContent += "<tr><td>2010 Census Population</td><td>" + parseInt(fullData.sponsorDetails.pop2010).toLocaleString() + "</td></tr>";
                 }
@@ -106,7 +117,7 @@ grantInfoWindow.makeResults =  function (){
                 grantContent += "<div class='row'><div class='col'><strong>Sponsors: </strong></div><div class='col'>";
                 //for each of the joint sponsor on a project, add them to the list
                 for (var u = 0; u < grant.sponsorList.length; u++){
-                    grantContent += "<span class='join-sponsors' sponsor='" + grant.sponsorList[u].sponsor + "' sponsorcode='" + grant.sponsorList[u].sponsorcode +"'>" + grant.sponsorList[u].sponsor + "</span>";
+                    grantContent += "<span class='join-sponsors' displayname='" + grant.sponsorList[u].displayname + "' sponsorcode='" + grant.sponsorList[u].sponsorcode +"'>" + grant.sponsorList[u].sponsor + "</span>";
                 }
 
                 grantContent += "</div></div>";
@@ -137,8 +148,8 @@ grantInfoWindow.makeResults =  function (){
             //function called when a sponsor button is click on in the details of an individual grant
             $(".join-sponsors").on("click", function(){
                 var sponsorcode = $(this).attr("sponsorcode");
-                var sponsor = $(this).attr("sponsor");
-                grantInfoWindow.displayGrantDetails(sponsor, null, "<h3>" + sponsor +  "</h3><p>Grants sponsored by</p>")
+                var displayname = $(this).attr("displayname");
+                grantInfoWindow.displayGrantDetails(displayname, null, "<h3>" + displayname +  "</h3><p>Grants sponsored by</p>")
             });
 
 
@@ -204,10 +215,15 @@ grantInfoWindow.makeResults =  function (){
                     var i;
                     for (i = 0; i < data.length; i++){
                         if (data[i].type === "sponsor"){
-                            data[i].label = data[i].sponsor;
-                            data[i].value = data[i].sponsor;
+                            if (data[i].hasOwnProperty("projcount")){
+                                data[i].label = data[i].displayname + " " + data[i].projcount + " Grants";
+                            } else {
+                                data[i].label = data[i].displayname + " 0 Grants";
+                            }
+
+                            data[i].value = data[i].displayname;
                         } else {
-                            data[i].label = data[i].projectnum + "-" + data[i].year.slice(2,4) + "  -  " + data[i].sponsor;
+                            data[i].label = data[i].projectnum + "-" + data[i].year.slice(2,4) + "  -  " + data[i].displayname;
                             data[i].value = data[i].projectnum;
                         }
 

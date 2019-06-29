@@ -17,20 +17,16 @@ public class sponsorsearch extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
     }
+    protected JSONArray sponsorTypeSearch(JSONArray list, String sponsorType, String searchterm, DBUtility dbutil){
 
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
+        String sql = " SELECT sp.sponsor, sp.displayname, sp.sponsorcode, ct.projcount ";
+        sql += " FROM sponsor AS sp LEFT JOIN (SELECT  sponsorcode, COUNT(projectnum) AS projcount FROM sponsor_to_grant GROUP BY sponsorcode) AS ct ON sp.sponsorcode = ct.sponsorcode ";
+        sql += " WHERE UPPER(sp.displayname) LIKE UPPER('%" + searchterm + "%') AND sp.type = '" + sponsorType + "' ORDER BY sp.displayname ASC ";
 
-        String searchterm = request.getParameter("searchterm");
-        DBUtility dbutil = new DBUtility();
-
-        String sql = "SELECT sponsor, displayname, sponsorcode FROM sponsor WHERE UPPER(sponsor) LIKE UPPER('%" + searchterm + "%') AND (type = 'Community' OR type = 'City' OR type = 'County' OR type = 'State' OR type = 'School District') ORDER BY sponsor ASC;";
+        System.out.println(sql);
+        //String sql = "SELECT sponsor, displayname, sponsorcode FROM sponsor WHERE UPPER(displayname) LIKE UPPER('%" + searchterm + "%') AND type = '" + sponsorType + "' ORDER BY displayname ASC;";
 
         ResultSet res = dbutil.queryDB(sql);
-
-        //the output is going to be json so a JSONArray object will be used to hold the output given to the response object
-        JSONArray list = new JSONArray();
 
         try {
             while (res.next()) {
@@ -38,6 +34,7 @@ public class sponsorsearch extends HttpServlet {
                 suggestion.put("sponsor" , res.getString("sponsor"));
                 suggestion.put("displayname" , res.getString("displayname"));
                 suggestion.put("sponsorcode" , res.getString("sponsorcode"));
+                suggestion.put("projcount" , res.getString("projcount"));
                 suggestion.put("type", "sponsor");
                 list.put(suggestion);
             }
@@ -47,8 +44,27 @@ public class sponsorsearch extends HttpServlet {
             e.printStackTrace();
         }
 
+        return list;
+    }
+
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+
+        String searchterm = request.getParameter("searchterm");
+        DBUtility dbutil = new DBUtility();
+
+        //the output is going to be json so a JSONArray object will be used to hold the output given to the response object
+        JSONArray list = new JSONArray();
+
+        //search for each type of sponsor in priority order so results can be in the preferred order
+        list = sponsorTypeSearch(list, "City", searchterm, dbutil);
+        list = sponsorTypeSearch(list, "County", searchterm, dbutil);
+        list = sponsorTypeSearch(list, "School District", searchterm, dbutil);
+        list = sponsorTypeSearch(list, "Community", searchterm, dbutil);
+
         //try and get a list of project numbers to that fit the search term
-        String ProjectNumSQL = "SELECT projectnum, year, sponsor FROM grantdisplay WHERE UPPER(projectnum) LIKE UPPER('%" + searchterm  + "%');";
+        String ProjectNumSQL = "SELECT projectnum, year, sponsor, displayname FROM grantdisplay WHERE UPPER(projectnum) LIKE UPPER('%" + searchterm  + "%') ORDER BY year DESC  ;";
 
         ResultSet projectRes = dbutil.queryDB(ProjectNumSQL);
         System.out.println("about to search grants");
@@ -57,6 +73,7 @@ public class sponsorsearch extends HttpServlet {
                 System.out.println("found a single grant suggestion");
                 JSONObject suggestion = new JSONObject();
                 suggestion.put("sponsor", projectRes.getString("sponsor"));
+                suggestion.put("displayname", projectRes.getString("displayname"));
                 suggestion.put("year", projectRes.getString("year"));
                 suggestion.put("projectnum", projectRes.getString("projectnum"));
                 suggestion.put("type", "grant");

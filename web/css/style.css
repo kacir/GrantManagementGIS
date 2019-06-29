@@ -11,10 +11,6 @@ h1 {
     height: 800px;
 }
 
-#grant-info-box {
-    overflow: scroll;
-    overflow-x: hidden;
-}
 
 .hidden {
     display: none;
@@ -25,6 +21,19 @@ h1 {
     padding: 10px;
 }
 
+
+/*specific to grant window on the right */
+#grant-info-box {
+    overflow: scroll;
+    overflow-x: hidden;
+}
+
+#sponsor-search {
+    width: 75%;
+}
+#grant-info-search-button{
+    width: 10%;
+}
 
 
 /*referring to popup contents*/

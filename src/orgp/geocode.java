@@ -25,7 +25,7 @@ public class geocode extends HttpServlet {
         String searchterm = request.getParameter("searchterm");
         DBUtility dbutil = new DBUtility();
 
-        String sql = "SELECT sponsor, displayname, lat, lon, sponsorcode FROM sponsor WHERE UPPER(sponsor) LIKE UPPER('%" + searchterm + "%') ORDER BY sponsor ASC;";
+        String sql = "SELECT sponsor, displayname, lat, lon, sponsorcode FROM sponsor WHERE UPPER(displayname) LIKE UPPER('%" + searchterm + "%') ORDER BY displayname ASC;";
         ResultSet res = dbutil.queryDB(sql);
 
         //the output is going to be json so a JSONArray object will be used to hold the output given to the response object

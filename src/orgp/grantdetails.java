@@ -59,29 +59,35 @@ public class grantdetails extends HttpServlet {
         JSONArray projectsDetailsList = new JSONArray();
 
         //string used to search useing the search term assuming the input is a sponsor name
-        String sqlGrantDetailsViaSponsor = "SELECT * FROM grantdisplay WHERE UPPER(sponsor) = UPPER('" + projectnumberOrSponsor +"') ORDER BY year DESC;";
+        String sqlGrantDetailsViaSponsor = "SELECT * FROM grantdisplay WHERE UPPER(displayname) = UPPER('" + projectnumberOrSponsor +"') ORDER BY year DESC;";
         //string used to search using the search term assuming the input is a project number
         String sqlGrantDetailsViaProjectNumber = "SELECT * FROM grantdisplay WHERE UPPER(projectnum) = UPPER('" + projectnumberOrSponsor + "') ORDER BY year DESC;";
         try {
             projectsDetailsList = processGrantDetailsQuery(projectsDetailsList, sqlGrantDetailsViaSponsor, dbutil);
             //embed sponsor details to the fullDataset Object if a sponsor is clear
-            if (projectsDetailsList.length() > 0){
-                String sqlSponsorDetail = "SELECT * FROM sponsor WHERE Upper(sponsor) = UPPER('" + projectnumberOrSponsor + "') LIMIT 1;";
-                ResultSet res = dbutil.queryDB(sqlSponsorDetail);
-                while (res.next()){
-                    JSONObject sponsorDetails = new JSONObject();
-                    sponsorDetails.put("sponsor", res.getString("sponsor"));
-                    sponsorDetails.put("type", res.getString("type"));
-                    sponsorDetails.put("displayname", res.getString("displayname"));
-                    sponsorDetails.put("pop2010", res.getString("pop2010"));
-                    sponsorDetails.put("website", res.getString("website"));
-                    sponsorDetails.put("folder", res.getString("folder"));
-                    sponsorDetails.put("lat", res.getString("lat"));
-                    sponsorDetails.put("lon", res.getString("lon"));
-                    sponsorDetails.put("city_fips_", res.getString("city_fips_"));
-                    fullDataset.put("sponsorDetails", sponsorDetails);
 
-                }
+            //String sqlSponsorDetail = "SELECT * FROM sponsor WHERE Upper(displayname) = UPPER('" + projectnumberOrSponsor + "') LIMIT 1;";
+            String sqlSponsorDetail = " SELECT sp.sponsor, sp.type, sp.displayname, sp.pop2010, sp.website, sp.folder, sp.lat, sp.lon, sp.city_fips_ , ct.projcount ";
+            sqlSponsorDetail += " FROM sponsor AS sp LEFT JOIN ";
+            sqlSponsorDetail += " (SELECT  sponsorcode, COUNT(projectnum) AS projcount FROM sponsor_to_grant GROUP BY sponsorcode) AS ct ";
+            sqlSponsorDetail += " ON sp.sponsorcode = ct.sponsorcode ";
+            sqlSponsorDetail += " WHERE Upper(displayname) = UPPER('" + projectnumberOrSponsor + "') LIMIT 1; ";
+
+
+            ResultSet res = dbutil.queryDB(sqlSponsorDetail);
+            while (res.next()){
+                JSONObject sponsorDetails = new JSONObject();
+                sponsorDetails.put("sponsor", res.getString("sponsor"));
+                sponsorDetails.put("type", res.getString("type"));
+                sponsorDetails.put("displayname", res.getString("displayname"));
+                sponsorDetails.put("pop2010", res.getString("pop2010"));
+                sponsorDetails.put("website", res.getString("website"));
+                sponsorDetails.put("folder", res.getString("folder"));
+                sponsorDetails.put("lat", res.getString("lat"));
+                sponsorDetails.put("lon", res.getString("lon"));
+                sponsorDetails.put("city_fips_", res.getString("city_fips_"));
+                sponsorDetails.put("projcount", res.getString("projcount"));
+                fullDataset.put("sponsorDetails", sponsorDetails);
             }
 
             projectsDetailsList = processGrantDetailsQuery(projectsDetailsList, sqlGrantDetailsViaProjectNumber, dbutil);
