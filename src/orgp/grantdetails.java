@@ -66,10 +66,9 @@ public class grantdetails extends HttpServlet {
             projectsDetailsList = processGrantDetailsQuery(projectsDetailsList, sqlGrantDetailsViaSponsor, dbutil);
             //embed sponsor details to the fullDataset Object if a sponsor is clear
 
-            //String sqlSponsorDetail = "SELECT * FROM sponsor WHERE Upper(displayname) = UPPER('" + projectnumberOrSponsor + "') LIMIT 1;";
-            String sqlSponsorDetail = " SELECT sp.sponsor, sp.type, sp.displayname, sp.pop2010, sp.website, sp.folder, sp.lat, sp.lon, sp.city_fips_ , ct.projcount ";
+            String sqlSponsorDetail = " SELECT sp.sponsor, sp.type, sp.displayname, sp.pop2010, sp.website, sp.folder, sp.lat, sp.lon, sp.city_fips_ , sp.county, sp.municipallink, ct.projcount, ct.awardsum ";
             sqlSponsorDetail += " FROM sponsor AS sp LEFT JOIN ";
-            sqlSponsorDetail += " (SELECT  sponsorcode, COUNT(projectnum) AS projcount FROM sponsor_to_grant GROUP BY sponsorcode) AS ct ";
+            sqlSponsorDetail += " (SELECT imp.sponsorcode, COUNT(imp.projectnum) AS projcount, SUM(awardamount) AS awardsum FROM sponsor_to_grant AS imp JOIN grants ON imp.projectnum = grants.projectnumber GROUP BY imp.sponsorcode) AS ct ";
             sqlSponsorDetail += " ON sp.sponsorcode = ct.sponsorcode ";
             sqlSponsorDetail += " WHERE Upper(displayname) = UPPER('" + projectnumberOrSponsor + "') LIMIT 1; ";
 
@@ -86,7 +85,10 @@ public class grantdetails extends HttpServlet {
                 sponsorDetails.put("lat", res.getString("lat"));
                 sponsorDetails.put("lon", res.getString("lon"));
                 sponsorDetails.put("city_fips_", res.getString("city_fips_"));
+                sponsorDetails.put("county", res.getString("county"));
                 sponsorDetails.put("projcount", res.getString("projcount"));
+                sponsorDetails.put("awardsum", res.getString("awardsum"));
+                sponsorDetails.put("municipallink", res.getString("municipallink"));
                 fullDataset.put("sponsorDetails", sponsorDetails);
             }
 

@@ -32,7 +32,15 @@ h1 {
     width: 75%;
 }
 #grant-info-search-button{
-    width: 10%;
+    width: 6%;
+}
+
+#search-controls-container {
+    padding-top: 15px;
+}
+
+.park-elements-div {
+    display: inline;
 }
 
 
@@ -82,6 +90,10 @@ div.leaflet-popup-content {
 
 .park-tooltip::after, .join-sponsors::after{
     content: ",";
+}
+
+.park-tooltip:last-child::after, .join-sponsors:last-child::after{
+    content: " ";
 }
 
 .sponsor-summary-details tr, .sponsor-summary-details tr td{

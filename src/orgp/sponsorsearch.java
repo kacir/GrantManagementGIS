@@ -60,6 +60,7 @@ public class sponsorsearch extends HttpServlet {
         //search for each type of sponsor in priority order so results can be in the preferred order
         list = sponsorTypeSearch(list, "City", searchterm, dbutil);
         list = sponsorTypeSearch(list, "County", searchterm, dbutil);
+        list = sponsorTypeSearch(list, "State", searchterm, dbutil);
         list = sponsorTypeSearch(list, "School District", searchterm, dbutil);
         list = sponsorTypeSearch(list, "Community", searchterm, dbutil);
 

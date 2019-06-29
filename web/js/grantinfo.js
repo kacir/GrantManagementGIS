@@ -58,26 +58,55 @@ grantInfoWindow.makeResults =  function (){
             //fill in the sponsor details box
             if (fullData.hasOwnProperty("sponsorDetails")) {
                 parkmap.zoomToSponsor(fullData.sponsorDetails);
-                var sponsorContent = "</h2><table class='sponsor-summary-details'><tr><td>Type: </td><td>" + fullData.sponsorDetails.type + "</td></tr>";
+                var sponsorContent = "</h2><table class='sponsor-summary-details'><tr><td><strong>Type: </strong></td><td>" + fullData.sponsorDetails.type + "</td></tr>";
+                if (fullData.sponsorDetails.hasOwnProperty("county")){
+                    sponsorContent += "<tr><td><strong>County: </strong></td><td>" + fullData.sponsorDetails.county + "</td></tr>";
+                }
                 if (fullData.sponsorDetails.hasOwnProperty("website")){
                     if (!(fullData.sponsorDetails.website.includes("http://") || fullData.sponsorDetails.website.includes("https://"))){
                         fullData.sponsorDetails.website = "http://" + fullData.sponsorDetails.website;
-                        sponsorContent += "<tr><td>Website</td><td><a target='_blank' href='" + fullData.sponsorDetails.website + "'>" + fullData.sponsorDetails.website + "</a></td></tr>";
+                        sponsorContent += "<tr><td><strong>Website</strong></td><td><a target='_blank' href='" + fullData.sponsorDetails.website + "'>" + fullData.sponsorDetails.website + "</a></td></tr>";
                     }
                 }
                 if (fullData.sponsorDetails.hasOwnProperty("projcount")){
-                    sponsorContent += "<tr><td>Grants Awarded: </td><td>" + parseInt(fullData.sponsorDetails.projcount).toLocaleString() + "</td></tr>";
+                    sponsorContent += "<tr><td><strong>Grants Awarded </strong></td><td>" + parseInt(fullData.sponsorDetails.projcount).toLocaleString() + "</td></tr>";
                 } else {
-                    sponsorContent += "<tr><td>Grants Awarded: </td><td>0</td></tr>";
+                    sponsorContent += "<tr><td><strong>Grants Awarded </strong></td><td>0</td></tr>";
                 }
 
-                if (fullData.sponsorDetails.hasOwnProperty("pop2010")){
-                    sponsorContent += "<tr><td>2010 Census Population</td><td>" + parseInt(fullData.sponsorDetails.pop2010).toLocaleString() + "</td></tr>";
+                if (fullData.sponsorDetails.hasOwnProperty("awardsum")){
+                    sponsorContent += "<tr><td><strong>Sum of Grant Awards </strong></td><td>" + formatter.format(Number(fullData.sponsorDetails.awardsum)) + "</td></tr>";
                 }
+
+                if (fullData.sponsorDetails.hasOwnProperty("municipallink")){
+                    sponsorContent += "<tr><td><strong>Mayor </strong></td><td><span id='sponsor-details-mayorname'><img height='20' src='img/loading.gif' /></span></td></tr>";
+                    sponsorContent += "<tr><td><strong>Population </strong></td><td><span id='sponsor-details-population'><img height='20' src='img/loading.gif' /></span></td></tr>";
+                    sponsorContent += "<tr><td><strong>Phone </strong></td><td><span id='sponsor-details-phone'><img height='20' src='img/loading.gif' /></span></td></tr>";
+                    sponsorContent += "<tr><td><strong>Fax </strong></td><td><span id='sponsor-details-fax'><img height='20' src='img/loading.gif' /></span></td></tr>";
+                    sponsorContent += "<tr><td><strong>Address </strong></td><td><span id='sponsor-details-address'><img height='20' src='img/loading.gif' /></span></td></tr>";
+                }
+
                 sponsorContent += "</table>";
 
                 //fill in the grant sponsor details at the top of the results panel
                 $("#sponsor-summary").html(sponsorContent);
+
+                if (fullData.sponsorDetails.hasOwnProperty("municipallink")){
+                    console.log("requesting remote data from municipal league");
+                    $.post("/api/remoteinfo", {url : fullData.sponsorDetails.municipallink, type : "city"}, function(remoteData){
+                        console.log("remote data found is: ");
+                        console.log(remoteData);
+                        $("#sponsor-details-mayorname").html(remoteData.mayorname);
+                        $("#sponsor-details-population").html(remoteData.population);
+                        $("#sponsor-details-phone").html(remoteData.phone);
+                        $("#sponsor-details-fax").html(remoteData.fax);
+                        $("#sponsor-details-address").html(remoteData.address.replace(new RegExp(",", "g"), ",<br/>"));
+
+                    }).fail(function(jqxhr, textStatus, error){
+                        var err = textStatus + ", " + error;
+                        console.log( "Request Failed: " + err );
+                    });
+                }
 
 
             } else {
@@ -110,17 +139,17 @@ grantInfoWindow.makeResults =  function (){
 
                 var grantContent = "<h3>" + grant.projectnum + "-" + grant.year.slice(2,4) + " " + withdrawnHeader  + "</h3>";
                 grantContent += "<div><div class='container'>" +
-                    "<div class='row'><div class='col-12'><strong>Project Name: </strong><span>" + grant.projectname + "</span></div></div>" +
-                    "<div class='row'><div class='col-12'><strong>Park Name: </strong><div id='park-hover-for-" + grant.projectnum + "'></div></div></div>" +
-                    "<div class='row'><div class='col-md-6 col-sm-12 col-lg-6 col-xl-4'><strong>Award Amount: </strong><span>" + grant.awardamount + "</span></div><div class='col-md-6 col-sm-12 col-lg-6 col-xl-4'><strong>Project Status: </strong><span>" + grant.status + "</span></div><div class='col-md-6 col-sm-12 col-lg-6 col-xl-4'><strong>Project Type: </strong><span>" + grant.projecttype + "</span></div></div>";
+                    "<div class='row'><div class='col-12'><strong>Project Name: </strong><span>" + grant.projectname + "</span></div></div>";
 
-                grantContent += "<div class='row'><div class='col'><strong>Sponsors: </strong></div><div class='col'>";
+                grantContent += "<div class='row'><div class='col'><strong>Sponsors: </strong>";
                 //for each of the joint sponsor on a project, add them to the list
                 for (var u = 0; u < grant.sponsorList.length; u++){
                     grantContent += "<span class='join-sponsors' displayname='" + grant.sponsorList[u].displayname + "' sponsorcode='" + grant.sponsorList[u].sponsorcode +"'>" + grant.sponsorList[u].sponsor + "</span>";
                 }
-
                 grantContent += "</div></div>";
+
+                grantContent += "<div class='row'><div class='col-12'><strong>Park Name: </strong><div class='park-elements-div' id='park-hover-for-" + grant.projectnum + "'></div></div></div>" +
+                    "<div class='row'><div class='col-md-6 col-sm-12 col-lg-6 col-xl-4'><strong>Award Amount: </strong><span>" + grant.awardamount + "</span></div><div class='col-md-6 col-sm-12 col-lg-6 col-xl-4'><strong>Project Status: </strong><span>" + grant.status + "</span></div><div class='col-md-6 col-sm-12 col-lg-6 col-xl-4'><strong>Project Type: </strong><span>" + grant.projecttype + "</span></div></div>";
 
                 //depending on the completion status or withrawn status. grant may not have certain properties. do not include in table if they are not needed
                 if (grant.hasOwnProperty("itemsapplication")){
