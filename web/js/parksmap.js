@@ -94,7 +94,7 @@ parkmap.crossReferenceParkToGrant = function(){
                 stringNumerList += featureCollection.features[t].properties.projectNum + " ";
             }
             //make request to the grant window to search for the grants related to the park.
-            grantInfoWindow.displayGrantDetails(null, stringNumerList, "<h3>" + selectedPark.feature.properties.currentNam + "</h3><p>given on this park</p>");
+            grantInfoWindow.displayGrantDetails(null, stringNumerList, "<p>given on this park</p><h3>" + selectedPark.feature.properties.currentNam + "</h3>");
 
         });
 };
@@ -392,7 +392,6 @@ parkmap.zoomToSponsor = function(sponsorDetails){
                 }
             });
     } else {
-        var sponsorLocation = L.latLng(sponsorDetails.lat, sponsorDetails.lon);
         if (sponsorDetails.type === "County"){
             L.esri.query({url : "https://gis.arkansas.gov/arcgis/rest/services/FEATURESERVICES/Boundaries/FeatureServer/8"})
                 .intersects(sponsorLocation)
@@ -401,11 +400,14 @@ parkmap.zoomToSponsor = function(sponsorDetails){
                         var countyExtent = L.geoJSON(featureCollection).getBounds();
                         parkmap.map.flyToBounds(countyExtent);
                     } else {
-                        parkmap.map.flyTo(sponsorLocation);
+                        parkmap.map.setZoomAround(sponsorLocation, 12);
                     }
                 });
+        } else if (sponsorDetails.type === "State"){
+            //zoom to the full extent of the state
+            parkmap.map.setView([ 34.7517595, -92.329416], 7);
         } else {
-            parkmap.map.flyTo(sponsorLocation);
+            parkmap.map.setZoomAround(sponsorLocation, 12);
         }
     }
 };

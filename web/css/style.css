@@ -104,3 +104,16 @@ div.leaflet-popup-content {
     padding-left: 5px;
     padding-right: 5px;
 }
+
+.sponsor-summary-details {
+    font-size: 14px;
+}
+
+#search-title p {
+    margin-bottom: 0px;
+}
+
+#search-title h3 {
+    margin-top: 0px;
+    margin-left: 0px;
+}

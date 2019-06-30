@@ -58,7 +58,7 @@ grantInfoWindow.makeResults =  function (){
             //fill in the sponsor details box
             if (fullData.hasOwnProperty("sponsorDetails")) {
                 parkmap.zoomToSponsor(fullData.sponsorDetails);
-                var sponsorContent = "</h2><table class='sponsor-summary-details'><tr><td><strong>Type: </strong></td><td>" + fullData.sponsorDetails.type + "</td></tr>";
+                var sponsorContent = "<table class='sponsor-summary-details'>";
                 if (fullData.sponsorDetails.hasOwnProperty("county")){
                     sponsorContent += "<tr><td><strong>County: </strong></td><td>" + fullData.sponsorDetails.county + "</td></tr>";
                 }
@@ -178,7 +178,7 @@ grantInfoWindow.makeResults =  function (){
             $(".join-sponsors").on("click", function(){
                 var sponsorcode = $(this).attr("sponsorcode");
                 var displayname = $(this).attr("displayname");
-                grantInfoWindow.displayGrantDetails(displayname, null, "<h3>" + displayname +  "</h3><p>Grants sponsored by</p>")
+                grantInfoWindow.displayGrantDetails(displayname, null, "<p>Grants sponsored by</p><h3>" + displayname +  "</h3>")
             });
 
 
@@ -223,16 +223,16 @@ grantInfoWindow.makeResults =  function (){
 
     sponsorSearchinputBox.on("keypress", function(event){
        if (event.key === "Enter"){
-           grantInfoWindow.displayGrantDetails(sponsorSearchinputBox.val(), null, "<h3>" + sponsorSearchinputBox.val() + "</h3><p>Grants sponsored by</p>");
+           grantInfoWindow.displayGrantDetails(sponsorSearchinputBox.val(), null, "<p>Grants sponsored by</p><h3>" + sponsorSearchinputBox.val() + "</h3>");
        }
     });
 
     var grantinfosearchButton = $("#grant-info-search-button");
     grantinfosearchButton.on("click", function(){
-        grantInfoWindow.displayGrantDetails(sponsorSearchinputBox.val(), null, "<h3>" + sponsorSearchinputBox.val() + "</h3><p>Grants sponsored by</p>");
+        grantInfoWindow.displayGrantDetails(sponsorSearchinputBox.val(), null, "<p>Grants sponsored by</p><h3>" + sponsorSearchinputBox.val() + "</h3>");
     });
 
-    sponsorSearchinputBox.autocomplete({autoFocus : true, minLength: 2, source :
+    sponsorSearchinputBox.autocomplete({autoFocus : true, html: true, minLength: 2, source :
             function(request, response){
                 $.getJSON("/api/sponsorsearch?searchterm=" + request.term, function(data){
                     console.log(data);
@@ -245,14 +245,14 @@ grantInfoWindow.makeResults =  function (){
                     for (i = 0; i < data.length; i++){
                         if (data[i].type === "sponsor"){
                             if (data[i].hasOwnProperty("projcount")){
-                                data[i].label = data[i].displayname + " " + data[i].projcount + " Grants";
+                                data[i].label = "<strong>" + data[i].displayname + "</strong> " + data[i].projcount + " Grants";
                             } else {
-                                data[i].label = data[i].displayname + " 0 Grants";
+                                data[i].label = "<strong>" + data[i].displayname + "</strong>" + " 0 Grants";
                             }
 
                             data[i].value = data[i].displayname;
                         } else {
-                            data[i].label = data[i].projectnum + "-" + data[i].year.slice(2,4) + "  -  " + data[i].displayname;
+                            data[i].label = "<strong>" + data[i].projectnum + "-" + data[i].year.slice(2,4) + "</strong>  -  " + data[i].displayname;
                             data[i].value = data[i].projectnum;
                         }
 
@@ -260,7 +260,7 @@ grantInfoWindow.makeResults =  function (){
                     response(data);
                 });
             }});
-}
+};
 
 //run the contents of the mod
 grantInfoWindow.makeResults();

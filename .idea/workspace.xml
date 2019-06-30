@@ -7,18 +7,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c63fa6c0-c501-43f4-ae9e-723b01d33f19" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/GrantManagementGIS.iml" beforeDir="false" afterPath="$PROJECT_DIR$/GrantManagementGIS.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/artifacts/GrantManagementGIS_war_exploded/WEB-INF/classes/orgp/grantdetails.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/artifacts/GrantManagementGIS_war_exploded/WEB-INF/classes/orgp/grantdetails.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/artifacts/GrantManagementGIS_war_exploded/css/style.css" beforeDir="false" afterPath="$PROJECT_DIR$/out/artifacts/GrantManagementGIS_war_exploded/css/style.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/artifacts/GrantManagementGIS_war_exploded/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/out/artifacts/GrantManagementGIS_war_exploded/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/artifacts/GrantManagementGIS_war_exploded/js/grantinfo.js" beforeDir="false" afterPath="$PROJECT_DIR$/out/artifacts/GrantManagementGIS_war_exploded/js/grantinfo.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/GrantManagementGIS/orgp/grantdetails.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/GrantManagementGIS/orgp/grantdetails.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/orgp/grantdetails.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/orgp/grantdetails.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/orgp/sponsorsearch.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/orgp/sponsorsearch.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/web/css/style.css" beforeDir="false" afterPath="$PROJECT_DIR$/web/css/style.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/web/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/web/index.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/web/js/grantinfo.js" beforeDir="false" afterPath="$PROJECT_DIR$/web/js/grantinfo.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/js/parksmap.js" beforeDir="false" afterPath="$PROJECT_DIR$/web/js/parksmap.js" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -76,24 +68,25 @@
     <session id="1549296350">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="28" />
+          <entry key="project.closed" value="29" />
           <entry key="project.open.time.10" value="8" />
           <entry key="project.open.time.11" value="8" />
           <entry key="project.open.time.12" value="1" />
-          <entry key="project.open.time.13" value="2" />
+          <entry key="project.open.time.13" value="3" />
           <entry key="project.open.time.3" value="1" />
           <entry key="project.open.time.8" value="3" />
           <entry key="project.open.time.9" value="6" />
-          <entry key="project.opened" value="29" />
+          <entry key="project.opened" value="30" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
         <counts>
           <entry key="css" value="4" />
-          <entry key="html" value="1" />
+          <entry key="html" value="2" />
           <entry key="ico" value="1" />
           <entry key="java" value="13" />
-          <entry key="js" value="6" />
+          <entry key="js" value="8" />
+          <entry key="json" value="2" />
           <entry key="jsp" value="1" />
           <entry key="sql" value="1" />
           <entry key="xml" value="1" />
@@ -102,33 +95,34 @@
       <usages-collector id="statistics.file.types.open">
         <counts>
           <entry key="CSS" value="4" />
-          <entry key="HTML" value="1" />
+          <entry key="HTML" value="2" />
           <entry key="Image" value="1" />
           <entry key="JAVA" value="13" />
+          <entry key="JSON" value="2" />
           <entry key="JSP" value="1" />
-          <entry key="JavaScript" value="6" />
+          <entry key="JavaScript" value="8" />
           <entry key="Scratch" value="1" />
           <entry key="XML" value="1" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="css" value="976" />
+          <entry key="css" value="1061" />
           <entry key="dummy" value="6" />
-          <entry key="html" value="1191" />
+          <entry key="html" value="1294" />
           <entry key="java" value="6703" />
-          <entry key="js" value="25945" />
+          <entry key="js" value="27015" />
           <entry key="jsp" value="41" />
           <entry key="txt" value="7" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="CSS" value="976" />
-          <entry key="HTML" value="1198" />
+          <entry key="CSS" value="1061" />
+          <entry key="HTML" value="1301" />
           <entry key="JAVA" value="6703" />
           <entry key="JSP" value="41" />
-          <entry key="JavaScript" value="25938" />
+          <entry key="JavaScript" value="27008" />
           <entry key="PLAIN_TEXT" value="13" />
         </counts>
       </usages-collector>
@@ -136,11 +130,23 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/web/index.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="199">
-              <caret line="29" column="14" selection-start-line="29" selection-start-column="14" selection-end-line="29" selection-end-column="14" />
+            <state relative-caret-position="149">
+              <caret line="41" column="14" lean-forward="true" selection-start-line="41" selection-start-column="14" selection-end-line="41" selection-end-column="14" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/web/lib/jquery.ui.autocomplete.html.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="697">
+              <caret line="41" column="63" selection-start-line="41" selection-start-column="63" selection-end-line="41" selection-end-column="63" />
+              <folding>
+                <element signature="n#!!doc" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -148,20 +154,29 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/web/js/grantinfo.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="505">
-              <caret line="92" lean-forward="true" selection-start-line="92" selection-end-line="92" />
+            <state relative-caret-position="119">
+              <caret line="7" column="25" lean-forward="true" selection-start-line="7" selection-start-column="25" selection-end-line="7" selection-end-column="25" />
+              <folding>
+                <element signature="e#6534#10231#0" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/web/js/regionmap.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="517">
+              <caret line="34" column="19" lean-forward="true" selection-start-line="34" selection-start-column="19" selection-end-line="34" selection-end-column="19" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/orgp/getSponsorRemoteInfo.java">
+        <entry file="file://$PROJECT_DIR$/web/data/county.json">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="459">
-              <caret line="27" lean-forward="true" selection-start-line="27" selection-end-line="27" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
+            <state relative-caret-position="356">
+              <caret line="59" column="497" lean-forward="true" selection-start-line="59" selection-start-column="497" selection-end-line="59" selection-end-column="497" />
             </state>
           </provider>
         </entry>
@@ -169,8 +184,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/web/js/parksmap.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="168">
-              <caret line="51" column="5" lean-forward="true" selection-start-line="51" selection-start-column="5" selection-end-line="51" selection-end-column="5" />
+            <state relative-caret-position="455">
+              <caret line="402" column="68" selection-start-line="402" selection-start-column="68" selection-end-line="402" selection-end-column="69" />
               <folding>
                 <element signature="n#style#0;n#rect#0;n#svg#0;n#div#0;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#rect#0;n#svg#0;n#div#2;n#!!top" expanded="true" />
@@ -189,34 +204,10 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/orgp/sponsorsearch.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="510">
-              <caret line="30" column="13" lean-forward="true" selection-start-line="30" selection-start-column="13" selection-end-line="30" selection-end-column="13" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/orgp/grantdetails.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="48">
-              <caret line="50" column="5" selection-start-line="50" selection-start-column="5" selection-end-line="50" selection-end-column="5" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/orgp/remoteInfoServlet.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="391">
-              <caret line="23" column="53" lean-forward="true" selection-start-line="23" selection-start-column="53" selection-end-line="23" selection-end-column="53" />
+            <state relative-caret-position="255">
+              <caret line="23" column="53" selection-start-line="23" selection-start-column="53" selection-end-line="23" selection-end-column="53" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -245,8 +236,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/web/css/style.css">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="48">
-              <caret line="28" column="1" selection-start-line="28" selection-start-column="1" selection-end-line="28" selection-end-column="1" />
+            <state relative-caret-position="353">
+              <caret line="100" column="1" lean-forward="true" selection-start-line="100" selection-start-column="1" selection-end-line="100" selection-end-column="1" />
             </state>
           </provider>
         </entry>
@@ -257,16 +248,13 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="HTML File" />
-        <option value="JavaScript File" />
         <option value="Class" />
+        <option value="JavaScript File" />
       </list>
     </option>
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>L.control.</find>
-      <find>sponsorSearchinputBox</find>
-      <find>d3</find>
       <find>console.log</find>
       <find>for</find>
       <find>insertParkNames</find>
@@ -278,7 +266,6 @@
       <find>splice</find>
       <find>system</find>
       <find>cross</find>
-      <find>displayGrantDetails</find>
       <find>currentNam</find>
       <find>properties</find>
       <find>search-title</find>
@@ -294,6 +281,10 @@
       <find>Sponsors:</find>
       <find>Finished</find>
       <find>img</find>
+      <find>Grants sponsored</find>
+      <find>displayGrantDetails</find>
+      <find>&lt;p&gt;</find>
+      <find>&lt;table&gt;</find>
     </findStrings>
     <replaceStrings>
       <replace>parkmap.parkCentroidLayer</replace>
@@ -310,18 +301,20 @@
         <option value="$PROJECT_DIR$/web/WEB-INF/js/mapcreate.js" />
         <option value="$PROJECT_DIR$/web/WEB-INF/js/parksmap.js" />
         <option value="$PROJECT_DIR$/src/orgp/DBUtility.java" />
-        <option value="$PROJECT_DIR$/web/js/parksmap.js" />
         <option value="$PROJECT_DIR$/web/js/customgeocoder.js" />
         <option value="$PROJECT_DIR$/src/orgp/geocode.java" />
-        <option value="$PROJECT_DIR$/web/css/style.css" />
         <option value="$PROJECT_DIR$/src/orgp/grantdetails.java" />
         <option value="$PROJECT_DIR$/src/orgp/getmunileague.java" />
         <option value="$PROJECT_DIR$/src/orgp/getSponsorInfo.java" />
         <option value="$PROJECT_DIR$/src/orgp/remoteInfoServlet.java" />
         <option value="$PROJECT_DIR$/src/orgp/getSponsorRemoteInfo.java" />
-        <option value="$PROJECT_DIR$/web/js/grantinfo.js" />
         <option value="$PROJECT_DIR$/src/orgp/sponsorsearch.java" />
+        <option value="$PROJECT_DIR$/web/css/style.css" />
+        <option value="$PROJECT_DIR$/web/js/parksmap.js" />
         <option value="$PROJECT_DIR$/web/index.html" />
+        <option value="$PROJECT_DIR$/web/lib/jquery.ui.autocomplete.html.js" />
+        <option value="$PROJECT_DIR$/web/js/grantinfo.js" />
+        <option value="$PROJECT_DIR$/web/js/regionmap.js" />
       </list>
     </option>
   </component>
@@ -349,6 +342,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="PackagesPane" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -387,6 +381,12 @@
               <item name="GrantManagementGIS" type="b2602c69:ProjectViewProjectNode" />
               <item name="GrantManagementGIS" type="462c0819:PsiDirectoryNode" />
               <item name="web" type="462c0819:PsiDirectoryNode" />
+              <item name="data" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="GrantManagementGIS" type="b2602c69:ProjectViewProjectNode" />
+              <item name="GrantManagementGIS" type="462c0819:PsiDirectoryNode" />
+              <item name="web" type="462c0819:PsiDirectoryNode" />
               <item name="img" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
@@ -394,6 +394,12 @@
               <item name="GrantManagementGIS" type="462c0819:PsiDirectoryNode" />
               <item name="web" type="462c0819:PsiDirectoryNode" />
               <item name="js" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="GrantManagementGIS" type="b2602c69:ProjectViewProjectNode" />
+              <item name="GrantManagementGIS" type="462c0819:PsiDirectoryNode" />
+              <item name="web" type="462c0819:PsiDirectoryNode" />
+              <item name="lib" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="GrantManagementGIS" type="b2602c69:ProjectViewProjectNode" />
@@ -412,7 +418,6 @@
           <select />
         </subPane>
       </pane>
-      <pane id="PackagesPane" />
       <pane id="Scope" />
     </panes>
   </component>
@@ -421,7 +426,7 @@
     <property name="DefaultHtmlFileTemplate" value="HTML File" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1561841085982" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1561870444519" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/web/WEB-INF/lib/jsoup-1.12.1.jar!/" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
@@ -430,16 +435,17 @@
     <property name="project.structure.side.proportion" value="0.2" />
   </component>
   <component name="RecentsManager">
-    <key name="MoveFile.RECENT_KEYS">
+    <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\Robert\Documents\Grad School\GEOG778\GrantManagementGIS\web\img" />
-      <recent name="C:\Users\Robert\Documents\Grad School\GEOG778\GrantManagementGIS\web" />
+      <recent name="C:\Users\Robert\Documents\Grad School\GEOG778\GrantManagementGIS\web\WEB-INF\lib" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
       <recent name="orgp" />
     </key>
-    <key name="CopyFile.RECENT_KEYS">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\Robert\Documents\Grad School\GEOG778\GrantManagementGIS\web\data" />
       <recent name="C:\Users\Robert\Documents\Grad School\GEOG778\GrantManagementGIS\web\img" />
-      <recent name="C:\Users\Robert\Documents\Grad School\GEOG778\GrantManagementGIS\web\WEB-INF\lib" />
+      <recent name="C:\Users\Robert\Documents\Grad School\GEOG778\GrantManagementGIS\web" />
     </key>
   </component>
   <component name="RunDashboard">
@@ -590,11 +596,12 @@
       <workItem from="1561596156038" duration="2526000" />
       <workItem from="1561771991035" duration="12809000" />
       <workItem from="1561821565559" duration="18565000" />
+      <workItem from="1561861630872" duration="8775000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="188320000" />
+    <option name="totallyTimeSpent" value="197095000" />
   </component>
   <component name="TodoView" selected-index="3">
     <todo-panel id="selected-file">
@@ -609,17 +616,17 @@
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.8590022" visible="true" weight="0.20202559" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.85791755" visible="true" weight="0.20415778" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Designer" order="2" />
       <window_info id="Image Layers" order="3" />
       <window_info id="UI Designer" order="4" />
       <window_info id="Favorites" order="5" side_tool="true" />
       <window_info id="Capture Tool" order="6" />
-      <window_info id="Web" order="7" sideWeight="0.14099783" side_tool="true" visible="true" weight="0.20202559" />
+      <window_info id="Web" order="7" sideWeight="0.14208242" side_tool="true" visible="true" weight="0.20415778" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Run" order="2" weight="0.09002169" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.12255965" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -666,9 +673,53 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="289">
           <caret line="27" column="166" selection-start-line="27" selection-start-column="166" selection-end-line="27" selection-end-column="166" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/orgp/getSponsorRemoteInfo.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="289">
+          <caret line="27" selection-start-line="27" selection-end-line="27" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/orgp/sponsorsearch.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="340">
+          <caret line="30" column="13" selection-start-line="30" selection-start-column="13" selection-end-line="30" selection-end-column="13" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/orgp/grantdetails.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="680">
+          <caret line="50" column="5" selection-start-line="50" selection-start-column="5" selection-end-line="50" selection-end-column="5" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/orgp/remoteInfoServlet.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="255">
+          <caret line="23" column="53" selection-start-line="23" selection-start-column="53" selection-end-line="23" selection-end-column="53" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/orgp/DBUtility.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="187">
+          <caret line="11" column="28" selection-start-line="11" selection-start-column="28" selection-end-line="11" selection-end-column="28" />
         </state>
       </provider>
     </entry>
@@ -681,42 +732,15 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/web/css/style.css">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="48">
-          <caret line="28" column="1" selection-start-line="28" selection-start-column="1" selection-end-line="28" selection-end-column="1" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/orgp/DBUtility.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="187">
-          <caret line="11" column="28" selection-start-line="11" selection-start-column="28" selection-end-line="11" selection-end-column="28" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/orgp/remoteInfoServlet.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="391">
-          <caret line="23" column="53" lean-forward="true" selection-start-line="23" selection-start-column="53" selection-end-line="23" selection-end-column="53" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/orgp/getSponsorRemoteInfo.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="459">
-          <caret line="27" lean-forward="true" selection-start-line="27" selection-end-line="27" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
+        <state relative-caret-position="353">
+          <caret line="100" column="1" lean-forward="true" selection-start-line="100" selection-start-column="1" selection-end-line="100" selection-end-column="1" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/web/js/parksmap.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="168">
-          <caret line="51" column="5" lean-forward="true" selection-start-line="51" selection-start-column="5" selection-end-line="51" selection-end-column="5" />
+        <state relative-caret-position="455">
+          <caret line="402" column="68" selection-start-line="402" selection-start-column="68" selection-end-line="402" selection-end-column="69" />
           <folding>
             <element signature="n#style#0;n#rect#0;n#svg#0;n#div#0;n#!!top" expanded="true" />
             <element signature="n#style#0;n#rect#0;n#svg#0;n#div#2;n#!!top" expanded="true" />
@@ -733,37 +757,44 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/web/js/grantinfo.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="505">
-          <caret line="92" lean-forward="true" selection-start-line="92" selection-end-line="92" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/orgp/grantdetails.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="48">
-          <caret line="50" column="5" selection-start-line="50" selection-start-column="5" selection-end-line="50" selection-end-column="5" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/orgp/sponsorsearch.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="510">
-          <caret line="30" column="13" lean-forward="true" selection-start-line="30" selection-start-column="13" selection-end-line="30" selection-end-column="13" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/web/index.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="199">
-          <caret line="29" column="14" selection-start-line="29" selection-start-column="14" selection-end-line="29" selection-end-column="14" />
+        <state relative-caret-position="149">
+          <caret line="41" column="14" lean-forward="true" selection-start-line="41" selection-start-column="14" selection-end-line="41" selection-end-column="14" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/web/lib/jquery.ui.autocomplete.html.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="697">
+          <caret line="41" column="63" selection-start-line="41" selection-start-column="63" selection-end-line="41" selection-end-column="63" />
+          <folding>
+            <element signature="n#!!doc" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/web/js/grantinfo.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="119">
+          <caret line="7" column="25" lean-forward="true" selection-start-line="7" selection-start-column="25" selection-end-line="7" selection-end-column="25" />
+          <folding>
+            <element signature="e#6534#10231#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/web/data/county.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="356">
+          <caret line="59" column="497" lean-forward="true" selection-start-line="59" selection-start-column="497" selection-end-line="59" selection-end-column="497" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/web/js/regionmap.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="517">
+          <caret line="34" column="19" lean-forward="true" selection-start-line="34" selection-start-column="19" selection-end-line="34" selection-end-column="19" />
         </state>
       </provider>
     </entry>
