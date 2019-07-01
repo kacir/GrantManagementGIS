@@ -46,6 +46,7 @@ grantInfoWindow.makeResults =  function (){
             console.log(fullData);
             var data = fullData.grants;
 
+            $("#sponsor-mini-map").addClass("hidden");
             resultsElement.html("");
 
             //If there are no results then display text explaining that to the end user
@@ -87,6 +88,12 @@ grantInfoWindow.makeResults =  function (){
                 }
 
                 sponsorContent += "</table>";
+
+                if (fullData.sponsorDetails.hasOwnProperty("lat") && fullData.sponsorDetails.hasOwnProperty("lon") ){
+                    regionSVG.buildSVG("#sponsor-mini-map");
+                    regionSVG.plotPoint("#sponsor-mini-map", [fullData.sponsorDetails.lon, fullData.sponsorDetails.lat] );
+                    $("#sponsor-mini-map").removeClass("hidden")
+                }
 
                 //fill in the grant sponsor details at the top of the results panel
                 $("#sponsor-summary").html(sponsorContent);

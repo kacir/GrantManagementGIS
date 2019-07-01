@@ -35,7 +35,17 @@
                 <button id="grant-info-search-button"><img src="img/search.png" width="15px" /></button>
             </div>
             <div id="search-title"></div>
-            <div id="sponsor-summary"></div>
+            <div class="container">
+                <div class="row">
+                    <div class="col-12 col-md-6">
+                        <div id="sponsor-summary"></div>
+                    </div>
+                    <div class="col-12 col-md-6 text-center" >
+                        <svg class="hidden" id="sponsor-mini-map"></svg>
+                    </div>
+                </div>
+            </div>
+
             <div id="no-results-text" class="hidden"><p>No Results currently, Please select a park or search for a sponsor or project number</p></div>
             <div id="grant-results-box">
             </div>
@@ -69,6 +79,7 @@
 <script src="js/customgeocoder.js" ></script>
 <script src="js/parksmap.js" ></script>
 <script src="js/grantinfo.js" ></script>
+<script src="js/regionmap.js" ></script>
 
 </body>
 </html>
