@@ -195,13 +195,13 @@ grantInfoWindow.makeResults =  function (){
 
     function insertParkNames (projectnum){
         //for the selected grant element make a ESRI query which get the park name and park numbers related to the grant and adds to the park span of the grant details parks field.
-        L.esri.query({"url": "http://gis.arkansas.gov/arcgis/rest/services/ADPT/ADPT_ORGP_MASTER2/MapServer/28"})
+        L.esri.query({"url": "https://gis.arkansas.gov/arcgis/rest/services/ADPT/ADPT_ORGP_MASTER2/MapServer/28"})
             .where("projectNum = '" + projectnum + "'")
             .run(function(error, gPointfeatureCollection, response){
                 //loop through each gpoint for a grant
                 for (var x = 0; x < gPointfeatureCollection.features.length; x++){
                     var point = gPointfeatureCollection.features[x].geometry;
-                    L.esri.query({"url": "http://gis.arkansas.gov/arcgis/rest/services/ADPT/ADPT_ORGP_MASTER2/MapServer/38"})
+                    L.esri.query({"url": "https://gis.arkansas.gov/arcgis/rest/services/ADPT/ADPT_ORGP_MASTER2/MapServer/38"})
                         .intersects(point)
                         .run(function(error, parkFeatureCollection, response){
                             console.log("parks returned from backend for grant " + projectnum);

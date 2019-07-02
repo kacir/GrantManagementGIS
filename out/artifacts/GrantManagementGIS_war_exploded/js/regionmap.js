@@ -17,6 +17,11 @@ regionSVG.launch =  function(){
 //Long lat list - in that order
 regionSVG.plotPoint = function(cssSelector, coordinatePair){
     console.log("plot mini map point called");
+
+    d3.select(cssSelector)
+        .select("circle")
+        .remove();
+
     d3.select(cssSelector)
         .append("circle")
         .attr("cx", regionSVG.projection(coordinatePair)[0])
@@ -47,7 +52,7 @@ regionSVG.buildSVG = function(cssSelector){
         .data(regionSVG.json.features)
         .enter()
         .append("path")
-        .attr("fill", "gray")
+        .attr("fill", "#DCDCDC")
         .attr("stroke", "black")
         .attr("stroke-width" , 1)
         .attr("d", regionSVG.geoGenerator);
