@@ -194,6 +194,32 @@ L.esri.query({url : "https://gis.arkansas.gov/arcgis/rest/services/ADPT/ADPT_ORG
     .run(function(error, featureCollection, response){
         featureCollection.features.forEach(function(feature){
             var pointFeature = turf.centerOfMass(feature.geometry);
+            //use different methods to get the center of the polygon. Some will place the point outside of the polygon. need to test for those.
+            if(!turf.booleanPointInPolygon(pointFeature.geometry.coordinates, feature.geometry)){
+                pointFeature = turf.centroid(feature.geometry);
+                if(!turf.booleanPointInPolygon(pointFeature.geometry.coordinates, feature.geometry)){
+                    pointFeature = turf.center(feature.geometry);
+                    if(!turf.booleanPointInPolygon(pointFeature.geometry.coordinates, feature.geometry)){
+
+                        //previous methods have been used up. Try dealing with individual features inside of the thing
+                        if (feature.geometry.type === "MultiPolygon"){
+                            var firstPolygon = turf.polygon(feature.geometry.coordinates[0]);
+                            pointFeature = turf.centroid(firstPolygon);
+                            if (!turf.booleanPointInPolygon(pointFeature.geometry.coordinates, feature.geometry)){
+                                var secondPolygon = turf.polygon(feature.geometry.coordinates[1]);
+                                pointFeature = turf.centroid(secondPolygon);
+                                if (!turf.booleanPointInPolygon(pointFeature.geometry.coordinates, feature.geometry)){
+                                    pointFeature = turf.point(secondPolygon.geometry.coordinates[0][0]);
+                                }
+                            }
+                        } else {
+                            //if the single polygon's center can't be found then just use the first point in the polygon array
+                            pointFeature = turf.point(feature.geometry.coordinates[0][0]);
+                        }
+                    }
+                }
+            }
+
             pointFeature.properties.pastName = feature.properties.pastName;
             pointFeature.properties.parkNum = feature.properties.parkNum;
             pointFeature.properties.OBJECTID = feature.properties.OBJECTID;
