@@ -40,6 +40,7 @@ grantInfoWindow.makeResults =  function (){
         //insert a loading giff while the data from the backend loads
         resultsElement.html("<img src='img/loading_large.gif' width='60%'/>");
 
+        console.log("url that is being requested is: " + requestURL);
 
         $.getJSON(requestURL , function(fullData){
             console.log("Grant Results back from server are: ");

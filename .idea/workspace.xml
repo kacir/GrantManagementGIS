@@ -7,6 +7,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c63fa6c0-c501-43f4-ae9e-723b01d33f19" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/artifacts/GrantManagementGIS_war_exploded/js/parksmap.js" beforeDir="false" afterPath="$PROJECT_DIR$/out/artifacts/GrantManagementGIS_war_exploded/js/parksmap.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/orgp/grantdetails.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/orgp/grantdetails.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/js/grantinfo.js" beforeDir="false" afterPath="$PROJECT_DIR$/web/js/grantinfo.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/web/js/parksmap.js" beforeDir="false" afterPath="$PROJECT_DIR$/web/js/parksmap.js" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
@@ -65,9 +69,9 @@
     <session id="1549296350">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="36" />
+          <entry key="project.closed" value="37" />
           <entry key="project.open.time.10" value="9" />
-          <entry key="project.open.time.11" value="8" />
+          <entry key="project.open.time.11" value="9" />
           <entry key="project.open.time.12" value="3" />
           <entry key="project.open.time.13" value="3" />
           <entry key="project.open.time.15" value="1" />
@@ -75,7 +79,7 @@
           <entry key="project.open.time.3" value="1" />
           <entry key="project.open.time.8" value="4" />
           <entry key="project.open.time.9" value="7" />
-          <entry key="project.opened" value="37" />
+          <entry key="project.opened" value="38" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
@@ -109,8 +113,8 @@
           <entry key="css" value="1071" />
           <entry key="dummy" value="6" />
           <entry key="html" value="1674" />
-          <entry key="java" value="6703" />
-          <entry key="js" value="33310" />
+          <entry key="java" value="7383" />
+          <entry key="js" value="33645" />
           <entry key="jsp" value="41" />
           <entry key="txt" value="7" />
         </counts>
@@ -119,9 +123,9 @@
         <counts>
           <entry key="CSS" value="1071" />
           <entry key="HTML" value="1681" />
-          <entry key="JAVA" value="6703" />
+          <entry key="JAVA" value="7383" />
           <entry key="JSP" value="41" />
-          <entry key="JavaScript" value="33303" />
+          <entry key="JavaScript" value="33638" />
           <entry key="PLAIN_TEXT" value="13" />
         </counts>
       </usages-collector>
@@ -132,17 +136,17 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/web/index.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="435">
+            <state relative-caret-position="1003">
               <caret line="59" column="52" selection-start-line="59" selection-start-column="52" selection-end-line="59" selection-end-column="52" />
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/web/js/parksmap.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="372">
-              <caret line="100" column="83" lean-forward="true" selection-start-line="100" selection-start-column="83" selection-end-line="100" selection-end-column="83" />
+            <state relative-caret-position="561">
+              <caret line="121" column="47" selection-start-line="121" selection-start-column="28" selection-end-line="121" selection-end-column="47" />
               <folding>
                 <element signature="n#style#0;n#rect#0;n#svg#0;n#div#0;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#rect#0;n#svg#0;n#div#2;n#!!top" expanded="true" />
@@ -163,8 +167,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/web/js/grantinfo.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="697">
-              <caret line="41" selection-start-line="41" selection-end-line="41" />
+            <state relative-caret-position="272">
+              <caret line="48" lean-forward="true" selection-start-line="48" selection-end-line="48" />
             </state>
           </provider>
         </entry>
@@ -178,11 +182,14 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/orgp/grantdetails.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="527">
-              <caret line="41" column="96" selection-start-line="41" selection-start-column="96" selection-end-line="41" selection-end-column="96" />
+            <state relative-caret-position="100">
+              <caret line="108" column="76" selection-start-line="108" selection-start-column="76" selection-end-line="108" selection-end-column="76" />
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -230,8 +237,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>system</find>
-      <find>cross</find>
       <find>currentNam</find>
       <find>properties</find>
       <find>search-title</find>
@@ -248,7 +253,6 @@
       <find>Finished</find>
       <find>img</find>
       <find>Grants sponsored</find>
-      <find>displayGrantDetails</find>
       <find>&lt;p&gt;</find>
       <find>&lt;table&gt;</find>
       <find>d3</find>
@@ -260,6 +264,9 @@
       <find>module</find>
       <find>Queue</find>
       <find>parkPopupBuild</find>
+      <find>cross</find>
+      <find>projectNumbersArray</find>
+      <find>displayGrantDetails</find>
     </findStrings>
     <replaceStrings>
       <replace>parkmap.parkCentroidLayer</replace>
@@ -278,7 +285,6 @@
         <option value="$PROJECT_DIR$/src/orgp/DBUtility.java" />
         <option value="$PROJECT_DIR$/web/js/customgeocoder.js" />
         <option value="$PROJECT_DIR$/src/orgp/geocode.java" />
-        <option value="$PROJECT_DIR$/src/orgp/grantdetails.java" />
         <option value="$PROJECT_DIR$/src/orgp/getmunileague.java" />
         <option value="$PROJECT_DIR$/src/orgp/getSponsorInfo.java" />
         <option value="$PROJECT_DIR$/src/orgp/remoteInfoServlet.java" />
@@ -287,12 +293,13 @@
         <option value="$PROJECT_DIR$/web/lib/jquery.ui.autocomplete.html.js" />
         <option value="$PROJECT_DIR$/web/regionmap.html" />
         <option value="$PROJECT_DIR$/web/css/style.css" />
-        <option value="$PROJECT_DIR$/web/js/grantinfo.js" />
         <option value="$PROJECT_DIR$/web/lib/index.js" />
         <option value="$PROJECT_DIR$/web/js/regionmap.js" />
         <option value="$PROJECT_DIR$/web/lib/polylabel.js" />
         <option value="$PROJECT_DIR$/web/index.html" />
         <option value="$PROJECT_DIR$/web/js/parksmap.js" />
+        <option value="$PROJECT_DIR$/web/js/grantinfo.js" />
+        <option value="$PROJECT_DIR$/src/orgp/grantdetails.java" />
       </list>
     </option>
   </component>
@@ -320,7 +327,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
+      <pane id="PackagesPane" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -383,7 +390,7 @@
           <select />
         </subPane>
       </pane>
-      <pane id="PackagesPane" />
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -569,11 +576,12 @@
       <workItem from="1562032599649" duration="10233000" />
       <workItem from="1562116156169" duration="8835000" />
       <workItem from="1562204878947" duration="12146000" />
+      <workItem from="1562252780254" duration="8711000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="244022000" />
+    <option name="totallyTimeSpent" value="252733000" />
   </component>
   <component name="TodoView" selected-index="3">
     <todo-panel id="selected-file">
@@ -588,17 +596,17 @@
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.8503254" visible="true" weight="0.21908316" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.8492408" visible="true" weight="0.22121535" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Designer" order="2" />
       <window_info id="Image Layers" order="3" />
       <window_info id="UI Designer" order="4" />
       <window_info id="Favorites" order="5" side_tool="true" />
       <window_info id="Capture Tool" order="6" />
-      <window_info id="Web" order="7" sideWeight="0.14967462" side_tool="true" visible="true" weight="0.21908316" />
+      <window_info id="Web" order="7" sideWeight="0.15075922" side_tool="true" visible="true" weight="0.22121535" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.329718" />
-      <window_info anchor="bottom" id="Run" order="2" weight="0.023861172" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.09652928" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -686,10 +694,10 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/web/lib/index.js" />
     <entry file="file://$PROJECT_DIR$/web/lib/polylabel.js" />
-    <entry file="file://$PROJECT_DIR$/web/js/grantinfo.js">
+    <entry file="file://$PROJECT_DIR$/web/index.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="697">
-          <caret line="41" selection-start-line="41" selection-end-line="41" />
+        <state relative-caret-position="1003">
+          <caret line="59" column="52" selection-start-line="59" selection-start-column="52" selection-end-line="59" selection-end-column="52" />
         </state>
       </provider>
     </entry>
@@ -697,13 +705,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="816">
           <caret line="48" column="29" selection-start-line="48" selection-start-column="29" selection-end-line="48" selection-end-column="29" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/orgp/grantdetails.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="527">
-          <caret line="41" column="96" selection-start-line="41" selection-start-column="96" selection-end-line="41" selection-end-column="96" />
         </state>
       </provider>
     </entry>
@@ -731,17 +732,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/web/index.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="435">
-          <caret line="59" column="52" selection-start-line="59" selection-start-column="52" selection-end-line="59" selection-end-column="52" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/web/js/parksmap.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="372">
-          <caret line="100" column="83" lean-forward="true" selection-start-line="100" selection-start-column="83" selection-end-line="100" selection-end-column="83" />
+        <state relative-caret-position="561">
+          <caret line="121" column="47" selection-start-line="121" selection-start-column="28" selection-end-line="121" selection-end-column="47" />
           <folding>
             <element signature="n#style#0;n#rect#0;n#svg#0;n#div#0;n#!!top" expanded="true" />
             <element signature="n#style#0;n#rect#0;n#svg#0;n#div#2;n#!!top" expanded="true" />
@@ -754,6 +748,23 @@
             <element signature="n#style#0;n#rect#0;n#svg#0;n#div#9;n#!!top" expanded="true" />
             <element signature="n#style#0;n#rect#0;n#svg#0;n#div#10;n#!!top" expanded="true" />
             <element signature="n#style#0;n#rect#0;n#svg#0;n#div#11;n#!!top" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/web/js/grantinfo.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="272">
+          <caret line="48" lean-forward="true" selection-start-line="48" selection-end-line="48" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/orgp/grantdetails.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="100">
+          <caret line="108" column="76" selection-start-line="108" selection-start-column="76" selection-end-line="108" selection-end-column="76" />
+          <folding>
+            <element signature="imports" expanded="true" />
           </folding>
         </state>
       </provider>

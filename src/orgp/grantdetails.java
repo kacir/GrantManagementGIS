@@ -29,12 +29,16 @@ public class grantdetails extends HttpServlet {
         if (!(request.getParameter("splitchar") == null)){
             splitchar = request.getParameter("splitchar");
             System.out.println("split character of " + splitchar + " has been found");
+        } else {
+            System.out.println("Split Character was missing");
         }
 
         String term = "";
         if (!(request.getParameter("term") == null)){
             term = request.getParameter("term");
             System.out.println("term of " + term + " has been found");
+        } else {
+            System.out.println("Search Term was null!");
         }
 
         String[] projectNumbersArray = {};
@@ -42,7 +46,13 @@ public class grantdetails extends HttpServlet {
             //check to see if the array can actually be split if it contains the split character
             if (request.getParameter("projectnumbers").contains(splitchar)){
                 projectNumbersArray = request.getParameter("projectnumbers").split(splitchar);
+                System.out.println("length of the split array is: ");
+                System.out.println(projectNumbersArray.length);
+            } else {
+                projectNumbersArray = new String[] {request.getParameter("projectnumbers")};
             }
+        } else {
+            System.out.println("Project numbers list was missing from request");
         }
 
         //send the data back to the end user
@@ -94,8 +104,9 @@ public class grantdetails extends HttpServlet {
 
             projectsDetailsList = processGrantDetailsQuery(projectsDetailsList, sqlGrantDetailsViaProjectNumber, dbutil);
 
-            for (int i = 1; i < projectNumbersArray.length; i++){
-                String sqlArrayItem = "SELECT * FROM grantdisplay WHERE UPPER(projectnum) = UPPER('" + projectNumbersArray[i] + "') ORDER BY year DESC;";
+            for (int i = 0; i < projectNumbersArray.length; i++){
+                System.out.println("Project Number that is addressed by search is '" + projectNumbersArray[i] + "'");
+                String sqlArrayItem = "SELECT *, projectnumber AS projectnum FROM grants WHERE UPPER(projectnumber) = UPPER('" + projectNumbersArray[i] + "') ORDER BY year DESC;";
                 projectsDetailsList = processGrantDetailsQuery(projectsDetailsList, sqlArrayItem, dbutil);
             }
 
@@ -119,9 +130,6 @@ public class grantdetails extends HttpServlet {
         while (res.next()){
             JSONObject grant = new JSONObject();
             grant.put("projectnum" , res.getString("projectnum"));
-            grant.put("sponsor" , res.getString("sponsor"));
-            grant.put("sponsortype" , res.getString("sponsortype"));
-            grant.put("displayname" , res.getString("displayname"));
             grant.put("year" , res.getString("year"));
             grant.put("awardamount" , res.getString("awardamount"));
             grant.put("projecttype" , res.getString("projecttype"));
