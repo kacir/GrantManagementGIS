@@ -21,7 +21,7 @@ var stateparkslayer = L.esri.dynamicMapLayer({
 });
 
 //function feeds both the park point and park polygon popup construction.
-function parkPopupBuild (feature) {
+function parkPopupBuild (feature, latLng) {
     console.log("build popup has been called on");
     console.log(feature);
     if (feature === undefined || feature == null || feature === ""){
@@ -40,10 +40,16 @@ function parkPopupBuild (feature) {
         if (!feature.properties.hasOwnProperty("fedeprojectarea")){
             feature.properties.fedeprojectarea = "<img height='20' src='img/loading.gif' />";
 
-            L.esri.query({ url : "https://gis.arkansas.gov/arcgis/rest/services/ADPT/ADPT_ORGP_MASTER2/MapServer/25"})
-                .where("type = 'federal'")
-                .intersects(feature.geometry)
+            var intersectionGeometry = feature;
+            console.log("intersection geometry");
+            console.log(intersectionGeometry);
+
+            console.log("starting request for federal ");
+            L.esri.query({ url : "http://gis.arkansas.gov/arcgis/rest/services/ADPT/ADPT_ORGP_MASTER2/MapServer/25"})
+                .where(" type = 'federal' ")
+                .intersects(intersectionGeometry)
                 .run(function(error, featureCollection, response){
+                    console.log("geometry of federl is available for processing");
                     if (featureCollection.features.legnth == 0){
                         alert("Query returned no features!");
                     }
@@ -51,21 +57,36 @@ function parkPopupBuild (feature) {
                     var squaremetersArea = turf.area(selectedGeometry);
                     var acresOfProjectArea = turf.convertArea(squaremetersArea, "meters", "acres").toFixed(2);
                     feature.properties.fedeprojectarea = acresOfProjectArea;
-                    $("#lwcf-acres").text(acresOfProjectArea);
+                    if ($("#lwcf-acres") == 0){
+                        console.log("lwcf acres does not exist yet");
+                    }
+                    $("#lwcf-acres").html(acresOfProjectArea.toString());
+                    console.log("changing out LWCF acres :" + acresOfProjectArea);
+                    parkmap.map.closePopup();
+                    parkPopupBuild(feature, latLng);
+
                 });
         }
-        popupText = popupText + "<tr><td>LWCF Area:</td><td><span id='lwcf-acres'>" + feature.properties.fedeprojectarea + "</span> Acres</td></tr>";
+        popupText = popupText + "<tr><td>LWCF Area:</td><td><span id='lwcf-acres'>" + feature.properties.fedeprojectarea.toString() + "</span> Acres</td></tr>";
     }
 
     //Some features lack state boundary. Do not include the table row if its not needed.
     if (feature.properties.state6f3St === "has 6(f)3 boundary"){
         if (!feature.properties.hasOwnProperty("stateprojectarea")){
-            feature.properties.stateprojectarea = "\"<img height='20' src='img/loading.gif' />\"";
+            feature.properties.stateprojectarea = "<img height='20' src='img/loading.gif' />";
 
-            L.esri.query({ url : "https://gis.arkansas.gov/arcgis/rest/services/ADPT/ADPT_ORGP_MASTER2/MapServer/25"})
-                .where("type = 'state'")
-                .intersects(feature.geometry)
+            var intersectionGeometry = feature;
+            console.log("intersection geometry");
+            console.log(intersectionGeometry);
+
+            console.log("starting request for state ");
+            L.esri.query({ url : "http://gis.arkansas.gov/arcgis/rest/services/ADPT/ADPT_ORGP_MASTER2/MapServer/25"})
+                .where(" type = 'state' ")
+                .intersects(intersectionGeometry)
                 .run(function(error, featureCollection, response){
+                    console.log("error and response are: ");
+                    console.log(error);
+                    console.log(response);
                     if (featureCollection.features.legnth == 0){
                         alert("Query returned no features!");
                     }
@@ -73,20 +94,33 @@ function parkPopupBuild (feature) {
                     var squaremetersArea = turf.area(selectedGeometry);
                     var acresOfProjectArea = turf.convertArea(squaremetersArea, "meters", "acres").toFixed(2);
                     feature.properties.stateprojectarea = acresOfProjectArea;
-                    $("#anrc-acres").text(acresOfProjectArea);
+                    if ($("#anrc-acres").length == 0){
+                        console.log("State element does not exist yet!");
+                    }
+                    $("#anrc-acres").html(acresOfProjectArea.toString());
+                    console.log("changing out state acres: " + acresOfProjectArea);
+                    parkmap.map.closePopup();
+                    parkPopupBuild(feature, latLng);
+
                 });
         }
-        popupText = popupText + "<tr><td>State Area:</td><td><span id='anrc-acres'>" + feature.properties.stateprojectarea + "</span> Acres</td></tr>";
+        popupText = popupText + "<tr><td>State Area:</td><td><span id='anrc-acres'>" + feature.properties.stateprojectarea.toString() + "</span> Acres</td></tr>";
 
 
-    };
+    }
     popupText = popupText + "<tr><td>Total Park Area:</td><td>" + parseFloat(feature.properties.calc_acre).toFixed(2) + " Acres</td></tr>" +
         "</table>" +
         "<div class='container'><div class='row'><div id='cross-reference-park-to-grant' onclick='parkmap.crossReferenceParkToGrant()' OBJECTID='" + feature.properties.OBJECTID + "' class='col popup-button'><span>Grants in Park</span></div><a target='_blank' href='" + feature.properties.boxlink + "'><div class='col popup-button'><span>Doc Scans</span></div></a><a target='_blank' href='" + feature.properties.googleLink + "'><div class='col popup-button'><span>Driving Directions</span></div></a></div></div>";
         //the on click function is very important. When the button is pressed, the grant info window searches for the grants related to the park that the popup represents
     console.log("popup text to be rendered to page");
     console.log(popupText);
-    return popupText;
+
+    L.popup({closeOnClick : true})
+        .setLatLng(latLng)
+        .setContent(popupText)
+        .openOn(parkmap.map);
+
+    console.log("popup Added to map");
 }
 
 //on click function referenced in the park popup
@@ -112,10 +146,31 @@ parkmap.parkPolygonStyle = {fillColor : "#008000", stroke : false, fillOpacity :
 parkmap.parkPolygon = L.esri.featureLayer({url : "https://gis.arkansas.gov/arcgis/rest/services/ADPT/ADPT_ORGP_MASTER2/MapServer/38",
     where : "type = 'funded park'",
     style : parkmap.parkPolygonStyle})
-    .bindPopup(function(layer){
-        return parkPopupBuild(layer.feature);
-    })
     .addTo(parkmap.map);
+
+    parkmap.parkPolygon.on("click", function(event){
+        console.log("park polygon click event launched");
+        console.log(event);
+        if (event.hasOwnProperty("OBJECTID")){
+
+        }
+    });
+
+parkmap.parkPolygon.on("click", function(event){
+    console.log("click on park polygon called!");
+    console.log(event);
+
+    var feature;
+    if(event.hasOwnProperty("feature")){
+        feature = event.feature;
+    } else if (event.hasOwnProperty("layer")){
+        feature = event.layer.feature;
+    } else {
+        console.warn("unable to find property in park polygon layer");
+    }
+    parkPopupBuild(feature, event.latlng);
+
+});
 
 //the park icon needed to be referenced by another function so hover effects on the markers can be reset.
 parkmap.parkIcon = L.icon({
@@ -125,49 +180,25 @@ parkmap.parkIcon = L.icon({
 });
 
 function parkPointPopupRedirection(event){
+        console.log("redirection of popup building function started!");
+        console.log(event);
+        var OBJECTID;
+        var latLng;
         if (event.hasOwnProperty("feature")){
-            var geometry = event.feature.geometry;
+            OBJECTID = event.feature.properties.OBJECTID;
+            latLng = event.feature.geometry.coordinates;
         } else if (event.hasOwnProperty("layer")){
-            var geometry = event.layer.feature.geometry;
+            OBJECTID = event.layer.feature.properties.OBJECTID;
+            latLng = event.layer.feature.geometry.coordinates;
         } else {
             console.warn("unable to work with object");
             console.warn(event);
         }
+        latLng = L.latLng(latLng[1], latLng[0]);
 
-        //query for the park footprint below the point
-        L.esri.query({url : "https://gis.arkansas.gov/arcgis/rest/services/ADPT/ADPT_ORGP_MASTER2/MapServer/38"})
-            .where("type = 'funded park'")
-            .intersects(geometry)
-            .run(function(error, featureCollection, response){
-                if (featureCollection.features.length === 0){
-                    console.warn("an intial popup redirection did not find a parkfootprint directly below the intended point");
-                    //buffer the centroid out if it did not catch the footprint because the center of the park is actually outside of the park
-                    var bufferedPoint = turf.buffer(geometry, 0.04572, {units : "kilometers"});
-                    L.esri.query({url : "https://gis.arkansas.gov/arcgis/rest/services/ADPT/ADPT_ORGP_MASTER2/MapServer/38"})
-                        .where("type = 'funded park'")
-                        .intersects(bufferedPoint)
-                        .run(function(error, secondFeatureCollection, response){
-                            if (secondFeatureCollection.features.length === 0){
-                                console.warn("Second search for parkfooprint below point did not yeild results. Your popup will most likely not form");
-                            }
-                            var parkfootprintFeature = secondFeatureCollection.features[0];
-                            //send that footprint to the popupgenerator function
-                            var popupcontents = parkPopupBuild(parkfootprintFeature);
-                            var popup = L.popup({closeOnClick : true})
-                                .setLatLng(L.latLng(geometry.coordinates[1], geometry.coordinates[0]))
-                                .setContent(popupcontents)
-                                .openOn(parkmap.map);
-                        });
-                } else {
-                    var parkfootprintFeature = featureCollection.features[0];
-                    //send that footprint to the popupgenerator function
-                    var popupcontents = parkPopupBuild(parkfootprintFeature);
-                    var popup = L.popup({closeOnClick : true})
-                        .setLatLng(L.latLng(geometry.coordinates[1], geometry.coordinates[0]))
-                        .setContent(popupcontents)
-                        .openOn(parkmap.map);
-                }
-            });
+        console.log("spatial query started for this stuff");
+        var parkPolygonFeature = parkmap.parkPolygon.getFeature(OBJECTID).feature;
+        parkPopupBuild(parkPolygonFeature, latLng);
     }
 
 
@@ -178,11 +209,9 @@ var parkCentroidLayerClick = L.geoJSON(null , {pointToLayer : function(feature, 
 parkCentroidLayerClick.addTo(parkmap.map);
 parkCentroidLayerClick.on("click", parkPointPopupRedirection);
 
-parkmap.parkCentroidLayer = L.geoJSON(null, {onEachFeature: function(feature, layer){
-        parkCentroidLayerClick.addData(feature);
-    }, pointToLayer : function(feature, latlng){
+parkmap.parkCentroidLayer = L.geoJSON(null, {pointToLayer : function(feature, latlng){
         return L.marker(latlng, {icon : parkmap.parkIcon});
-    }}).bindPopup(parkPointPopupRedirection);
+    }});
 parkmap.parkCentroidLayer.addTo(parkmap.map);
 parkmap.parkCentroidLayer.on("click", parkPointPopupRedirection);
 
@@ -230,6 +259,7 @@ L.esri.query({url : "https://gis.arkansas.gov/arcgis/rest/services/ADPT/ADPT_ORG
             pointFeature.properties.calc_acre = feature.properties.calc_acre;
 
             parkmap.parkCentroidLayer.addData(pointFeature);
+            parkCentroidLayerClick.addData(pointFeature);
         });
     });
 
