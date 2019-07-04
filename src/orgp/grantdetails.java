@@ -8,6 +8,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.awt.*;
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -104,11 +105,28 @@ public class grantdetails extends HttpServlet {
 
             projectsDetailsList = processGrantDetailsQuery(projectsDetailsList, sqlGrantDetailsViaProjectNumber, dbutil);
 
+            String combinedSQL = "SELECT *, projectnumber AS projectnum FROM grants WHERE ";
             for (int i = 0; i < projectNumbersArray.length; i++){
                 System.out.println("Project Number that is addressed by search is '" + projectNumbersArray[i] + "'");
-                String sqlArrayItem = "SELECT *, projectnumber AS projectnum FROM grants WHERE UPPER(projectnumber) = UPPER('" + projectNumbersArray[i] + "') ORDER BY year DESC;";
-                projectsDetailsList = processGrantDetailsQuery(projectsDetailsList, sqlArrayItem, dbutil);
+                String orContainer;
+                if (i == 0){
+                    orContainer = "";
+                } else {
+                    orContainer = " OR ";
+                }
+
+                String itemClause = orContainer + " ( UPPER(projectnumber) = UPPER('" + projectNumbersArray[i] + "'))";
+                combinedSQL += itemClause;
+                //String sqlArrayItem = "SELECT *, projectnumber AS projectnum FROM grants WHERE UPPER(projectnumber) = UPPER('" + projectNumbersArray[i] + "') ORDER BY year DESC;";
+                //projectsDetailsList = processGrantDetailsQuery(projectsDetailsList, sqlArrayItem, dbutil);
             }
+            if (projectNumbersArray.length > 0){
+                combinedSQL += " ORDER BY year DESC;";
+                System.out.println("combined SQL");
+                System.out.println(combinedSQL);
+                projectsDetailsList = processGrantDetailsQuery(projectsDetailsList, combinedSQL, dbutil);
+            }
+
 
             fullDataset.put("grants", projectsDetailsList);
         } catch (SQLException e){

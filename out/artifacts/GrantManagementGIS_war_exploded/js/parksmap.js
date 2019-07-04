@@ -245,11 +245,11 @@ L.esri.query({url : "https://gis.arkansas.gov/arcgis/rest/services/ADPT/ADPT_ORG
 
 var stateProjectBoundary = L.esri.featureLayer({url : "https://gis.arkansas.gov/arcgis/rest/services/ADPT/ADPT_ORGP_MASTER2/MapServer/25",
     where : "type = 'state'",
-    style : {fill : false, stroke : true, opacity : 1.0, color : "#FF0000", weight : 4.0}
+    style : {fill : false, stroke : true, opacity : 1.0, color : "#FF0000", weight : 2.0}
 });
 var federalProjectBoundary = L.esri.featureLayer({url : "https://gis.arkansas.gov/arcgis/rest/services/ADPT/ADPT_ORGP_MASTER2/MapServer/26",
     where : "type = 'federal'",
-    style : {fill : false, stroke : true, opacity : 1.0, color : "#ffff00", weight : 4.0}
+    style : {fill : false, stroke : true, opacity : 1.0, color : "#ffff00", weight : 6.0}
 });
 var conversionpolygons = L.esri.featureLayer({url : "https://gis.arkansas.gov/arcgis/rest/services/ADPT/ADPT_ORGP_MASTER2/MapServer/24",
     style : function(feature) {

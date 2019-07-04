@@ -177,7 +177,7 @@ grantInfoWindow.makeResults =  function (){
                 insertParkNames(grant.projectnum);
 
             }
-            resultsElement.accordion({heightStyle : "content"});
+            resultsElement.accordion({heightStyle : "content", collapsible : true});
             //this attribute is needed because, if the accordion is destroyed before its created it
             // launches an exception. This variable keeps track of if it exists so the exception does not occur
             accordionApplied = true;
@@ -240,7 +240,12 @@ grantInfoWindow.makeResults =  function (){
         grantInfoWindow.displayGrantDetails(sponsorSearchinputBox.val(), null, "<p>Grants sponsored by</p><h3>" + sponsorSearchinputBox.val() + "</h3>");
     });
 
-    sponsorSearchinputBox.autocomplete({autoFocus : true, html: true, minLength: 2, source :
+    sponsorSearchinputBox.autocomplete({autoFocus : true, html: true, minLength: 2,  select : function(event, ui){
+        console.log("select launched!");
+        console.log(event);
+        console.log(ui);
+            grantInfoWindow.displayGrantDetails(ui.item.value, null, "Grants Given To<h3>" + ui.item.value +  "</h3>");
+    }, source :
             function(request, response){
                 $.getJSON("/api/sponsorsearch?searchterm=" + request.term, function(data){
                     console.log(data);
