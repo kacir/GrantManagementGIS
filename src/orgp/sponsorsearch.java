@@ -86,6 +86,11 @@ public class sponsorsearch extends HttpServlet {
             e.printStackTrace();
         }
 
+        if (list.length() < 10){
+            geoStorConnect parkSearch = new geoStorConnect();
+            list = parkSearch.searchParks( searchterm, list, 10);
+        }
+
         response.getWriter().write(list.toString());
 
     }

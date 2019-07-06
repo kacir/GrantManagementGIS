@@ -100,6 +100,10 @@ function parkPopupBuild (feature, latLng) {
 //on click function referenced in the park popup
 parkmap.crossReferenceParkToGrant = function(){
     var OBJECTID = $("#cross-reference-park-to-grant").attr("OBJECTID");
+    parkmap.parkSearch(OBJECTID);
+};
+
+parkmap.parkSearch = function (OBJECTID){
     var selectedPark = parkmap.parkPolygon.getFeature(OBJECTID);
     console.log("park selected for cross referencing");
     console.log(selectedPark);
@@ -123,6 +127,7 @@ parkmap.crossReferenceParkToGrant = function(){
 
         });
 };
+
 //park polygon style needed to be refferended by a few functions that change layer symbology based on hover affects.
 //These hover effects need to be result by referencing the style that first created the layer
 parkmap.parkPolygonStyle = {fillColor : "#008000", stroke : false, fillOpacity : 1};

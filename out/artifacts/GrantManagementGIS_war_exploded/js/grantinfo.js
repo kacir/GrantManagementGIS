@@ -189,7 +189,12 @@ grantInfoWindow.makeResults =  function (){
                 grantInfoWindow.displayGrantDetails(displayname, null, "<p>Grants sponsored by</p><h3>" + displayname +  "</h3>")
             });
 
-
+            if (data.length === 0 && fullData.hasOwnProperty("park") && fullData.park){
+                parkmap.parkSearch(fullData.park.OBJECTID);
+                var selectedPark = parkmap.parkPolygon.getFeature(fullData.park.OBJECTID);
+                var parkBounds = selectedPark.getBounds();
+                parkmap.map.flyToBounds(parkBounds);
+            }
 
         });
     };
@@ -252,7 +257,7 @@ grantInfoWindow.makeResults =  function (){
                     var maxResults = 10;
                     if (data.length > maxResults){
                         data = data.slice(0, maxResults -1);
-                    };
+                    }
 
                     var i;
                     for (i = 0; i < data.length; i++){
@@ -262,11 +267,18 @@ grantInfoWindow.makeResults =  function (){
                             } else {
                                 data[i].label = "<strong>" + data[i].displayname + "</strong>" + " 0 Grants";
                             }
-
                             data[i].value = data[i].displayname;
-                        } else {
+
+                        } else if(data[i].type === "grant" ) {
                             data[i].label = "<strong>" + data[i].projectnum + "-" + data[i].year.slice(2,4) + "</strong>  -  " + data[i].displayname;
                             data[i].value = data[i].projectnum;
+                        } else if (data[i].type === "park"){
+                            if (data[i].hasOwnProperty("pastName")  && !(data[i].pastName === " ") && !(data[i].pastName === "") ) {
+                                data[i].label = "<strong>" + data[i].currentNam +  "</strong> - Prev. " + data[i].pastName;
+                            } else {
+                                data[i].label = "<strong>" + data[i].currentNam +  "</strong>";
+                            }
+                            data[i].value = data[i].currentNam;
                         }
 
                     }

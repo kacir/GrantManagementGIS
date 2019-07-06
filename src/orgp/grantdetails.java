@@ -127,8 +127,19 @@ public class grantdetails extends HttpServlet {
                 projectsDetailsList = processGrantDetailsQuery(projectsDetailsList, combinedSQL, dbutil);
             }
 
-
             fullDataset.put("grants", projectsDetailsList);
+
+            if (projectsDetailsList.length() == 0){
+                geoStorConnect parkSearch = new geoStorConnect();
+                JSONArray parkresult = parkSearch.searchParks(projectnumberOrSponsor, projectsDetailsList, 1);
+                if (parkresult.length() > 0){
+                    JSONObject park = parkresult.getJSONObject(0);
+                    fullDataset.put("park" , park);
+                    projectsDetailsList.remove(0);
+                }
+            }
+
+
         } catch (SQLException e){
             e.printStackTrace();
         } catch (JSONException e){
