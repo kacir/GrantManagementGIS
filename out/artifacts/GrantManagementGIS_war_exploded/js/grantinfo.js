@@ -267,19 +267,16 @@ grantInfoWindow.makeResults =  function (){
         grantInfoWindow.displayGrantDetails(sponsorSearchinputBox.val(), null, "<p>Grants sponsored by</p><h3>" + sponsorSearchinputBox.val() + "</h3>");
     });
 
-    sponsorSearchinputBox.autocomplete({autoFocus : true, html: true, minLength: 2,  select : function(event, ui){
+    sponsorSearchinputBox.autocomplete({autoFocus : true, delay : 150 , html: true, minLength: 2,  select : function(event, ui){
         console.log("select launched!");
         console.log(event);
         console.log(ui);
             grantInfoWindow.displayGrantDetails(ui.item.value, null, "Grants Given To<h3>" + ui.item.value +  "</h3>");
     }, source :
             function(request, response){
-                $.getJSON("/api/sponsorsearch?searchterm=" + request.term, function(data){
+                var maxResults = 10;
+                $.getJSON("/api/sponsorsearch?limit=" + maxResults.toString() +"&searchterm=" + request.term, function(data){
                     console.log(data);
-                    var maxResults = 10;
-                    if (data.length > maxResults){
-                        data = data.slice(0, maxResults -1);
-                    }
 
                     var i;
                     for (i = 0; i < data.length; i++){
