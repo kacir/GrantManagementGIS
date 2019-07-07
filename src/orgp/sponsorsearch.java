@@ -64,7 +64,7 @@ public class sponsorsearch extends HttpServlet {
         list = sponsorTypeSearch(list, "School District", searchterm, dbutil);
         list = sponsorTypeSearch(list, "Community", searchterm, dbutil);
 
-        //try and get a list of project numbers to that fit the search term
+        //try and municipal a list of project numbers to that fit the search term
         String ProjectNumSQL = "SELECT projectnum, year, sponsor, displayname FROM grantdisplay WHERE UPPER(projectnum) LIKE UPPER('%" + searchterm  + "%') ORDER BY year DESC  ;";
 
         ResultSet projectRes = dbutil.queryDB(ProjectNumSQL);

@@ -15,20 +15,75 @@ import java.net.URL;
 public class getSponsorRemoteInfo {
 
     public static void main(String args[]){
-        String myURL = "http://local.arkansas.gov/local.php?agency=North%20Little%20Rock";
+        String myURL = "https://www.arcounties.org/counties/crittenden/";
 
         getSponsorRemoteInfo example = new getSponsorRemoteInfo();
         try {
-            example.get(myURL, "city");
-        } catch (JSONException e){
-            e.printStackTrace();
+            example.judge(myURL);
         } catch (IOException e){
             e.printStackTrace();
         }
 
     }
 
-    protected JSONObject get(String muniStringURL, String type) throws IOException, JSONException {
+    protected JSONObject judge(String countyURL) throws IOException {
+
+        if (!countyURL.contains("https://" ) && countyURL.contains("http://")){
+            countyURL = countyURL.replace("http://", "https://");
+        }
+
+        String line = "";
+        String documentString = "";
+
+        URL url = new URL(countyURL);
+        InputStream is = url.openStream();
+        BufferedReader br = new BufferedReader(new InputStreamReader(is));
+
+        while ((line = br.readLine()) != null){
+            documentString += line;
+        }
+
+        System.out.println("Finished getting from web data");
+        br.close();
+        is.close();
+        System.out.println("HTML taken from the County Association Server");
+
+        JSONObject result = new JSONObject();
+
+        //finding the judges name on the page
+        Document doc = Jsoup.parse(documentString);
+        Elements judgeParagraph = doc.select("p:contains(County Judge)");
+        String[] detailsList = judgeParagraph.html().split("<br>");
+
+        String judgeEmail = judgeParagraph.select("a").text();
+        String judgeName = detailsList[1];
+        String phoneNumber = detailsList[2].replace("Phone: ", "");
+        String faxNumber = detailsList[3].replace("Fax: ", "");
+        String mailingAddress = detailsList[4].replace("Address: ", "");
+
+
+        System.out.println("judges Email is " + judgeEmail);
+        System.out.println("judge name is " + judgeName);
+        System.out.println("Phone number is " + phoneNumber);
+        System.out.println("Fax number is " + faxNumber);
+        System.out.println("Mailing Address " + mailingAddress);
+
+        try {
+            result.put("judgename" , judgeName);
+            result.put("phone" , phoneNumber);
+            result.put("fax" , faxNumber);
+            result.put("address" , mailingAddress);
+            result.put("email", judgeEmail);
+
+        } catch (JSONException e){
+            e.printStackTrace();
+        }
+
+        return result;
+
+    }
+
+    protected JSONObject municipal(String muniStringURL) throws IOException, JSONException {
 
         if (!muniStringURL.contains("https://" ) && muniStringURL.contains("http://")){
             muniStringURL = muniStringURL.replace("http://", "https://");

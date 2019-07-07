@@ -23,11 +23,22 @@ public class remoteInfoServlet extends HttpServlet {
         String url = request.getParameter("url");
         System.out.println("URL recieved is " + url);
         String type = request.getParameter("type");
+        System.out.println("The type of URL request is" + type);
 
         JSONObject result = new JSONObject();
 
         try {
-            result = new getSponsorRemoteInfo().get(url, type);
+            if (type.equals("city")){
+                System.out.println("requesting data for municipal");
+                result = new getSponsorRemoteInfo().municipal(url);
+            }
+            if (type.equals("county")){
+                System.out.println("requesting data for county");
+                result = new getSponsorRemoteInfo().judge(url);
+            }
+
+            type.equals("county");
+
         } catch (JSONException e){
             e.printStackTrace();
         }

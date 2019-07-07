@@ -88,6 +88,14 @@ grantInfoWindow.makeResults =  function (){
                     sponsorContent += "<tr><td><strong>Address </strong></td><td><span id='sponsor-details-address'><img height='20' src='img/loading.gif' /></span></td></tr>";
                 }
 
+                if (fullData.sponsorDetails.hasOwnProperty("judgelink")){
+                    sponsorContent += "<tr><td><strong>Judge </strong></td><td><span id='sponsor-details-judge'><img height='20' src='img/loading.gif' /></span></td></tr>";
+                    sponsorContent += "<tr><td><strong>email </strong></td><td><span id='sponsor-details-email'><img height='20' src='img/loading.gif' /></span></td></tr>";
+                    sponsorContent += "<tr><td><strong>Phone </strong></td><td><span id='sponsor-details-phone'><img height='20' src='img/loading.gif' /></span></td></tr>";
+                    sponsorContent += "<tr><td><strong>Fax </strong></td><td><span id='sponsor-details-fax'><img height='20' src='img/loading.gif' /></span></td></tr>";
+                    sponsorContent += "<tr><td><strong>Address </strong></td><td><span id='sponsor-details-address'><img height='20' src='img/loading.gif' /></span></td></tr>";
+                }
+
                 sponsorContent += "</table>";
 
                 if (fullData.sponsorDetails.hasOwnProperty("lat") && fullData.sponsorDetails.hasOwnProperty("lon") ){
@@ -113,6 +121,20 @@ grantInfoWindow.makeResults =  function (){
                     }).fail(function(jqxhr, textStatus, error){
                         var err = textStatus + ", " + error;
                         console.log( "Request Failed: " + err );
+                    });
+                }
+
+                if (fullData.sponsorDetails.hasOwnProperty("judgelink")){
+                    console.log("requesting remote data form county sponsor");
+                    $.post("/api/remoteinfo", {url : fullData.sponsorDetails.judgelink, type : "county"}, function(remoteData){
+                        console.log("remote data found is: ");
+                        console.log(remoteData);
+                        $("#sponsor-details-judge").html(remoteData.judgename);
+                        $("#sponsor-details-email").html( "<a target='_blank' href='mailto: " + remoteData.email + "'>" + remoteData.email + "</a>");
+                        $("#sponsor-details-phone").html(remoteData.phone);
+                        $("#sponsor-details-fax").html(remoteData.fax);
+                        $("#sponsor-details-address").html(remoteData.address.replace(new RegExp(",", "g"), ",<br/>"));
+
                     });
                 }
 

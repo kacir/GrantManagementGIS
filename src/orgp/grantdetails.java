@@ -24,7 +24,7 @@ public class grantdetails extends HttpServlet {
         response.setCharacterEncoding("UTF-8");
         System.out.println("request for data has been recived!");
 
-        //get the parameter information
+        //municipal the parameter information
         //give the parameter a default value if the url parameter was not used in the request
         String splitchar = " ";
         if (!(request.getParameter("splitchar") == null)){
@@ -77,7 +77,7 @@ public class grantdetails extends HttpServlet {
             projectsDetailsList = processGrantDetailsQuery(projectsDetailsList, sqlGrantDetailsViaSponsor, dbutil);
             //embed sponsor details to the fullDataset Object if a sponsor is clear
 
-            String sqlSponsorDetail = " SELECT sp.sponsor, sp.type, sp.displayname, sp.pop2010, sp.website, sp.folder, sp.lat, sp.lon, sp.city_fips_ , sp.county, sp.municipallink, ct.projcount, ct.awardsum ";
+            String sqlSponsorDetail = " SELECT sp.sponsor, sp.type, sp.displayname, sp.pop2010, sp.website, sp.folder, sp.lat, sp.lon, sp.city_fips_ , sp.county, sp.municipallink, sp.judgelink, ct.projcount, ct.awardsum ";
             sqlSponsorDetail += " FROM sponsor AS sp LEFT JOIN ";
             sqlSponsorDetail += " (SELECT imp.sponsorcode, COUNT(imp.projectnum) AS projcount, SUM(awardamount) AS awardsum FROM sponsor_to_grant AS imp JOIN grants ON imp.projectnum = grants.projectnumber GROUP BY imp.sponsorcode) AS ct ";
             sqlSponsorDetail += " ON sp.sponsorcode = ct.sponsorcode ";
@@ -100,6 +100,7 @@ public class grantdetails extends HttpServlet {
                 sponsorDetails.put("projcount", res.getString("projcount"));
                 sponsorDetails.put("awardsum", res.getString("awardsum"));
                 sponsorDetails.put("municipallink", res.getString("municipallink"));
+                sponsorDetails.put("judgelink", res.getString("judgelink"));
                 fullDataset.put("sponsorDetails", sponsorDetails);
             }
 
