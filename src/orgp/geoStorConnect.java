@@ -69,7 +69,7 @@ public class geoStorConnect {
         //build the sql request for parks matching a specific name
         try (Connection con = DriverManager.getConnection(connectionUrl); Statement stmt = con.createStatement();) {
             String SQL = "SELECT TOP (" + String.valueOf(searchLimit)  + ") [OBJECTID],[parkNum],[currentNam],[pastName], [county] ,[Shape].STCentroid().ToString() AS centroid FROM [asdi].[adpt].[OGPARKFOOTPRINTS]";
-            SQL += " WHERE (UPPER([pastName]) LIKE UPPER('%" + term + "%') OR UPPER([currentNam]) LIKE UPPER('%" + term + "%')) AND [type] = 'funded park' ORDER BY [currentNam] ASC;";
+            SQL += " WHERE (UPPER([pastName]) LIKE UPPER('" + term + "%') OR UPPER([currentNam]) LIKE UPPER('%" + term + "%')) AND [type] = 'funded park' ORDER BY [currentNam] ASC;";
             System.out.println("moving through MS SQL code");
             ResultSet rs = stmt.executeQuery(SQL);
 

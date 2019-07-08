@@ -23,10 +23,9 @@ public class sponsorsearch extends HttpServlet {
 
         String sql = " SELECT sp.sponsor, sp.displayname, sp.sponsorcode, ct.projcount ";
         sql += " FROM sponsor AS sp LEFT JOIN (SELECT  sponsorcode, COUNT(projectnum) AS projcount FROM sponsor_to_grant GROUP BY sponsorcode) AS ct ON sp.sponsorcode = ct.sponsorcode ";
-        sql += " WHERE UPPER(sp.displayname) LIKE UPPER('%" + searchterm + "%') AND sp.type = '" + sponsorType + "' ORDER BY sp.displayname ASC LIMIT " + Integer.toString(limit) + " ;";
+        sql += " WHERE UPPER(sp.displayname) LIKE UPPER('" + searchterm + "%') AND sp.type = '" + sponsorType + "' ORDER BY sp.displayname ASC LIMIT " + Integer.toString(limit) + " ;";
 
         System.out.println(sql);
-        //String sql = "SELECT sponsor, displayname, sponsorcode FROM sponsor WHERE UPPER(displayname) LIKE UPPER('%" + searchterm + "%') AND type = '" + sponsorType + "' ORDER BY displayname ASC;";
 
         ResultSet res = dbutil.queryDB(sql);
 

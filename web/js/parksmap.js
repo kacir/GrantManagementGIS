@@ -6,6 +6,16 @@ parkmap.start = function(){
 parkmap.map = L.map('map', {minZoom : 7, maxBounds : [ [ 30.232947, -98.151799], [ 38.872223, -87.048198] ]})
     .setView([ 34.7517595, -92.329416], 7);
 parkmap.map.zoomControl.setPosition("bottomleft");
+//create panes to seperate different layers into different orders within the map
+parkmap.map.createPane("parkfootprint");
+parkmap.map.getPane("parkfootprint").style.zIndex = 396;
+parkmap.map.createPane("federalProjectBoundary");
+parkmap.map.getPane("federalProjectBoundary").style.zIndex = 397;
+parkmap.map.createPane("stateProjectBoundary");
+parkmap.map.getPane("stateProjectBoundary").style.zIndex = 398;
+parkmap.map.createPane("conversionpolygons");
+parkmap.map.getPane("conversionpolygons").style.zIndex = 399;
+
 
 //load the basemap information
 var mapboxlink = "https://api.mapbox.com/styles/v1/robertkaciradpt/cjjrecba50sae2snpvqcw8ylq/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1Ijoicm9iZXJ0a2FjaXJhZHB0IiwiYSI6ImNqZ3BoODQ2NTAwM20ycXJ1OWpkZnh1emkifQ.MBfZdxZljkG8_JeivKerxw";
@@ -86,10 +96,17 @@ function parkPopupBuild (feature, latLng) {
 
 
     }
-    popupText = popupText + "<tr><td>Total Park Area:</td><td>" + parseFloat(feature.properties.calc_acre).toFixed(2) + " Acres</td></tr>" +
-        "</table>" +
-        "<div class='container'><div class='row'><div id='cross-reference-park-to-grant' onclick='parkmap.crossReferenceParkToGrant()' OBJECTID='" + feature.properties.OBJECTID + "' class='col popup-button'><span>Grants in Park</span></div><a target='_blank' href='" + feature.properties.boxlink + "'><div class='col popup-button'><span>Doc Scans</span></div></a><a target='_blank' href='" + feature.properties.googleLink + "'><div class='col popup-button'><span>Driving Directions</span></div></a></div></div>";
-        //the on click function is very important. When the button is pressed, the grant info window searches for the grants related to the park that the popup represents
+    popupText = popupText + "<tr><td>Total Park Area:</td><td>" + parseFloat(feature.properties.calc_acre).toFixed(2) + " Acres</td></tr></table>";
+
+    //the on click function is very important. When the button is pressed, the grant info window searches for the grants related to the park that the popup represents
+    popupText = popupText + "<div class='container'><div class='row'><div id='cross-reference-park-to-grant' onclick='parkmap.crossReferenceParkToGrant()' OBJECTID='" + feature.properties.OBJECTID + "' class='col popup-button'><span>Grants in Park</span></div>";
+    //if the park does not have a box link then there is no reason to add the box link button to the interface
+    if (feature.properties.hasOwnProperty("boxlink") && !(feature.properties.boxlink === undefined) && !(feature.properties.boxlink === "") && !(feature.properties.boxlink === " ") && !(feature.properties.boxlink === null)){
+        popupText = popupText + "<a target='_blank' href='" + feature.properties.boxlink + "'><div class='col popup-button'><span>Doc Scans</span></div></a>";
+    }
+    popupText = popupText + "<a target='_blank' href='" + feature.properties.googleLink + "'><div class='col popup-button'><span>Driving Directions</span></div></a></div></div>";
+
+
 
     L.popup({closeOnClick : true})
         .setLatLng(latLng)
@@ -133,7 +150,8 @@ parkmap.parkSearch = function (OBJECTID){
 parkmap.parkPolygonStyle = {fillColor : "#008000", stroke : false, fillOpacity : 1};
 parkmap.parkPolygon = L.esri.featureLayer({url : "https://gis.arkansas.gov/arcgis/rest/services/ADPT/ADPT_ORGP_MASTER2/MapServer/38",
     where : "type = 'funded park'",
-    style : parkmap.parkPolygonStyle})
+    style : parkmap.parkPolygonStyle,
+    pane: "parkfootprint"})
     .addTo(parkmap.map);
 
     parkmap.parkPolygon.on("click", function(event){
@@ -250,13 +268,16 @@ L.esri.query({url : "https://gis.arkansas.gov/arcgis/rest/services/ADPT/ADPT_ORG
 
 var stateProjectBoundary = L.esri.featureLayer({url : "https://gis.arkansas.gov/arcgis/rest/services/ADPT/ADPT_ORGP_MASTER2/MapServer/25",
     where : "type = 'state'",
+    pane : "stateProjectBoundary",
     style : {fill : false, stroke : true, opacity : 1.0, color : "#FF0000", weight : 2.0}
 });
 var federalProjectBoundary = L.esri.featureLayer({url : "https://gis.arkansas.gov/arcgis/rest/services/ADPT/ADPT_ORGP_MASTER2/MapServer/26",
     where : "type = 'federal'",
+    pane : "federalProjectBoundary",
     style : {fill : false, stroke : true, opacity : 1.0, color : "#ffff00", weight : 6.0}
 });
 var conversionpolygons = L.esri.featureLayer({url : "https://gis.arkansas.gov/arcgis/rest/services/ADPT/ADPT_ORGP_MASTER2/MapServer/24",
+    pane : "conversionpolygons",
     style : function(feature) {
         if (feature.properties.type == "past conversion"){
             return {color : "#FF0090" , fillColor : "#FF0090" , fillOpacity : 1, weight : 4.0};
@@ -277,11 +298,11 @@ conversionpolygons.bindPopup(function(layer){
 });
 
 var houseDistricts = L.esri.featureLayer({url : "https://gis.arkansas.gov/arcgis/rest/services/FEATURESERVICES/Boundaries/FeatureServer/15"})
-    .bindTooltip(function(layer){
+    .bindPopup(function(layer){
         return "District " + layer.feature.properties.ndistrict + ": " + layer.feature.properties.name;
 });
 var senateDistricts = L.esri.featureLayer({url : "https://gis.arkansas.gov/arcgis/rest/services/FEATURESERVICES/Boundaries/FeatureServer/34"})
-    .bindTooltip(function(layer){
+    .bindPopup(function(layer){
         return "District " + layer.feature.properties.ndistrict + ": " + layer.feature.properties.name;
 });
 var regions = L.esri.featureLayer({url : "https://gis.arkansas.gov/arcgis/rest/services/ADPT/ADPT_ORGP_MASTER2/MapServer/52",
@@ -311,11 +332,8 @@ var overlayMaps = {"Park Polygon" : parkmap.parkPolygon,
     "State Parks" : stateparkslayer
 };
 var baseMaps = { "Streets" : parklessStreetBasemap, "Aerial" : Esri_WorldImagery};
-L.control.layers(baseMaps, overlayMaps).addTo(parkmap.map);
 
-//implemented a custom geocoder for this project which uses custom grant sponsor information for arkansas.
-var myCoderEngine = new L.Control.Geocoder.CustomGeocoder();
-L.Control.geocoder({position : "topleft", geocoder : myCoderEngine, placeholder : "Town, Park, or Street Address"}).addTo(parkmap.map);
+parkmap.layerControl = L.control.layers(baseMaps, overlayMaps, {collapsed : false}).addTo(parkmap.map);
 
 
 var legendControl = L.control({position : "bottomright"});
@@ -390,7 +408,7 @@ legendControl.update = function (props) {
 };
 legendControl.addTo(parkmap.map);
 
-parkmap.map.on("overlayadd overlayremove", function(eo){
+parkmap.map.on("overlayadd overlayremove", function(event){
     legendControl.update();
     console.log("updating legend contents");
 });

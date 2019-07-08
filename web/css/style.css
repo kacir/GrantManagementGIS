@@ -69,6 +69,17 @@ div.leaflet-popup-content {
 }
 
 
+
+
+
+/*Refering to the Leaflet layer control*/
+div.leaflet-control-layers-expanded {
+    background : rgba(255,255,255, 0.9);
+}
+
+
+
+
 /*referring to the accordion stuffs*/
 .ui-state-active {
     background-color: green;
