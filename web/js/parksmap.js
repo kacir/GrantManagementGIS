@@ -18,16 +18,15 @@ parkmap.map.getPane("conversionpolygons").style.zIndex = 399;
 
 
 //load the basemap information
-var mapboxlink = "https://api.mapbox.com/styles/v1/robertkaciradpt/cjjrecba50sae2snpvqcw8ylq/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1Ijoicm9iZXJ0a2FjaXJhZHB0IiwiYSI6ImNqZ3BoODQ2NTAwM20ycXJ1OWpkZnh1emkifQ.MBfZdxZljkG8_JeivKerxw";
-var parklessStreetBasemap = L.tileLayer(mapboxlink).addTo(parkmap.map);
-var Esri_WorldImagery = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+var parklessStreetBasemap = L.tileLayer(config.mapboxlink).addTo(parkmap.map);
+var Esri_WorldImagery = L.tileLayer(config.worldImagery, {
     attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
 });
 
 
 //the ADPT state parks master layer maintained by Darin
 var stateparkslayer = L.esri.dynamicMapLayer({
-    url: "https://gis.arkansas.gov/arcgis/rest/services/ADPT/ADPT_MapService_2017/MapServer"
+    url: config.stateparks
 });
 
 //function feeds both the park point and park polygon popup construction.
@@ -49,8 +48,8 @@ function parkPopupBuild (feature, latLng) {
             feature.properties.fedeprojectarea = "<img height='20' src='img/loading.gif' />";
 
             var intersectionGeometry = feature;
-            L.esri.query({ url : "http://gis.arkansas.gov/arcgis/rest/services/ADPT/ADPT_ORGP_MASTER2/MapServer/25"})
-                .where(" type = 'federal' ")
+            L.esri.query({ url : config.projectBoundary})
+                .where(config.fedWhere)
                 .intersects(intersectionGeometry)
                 .run(function(error, featureCollection, response){
                     if (featureCollection.features.legnth == 0){
@@ -75,8 +74,8 @@ function parkPopupBuild (feature, latLng) {
             feature.properties.stateprojectarea = "<img height='20' src='img/loading.gif' />";
 
             var intersectionGeometry = feature;
-            L.esri.query({ url : "http://gis.arkansas.gov/arcgis/rest/services/ADPT/ADPT_ORGP_MASTER2/MapServer/25"})
-                .where(" type = 'state' ")
+            L.esri.query({ url : config.projectBoundary})
+                .where(config.stateWhere)
                 .intersects(intersectionGeometry)
                 .run(function(error, featureCollection, response){
                     if (featureCollection.features.legnth == 0){
@@ -125,7 +124,7 @@ parkmap.parkSearch = function (OBJECTID){
     console.log("park selected for cross referencing");
     console.log(selectedPark);
     //find each of the related grant numbers
-    L.esri.query({url : "https://gis.arkansas.gov/arcgis/rest/services/ADPT/ADPT_ORGP_MASTER2/MapServer/28"})
+    L.esri.query({url : config.grantPoints})
         .intersects(selectedPark)
         .run(function(error, featureCollection, response){
             console.log("cross referenced list of projects");
@@ -147,9 +146,9 @@ parkmap.parkSearch = function (OBJECTID){
 
 //park polygon style needed to be refferended by a few functions that change layer symbology based on hover affects.
 //These hover effects need to be result by referencing the style that first created the layer
-parkmap.parkPolygonStyle = {fillColor : "#008000", stroke : false, fillOpacity : 1};
-parkmap.parkPolygon = L.esri.featureLayer({url : "https://gis.arkansas.gov/arcgis/rest/services/ADPT/ADPT_ORGP_MASTER2/MapServer/38",
-    where : "type = 'funded park'",
+parkmap.parkPolygonStyle = {fillColor : "#008000", stroke : false, fillOpacity : 0.8};
+parkmap.parkPolygon = L.esri.featureLayer({url : config.parkfootprints,
+    where : config.parkfootprintsWhere,
     style : parkmap.parkPolygonStyle,
     pane: "parkfootprint"})
     .addTo(parkmap.map);
@@ -177,12 +176,17 @@ parkmap.parkPolygon.on("click", function(event){
     parkPopupBuild(feature, event.latlng);
 
 });
-
 //the park icon needed to be referenced by another function so hover effects on the markers can be reset.
 parkmap.parkIcon = L.icon({
     iconUrl : "/img/greenpark.png",
     iconSize : [12,12],
     iconAnchor : [6,6]
+});
+
+parkmap.parkIconArial = L.icon({
+    iconUrl : "/img/tree_white.png",
+    iconSize : [40,27],
+    iconAnchor : [20,13]
 });
 
 function parkPointPopupRedirection(event){
@@ -221,8 +225,8 @@ parkmap.parkCentroidLayer.on("click", parkPointPopupRedirection);
 //attempt to find the centorid of all funded parks and then add all those park centers to the park points layer
 // could not use the grantpoint ESRI layer because it was not flexible enough to use the same popup as the park polygon
 // The speed is reasonable based on the fact there are less than 1k of point features
-L.esri.query({url : "https://gis.arkansas.gov/arcgis/rest/services/ADPT/ADPT_ORGP_MASTER2/MapServer/38"})
-    .where("type = 'funded park'")
+L.esri.query({url : config.parkfootprints})
+    .where(config.parkfootprintsWhere)
     .run(function(error, featureCollection, response){
         featureCollection.features.forEach(function(feature){
             var pointFeature = turf.centerOfMass(feature.geometry);
@@ -266,17 +270,17 @@ L.esri.query({url : "https://gis.arkansas.gov/arcgis/rest/services/ADPT/ADPT_ORG
         });
     });
 
-var stateProjectBoundary = L.esri.featureLayer({url : "https://gis.arkansas.gov/arcgis/rest/services/ADPT/ADPT_ORGP_MASTER2/MapServer/25",
-    where : "type = 'state'",
+var stateProjectBoundary = L.esri.featureLayer({url : config.projectBoundary,
+    where : config.stateWhere,
     pane : "stateProjectBoundary",
     style : {fill : false, stroke : true, opacity : 1.0, color : "#FF0000", weight : 2.0}
 });
-var federalProjectBoundary = L.esri.featureLayer({url : "https://gis.arkansas.gov/arcgis/rest/services/ADPT/ADPT_ORGP_MASTER2/MapServer/26",
-    where : "type = 'federal'",
+var federalProjectBoundary = L.esri.featureLayer({url : config.projectBoundary,
+    where : config.fedWhere,
     pane : "federalProjectBoundary",
     style : {fill : false, stroke : true, opacity : 1.0, color : "#ffff00", weight : 6.0}
 });
-var conversionpolygons = L.esri.featureLayer({url : "https://gis.arkansas.gov/arcgis/rest/services/ADPT/ADPT_ORGP_MASTER2/MapServer/24",
+var conversionpolygons = L.esri.featureLayer({url : config.conversions,
     pane : "conversionpolygons",
     style : function(feature) {
         if (feature.properties.type == "past conversion"){
@@ -297,15 +301,15 @@ conversionpolygons.bindPopup(function(layer){
     return conversionDescription;
 });
 
-var houseDistricts = L.esri.featureLayer({url : "https://gis.arkansas.gov/arcgis/rest/services/FEATURESERVICES/Boundaries/FeatureServer/15"})
+var houseDistricts = L.esri.featureLayer({url : config.houseDistrict})
     .bindPopup(function(layer){
         return "District " + layer.feature.properties.ndistrict + ": " + layer.feature.properties.name;
 });
-var senateDistricts = L.esri.featureLayer({url : "https://gis.arkansas.gov/arcgis/rest/services/FEATURESERVICES/Boundaries/FeatureServer/34"})
+var senateDistricts = L.esri.featureLayer({url : config.senateDistrict})
     .bindPopup(function(layer){
         return "District " + layer.feature.properties.ndistrict + ": " + layer.feature.properties.name;
 });
-var regions = L.esri.featureLayer({url : "https://gis.arkansas.gov/arcgis/rest/services/ADPT/ADPT_ORGP_MASTER2/MapServer/52",
+var regions = L.esri.featureLayer({url : config.regions,
     style : function(feature){
         if (feature.properties.region2017 == "region 1"){
             return {fillColor : "pink", color : "white", fillOpacity : 0.9};
@@ -413,6 +417,26 @@ parkmap.map.on("overlayadd overlayremove", function(event){
     console.log("updating legend contents");
 });
 
+//set a default park icon marker for hover events
+parkmap.activeMarker = parkmap.parkIcon;
+parkmap.map.on("baselayerchange", function(event){
+    if (event.layer._leaflet_id === Esri_WorldImagery._leaflet_id){
+        parkmap.map.removeLayer(parkmap.parkPolygon);
+        parkmap.activeMarker = parkmap.parkIconArial;
+        parkmap.parkCentroidLayer.eachLayer(function(layer){
+            layer.setIcon(parkmap.activeMarker);
+        });
+    }
+    if (event.layer._leaflet_id === parklessStreetBasemap._leaflet_id){
+        parkmap.map.addLayer(parkmap.parkPolygon);
+        parkmap.activeMarker = parkmap.parkIcon;
+        parkmap.parkCentroidLayer.eachLayer(function(layer){
+            layer.setIcon(parkmap.activeMarker);
+        });
+    }
+
+});
+
 };
 
 //function binds event listeners to the park span elements listed in the grant info window when results are shown
@@ -434,9 +458,9 @@ parkmap.parkHover = function(parkSelector){
                 layer.setOpacity(1.0);
                 //Change size of icon temporarily
                 var multiplyfactor = 3;
-                var largeParkIcon = L.icon({iconSize : [parkmap.parkIcon.options.iconSize[0]*multiplyfactor ,parkmap.parkIcon.options.iconSize[1]*multiplyfactor],
-                    iconAnchor : [parkmap.parkIcon.options.iconAnchor[0]*multiplyfactor, parkmap.parkIcon.options.iconAnchor[1]*multiplyfactor],
-                    iconUrl : parkmap.parkIcon.options.iconUrl
+                var largeParkIcon = L.icon({iconSize : [parkmap.activeMarker.options.iconSize[0]*multiplyfactor ,parkmap.activeMarker.options.iconSize[1]*multiplyfactor],
+                    iconAnchor : [parkmap.activeMarker.options.iconAnchor[0]*multiplyfactor, parkmap.activeMarker.options.iconAnchor[1]*multiplyfactor],
+                    iconUrl : parkmap.activeMarker.options.iconUrl
                 });
                 layer.setIcon(largeParkIcon);
             } else {
@@ -464,7 +488,7 @@ parkmap.parkHover = function(parkSelector){
         parkmap.parkPolygon.resetStyle(OBJECTID);
         parkmap.parkCentroidLayer.eachLayer(function(layer){
             layer.setOpacity(1.0);
-            layer.setIcon(parkmap.parkIcon);
+            layer.setIcon(parkmap.activeMarker);
         });
         parkmap.parkPolygon.eachActiveFeature(function(layer){
             layer.setStyle(parkmap.parkPolygonStyle);
@@ -478,7 +502,7 @@ parkmap.zoomToSponsor = function(sponsorDetails){
     var sponsorLocation = L.latLng(sponsorDetails.lat, sponsorDetails.lon);
 
     if (sponsorDetails.hasOwnProperty("city_fips_")){
-        L.esri.query({url : "https://gis.arkansas.gov/arcgis/rest/services/FEATURESERVICES/Boundaries/FeatureServer/41"})
+        L.esri.query({url : config.municipal})
             .where("city_fips = " + sponsorDetails.city_fips_)
             .run(function(error, featureCollection, response){
                 if (featureCollection.features.length > 0){
@@ -490,7 +514,7 @@ parkmap.zoomToSponsor = function(sponsorDetails){
             });
     } else {
         if (sponsorDetails.type === "County"){
-            L.esri.query({url : "https://gis.arkansas.gov/arcgis/rest/services/FEATURESERVICES/Boundaries/FeatureServer/8"})
+            L.esri.query({url : config.county})
                 .intersects(sponsorLocation)
                 .run(function(error, featureCollection, response){
                     if (featureCollection.features.length > 0){

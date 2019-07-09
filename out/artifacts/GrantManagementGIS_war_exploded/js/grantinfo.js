@@ -39,6 +39,10 @@ grantInfoWindow.makeResults =  function (){
 
         //insert a loading giff while the data from the backend loads
         resultsElement.html("<img src='img/loading_large.gif' width='60%'/>");
+        $("#search-error").addClass("hidden");
+        $("#sponsor-summary").addClass("hidden");
+        $("#sponsor-mini-map").addClass("hidden");
+        $("#view-sponsor-details").addClass("hidden");
 
         console.log("url that is being requested is: " + requestURL);
 
@@ -47,7 +51,6 @@ grantInfoWindow.makeResults =  function (){
             console.log(fullData);
             var data = fullData.grants;
 
-            $("#sponsor-mini-map").addClass("hidden");
             resultsElement.html("");
 
             //If there are no results then display text explaining that to the end user
@@ -101,7 +104,6 @@ grantInfoWindow.makeResults =  function (){
                 if (fullData.sponsorDetails.hasOwnProperty("lat") && fullData.sponsorDetails.hasOwnProperty("lon") ){
                     regionSVG.buildSVG("#sponsor-mini-map");
                     regionSVG.plotPoint("#sponsor-mini-map", [fullData.sponsorDetails.lon, fullData.sponsorDetails.lat] );
-                    $("#sponsor-mini-map").removeClass("hidden")
                 }
 
                 //fill in the grant sponsor details at the top of the results panel
@@ -137,6 +139,7 @@ grantInfoWindow.makeResults =  function (){
 
                     });
                 }
+                $("#view-sponsor-details").removeClass("hidden");
 
 
             } else {
@@ -218,18 +221,23 @@ grantInfoWindow.makeResults =  function (){
                 parkmap.map.flyToBounds(parkBounds);
             }
 
+        }).fail(function(jqXHR, textStatus, error){
+            $("#search-error").removeClass("hidden");
+            resultsElement.html();
+            console.log("search error was: ");
+            console.log(error);
         });
     };
 
     function insertParkNames (projectnum){
         //for the selected grant element make a ESRI query which get the park name and park numbers related to the grant and adds to the park span of the grant details parks field.
-        L.esri.query({"url": "https://gis.arkansas.gov/arcgis/rest/services/ADPT/ADPT_ORGP_MASTER2/MapServer/28"})
+        L.esri.query({"url": config.grantPoints})
             .where("projectNum = '" + projectnum + "'")
             .run(function(error, gPointfeatureCollection, response){
                 //loop through each gpoint for a grant
                 for (var x = 0; x < gPointfeatureCollection.features.length; x++){
                     var point = gPointfeatureCollection.features[x].geometry;
-                    L.esri.query({"url": "https://gis.arkansas.gov/arcgis/rest/services/ADPT/ADPT_ORGP_MASTER2/MapServer/38"})
+                    L.esri.query({"url": config.parkfootprints})
                         .intersects(point)
                         .run(function(error, parkFeatureCollection, response){
                             console.log("parks returned from backend for grant " + projectnum);
@@ -255,12 +263,6 @@ grantInfoWindow.makeResults =  function (){
             });
     }
 
-
-    sponsorSearchinputBox.on("keypress", function(event){
-       if (event.key === "Enter"){
-           grantInfoWindow.displayGrantDetails(sponsorSearchinputBox.val(), null, "<p>Grants sponsored by</p><h3>" + sponsorSearchinputBox.val() + "</h3>");
-       }
-    });
 
     var grantinfosearchButton = $("#grant-info-search-button");
     grantinfosearchButton.on("click", function(){
@@ -304,6 +306,12 @@ grantInfoWindow.makeResults =  function (){
                     response(data);
                 });
             }});
+
+    $("#view-sponsor-details").on("click", function(){
+        $("#sponsor-mini-map").removeClass("hidden");
+        $("#sponsor-summary").removeClass("hidden");
+        $("#view-sponsor-details").addClass("hidden");
+    });
 };
 
 //run the contents of the mod
