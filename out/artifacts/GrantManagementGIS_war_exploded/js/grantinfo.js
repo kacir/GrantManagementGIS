@@ -263,6 +263,12 @@ grantInfoWindow.makeResults =  function (){
             });
     }
 
+    sponsorSearchinputBox.on("keypress", function(event){
+        if (event.key === "Enter"){
+            grantInfoWindow.displayGrantDetails(sponsorSearchinputBox.val(), null, "<p>Grants sponsored by</p><h3>" + sponsorSearchinputBox.val() + "</h3>");
+        }
+    });
+
 
     var grantinfosearchButton = $("#grant-info-search-button");
     grantinfosearchButton.on("click", function(){

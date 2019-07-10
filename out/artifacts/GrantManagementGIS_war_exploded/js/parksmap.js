@@ -146,7 +146,7 @@ parkmap.parkSearch = function (OBJECTID){
 
 //park polygon style needed to be refferended by a few functions that change layer symbology based on hover affects.
 //These hover effects need to be result by referencing the style that first created the layer
-parkmap.parkPolygonStyle = {fillColor : "#008000", stroke : false, fillOpacity : 0.8};
+parkmap.parkPolygonStyle = {fillColor : "#008000", stroke : false, fillOpacity : 0.3};
 parkmap.parkPolygon = L.esri.featureLayer({url : config.parkfootprints,
     where : config.parkfootprintsWhere,
     style : parkmap.parkPolygonStyle,
@@ -289,7 +289,7 @@ var conversionpolygons = L.esri.featureLayer({url : config.conversions,
         else if (feature.properties.type == "replacement"){
             return {color : "#99ff33" , fillColor : "#99ff33" , fillOpacity : 1, weight : 4.0};
         } else if (feature.properties.type == "converted replacement"){
-            return {color : "#99ff33" , fillColor : "#FF0090" , fillOpacity : 1, weight : 4.0};
+            return {color : "#0000FF" , fillColor : "#0000FF" , fillOpacity : 1, weight : 4.0};
         } else {
             return {fill : false, stroke : false};
         };
@@ -397,18 +397,18 @@ legendControl.update = function (props) {
         var regionsClass = "hidden"
     }
 
-    this._div.innerHTML = "<h4>Legend</h4><div class='" + parkPolygonClass + " '><span>Funded Park</span><svg width='25' height='25'><rect width='25' height='25' style='fill:green;stroke:green;stroke-width:3;fill-opacity:0.9'></rect></svg></div>" +
-        "<div class='" + grantPointClass + "'><span>Park Point</span><img src='img/greenpark.png' width='25' height='25' /></div>" +
-        "<div class='" + stateProjectBoundaryClass + "'><span>State Project Boundary</span> <svg width='25' height='25'><rect width='25' height='25' style='fill:none;stroke:red;stroke-width:3'></rect></svg> </div>" +
-        "<div class='" + federalProjectClass + "' ><span>Federal Project Boundary</span> <svg width='25' height='25'><rect width='25' height='25' style='fill:none;stroke:yellow;stroke-width:3'></rect></svg> </div>" +
-        "<div class='" + conversionPolygonClass + "' ><span>Converted Area</span><svg width='25' height='25'><rect width='25' height='25' style='fill:deeppink;stroke:deeppink;stroke-width:3'></rect></svg></div> " +
-        "<div class='" + conversionPolygonClass + "' ><span>Replacement Property</span> <svg width='25' height='25'><rect width='25' height='25' style='fill:lawngreen;stroke:lawngreen;stroke-width:3'></rect></svg></div>" +
-        "<div class='" + conversionPolygonClass + "' ><span>Converted Replacement Property</span> <svg width='25' height='25'><rect width='25' height='25' style='fill:deeppink;stroke:lawngreen;stroke-width:3'></rect></svg></div>" +
-        "<div class='" + houseDistrictClass + "' ><span>House District</span> <svg width='25' height='25'><rect width='25' height='25' style='fill:blue;stroke:blue;stroke-width:3;fill-opacity:0.5'></rect></svg></div>" +
-        "<div class='" + senateDistrictClass + "' ><span>Senate District</span> <svg width='25' height='25'><rect width='25' height='25' style='fill:blue;stroke:blue;stroke-width:3;fill-opacity:0.5'></rect></svg></div>" +
-        "<div class='" + regionsClass + "' ><span>Northwest Region</span> <svg width='25' height='25'><rect width='25' height='25' style='fill:blue;stroke:white;stroke-width:3;fill-opacity:0.9'></rect></svg></div>" +
-        "<div class='" + regionsClass + "' ><span>Northeast Region</span> <svg width='25' height='25'><rect width='25' height='25' style='fill:deeppink;stroke:white;stroke-width:3;fill-opacity:0.9'></rect></svg></div>" +
-        "<div class='" + regionsClass + "' ><span>Southern Region</span> <svg width='25' height='25'><rect width='25' height='25' style='fill:green;stroke:white;stroke-width:3;fill-opacity:0.9'></rect></svg></div>";
+    this._div.innerHTML = "<h4>Legend</h4><div " + parkPolygonClass + " ><svg width='18' height='18'><rect width='18' height='18' style='fill:green;stroke:green;stroke-width:3;fill-opacity:0.9'></rect></svg><span>Funded Park</span></div>" +
+        "<div class='" + grantPointClass + "'><img src='img/greenpark.png' width='18' height='18' /><span>Park Point</span></div>" +
+        "<div class='" + stateProjectBoundaryClass + "'><svg width='18' height='18'><rect width='18' height='18' style='fill:none;stroke:red;stroke-width:3'></rect></svg><span>State Project Boundary</span>  </div>" +
+        "<div class='" + federalProjectClass + "' ><svg width='18' height='18'><rect width='18' height='18' style='fill:none;stroke:yellow;stroke-width:3'></rect></svg><span>Federal Project Boundary</span>  </div>" +
+        "<div class='" + conversionPolygonClass + "' ><svg width='18' height='18'><rect width='18' height='18' style='fill:deeppink;stroke:deeppink;stroke-width:3'></rect></svg><span>Converted Area</span></div> " +
+        "<div class='" + conversionPolygonClass + "' ><svg width='18' height='18'><rect width='18' height='18' style='fill:lawngreen;stroke:lawngreen;stroke-width:3'></rect></svg><span>Replacement Property</span> </div>" +
+        "<div class='" + conversionPolygonClass + "' ><svg width='18' height='18'><rect width='18' height='18' style='fill:#0000FF;stroke:#0000FF;stroke-width:3'></rect></svg><span>Converted Replacement Property</span> </div>" +
+        "<div class='" + houseDistrictClass + "' ><svg width='18' height='18'><rect width='18' height='18' style='fill:blue;stroke:blue;stroke-width:3;fill-opacity:0.5'></rect></svg><span>House District</span> </div>" +
+        "<div class='" + senateDistrictClass + "' ><svg width='18' height='18'><rect width='18' height='18' style='fill:blue;stroke:blue;stroke-width:3;fill-opacity:0.5'></rect></svg><span>Senate District</span> </div>" +
+        "<div class='" + regionsClass + "' ><svg width='18' height='18'><rect width='18' height='18' style='fill:blue;stroke:white;stroke-width:3;fill-opacity:0.9'></rect></svg><span>Northwest Region</span> </div>" +
+        "<div class='" + regionsClass + "' ><svg width='18' height='18'><rect width='18' height='18' style='fill:deeppink;stroke:white;stroke-width:3;fill-opacity:0.9'></rect></svg><span>Northeast Region</span> </div>" +
+        "<div class='" + regionsClass + "' ><svg width='18' height='18'><rect width='18' height='18' style='fill:green;stroke:white;stroke-width:3;fill-opacity:0.9'></rect></svg><span>Southern Region</span></div>";
 };
 legendControl.addTo(parkmap.map);
 
@@ -478,7 +478,7 @@ parkmap.parkHover = function(parkSelector){
                     opacity : 1.0
                 });
             } else {
-                layer.setStyle({opacity : 0.3, fillOpacity : 0.3});
+                layer.setStyle({opacity : 0.3, fillOpacity : 0.1});
             };
         });
     });

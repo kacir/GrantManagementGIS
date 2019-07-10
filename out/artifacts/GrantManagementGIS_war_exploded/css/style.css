@@ -21,6 +21,17 @@ h1 {
     padding: 10px;
 }
 
+.legend-control div svg, .legend-control div img{
+    float: left;
+    margin-right: 3px;
+}
+
+.legend-control div {
+    padding-bottom: 2px;
+    padding-top: 2px;
+}
+
+
 
 /*specific to grant window on the right */
 #grant-info-box {
@@ -41,6 +52,19 @@ h1 {
 
 .park-elements-div {
     display: inline;
+}
+
+#sponsor-search:focus::-webkit-input-placeholder{
+    color: transparent;
+}
+#sponsor-search:focus::-moz-placeholder{
+    color: transparent;
+}
+#sponsor-search:focus:-moz-placeholder{
+    color: transparent;
+}
+#sponsor-search:focus::-ms-input-placeholder{
+    color: transparent;
 }
 
 
