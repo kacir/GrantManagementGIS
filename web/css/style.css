@@ -66,6 +66,12 @@ h1 {
 #sponsor-search:focus::-ms-input-placeholder{
     color: transparent;
 }
+.ui-autocomplete {
+    max-height: 200px;
+    overflow-y: auto;
+    /* prevent horizontal scrollbar */
+    overflow-x: hidden;
+}
 
 
 /*referring to popup contents*/

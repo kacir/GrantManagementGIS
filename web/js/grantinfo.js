@@ -275,43 +275,42 @@ grantInfoWindow.makeResults =  function (){
         grantInfoWindow.displayGrantDetails(sponsorSearchinputBox.val(), null, "<p>Grants sponsored by</p><h3>" + sponsorSearchinputBox.val() + "</h3>");
     });
 
-    sponsorSearchinputBox.autocomplete({autoFocus : true, delay : 150 , html: true, minLength: 2,  select : function(event, ui){
-        console.log("select launched!");
-        console.log(event);
-        console.log(ui);
-            grantInfoWindow.displayGrantDetails(ui.item.value, null, "Grants Given To<h3>" + ui.item.value +  "</h3>");
-    }, source :
-            function(request, response){
-                var maxResults = 10;
-                $.getJSON("/api/sponsorsearch?limit=" + maxResults.toString() +"&searchterm=" + request.term, function(data){
-                    console.log(data);
+    $.getJSON("/api/autosuggest", function(data){
+        console.log("data for autocomplete stuffs has been received");
+        console.log(data);
+        var suggestionList = [];
 
-                    var i;
-                    for (i = 0; i < data.length; i++){
-                        if (data[i].type === "sponsor"){
-                            if (data[i].hasOwnProperty("projcount")){
-                                data[i].label = "<strong>" + data[i].displayname + "</strong> " + data[i].projcount + " Grants";
-                            } else {
-                                data[i].label = "<strong>" + data[i].displayname + "</strong>" + " 0 Grants";
-                            }
-                            data[i].value = data[i].displayname;
-
-                        } else if(data[i].type === "grant" ) {
-                            data[i].label = "<strong>" + data[i].projectnum + "-" + data[i].year.slice(2,4) + "</strong>  -  " + data[i].displayname;
-                            data[i].value = data[i].projectnum;
-                        } else if (data[i].type === "park"){
-                            if (data[i].hasOwnProperty("pastName")  && !(data[i].pastName === " ") && !(data[i].pastName === "") ) {
-                                data[i].label = "<strong>" + data[i].currentNam +  "</strong> - Prev. " + data[i].pastName;
-                            } else {
-                                data[i].label = "<strong>" + data[i].currentNam +  "</strong>";
-                            }
-                            data[i].value = data[i].currentNam;
+        for (var i = 0; i < data.length; i++ ){
+            if (data[i].type === "sponsor"){
+                var suggestion = {value : data[i].displayname, label : "<strong>" + data[i].displayname + "</strong>" };
+                suggestionList.push(suggestion);
+            } else if (data[i].type === "park"){
+                var suggestion = {value : data[i].currentNam, label : "<strong>" + data[i].currentNam + "</strong>, " + data[i].sponsorshi};
+                suggestionList.push(suggestion);
+                if (data[i].hasOwnProperty("pastName") && !(data[i].pastName === " ") && !(data[i].pastName === "") && !(data[i].pastName === null) && !(data[i].pastName === undefined) ){
+                    if (data[i].pastName.includes(",")){
+                        var parkNameList = data[i].pastName.split(",");
+                        for (var v = 0; v < parkNameList.length; v++){
+                            var trimed = parkNameList[v].trim();
+                            var minorSuggestion = {value : trimed , label : "<strong>" + trimed + "</strong>, " + data[i].sponsorshi};
+                            suggestionList.push(minorSuggestion);
                         }
 
+                    } else {
+                        var trimed = data[i].pastName.trim();
+                        var minorSuggestion = {value : trimed , label : "<strong>" + trimed + "</strong>, " + data[i].sponsorshi};
+                        suggestionList.push(minorSuggestion);
                     }
-                    response(data);
-                });
-            }});
+                }
+            }
+        }
+        sponsorSearchinputBox.autocomplete({autoFocus : true, delay : 0 , html: true, minLength: 2, source : suggestionList});
+
+    }).fail(function(){
+        console.log("was unable to load auto suggest information");
+    });
+
+
 
     $("#view-sponsor-details").on("click", function(){
         $("#sponsor-mini-map").removeClass("hidden");

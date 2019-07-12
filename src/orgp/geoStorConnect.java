@@ -23,40 +23,7 @@ public class geoStorConnect {
         System.out.println(tempArray.toString());
     }
 
-    public Boolean isPark(String possiblePark){
-
-        String connectionUrl = "jdbc:sqlserver://db.geostor.org:1433;databaseName=asdi;user=adpt;password=Kv3Dc2katEmCBS4tARuo";
-
-        try {
-            Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
-        } catch (ClassNotFoundException e){
-            e.printStackTrace();
-        }
-
-        try (Connection con = DriverManager.getConnection(connectionUrl); Statement stmt = con.createStatement();) {
-            String SQL = "SELECT TOP (1) COUNT([OBJECTID]) AS count FROM [asdi].[adpt].[OGPARKFOOTPRINTS] WHERE [type] = 'funded park';";
-            ResultSet rs = stmt.executeQuery(SQL);
-
-            while (rs.next()) {
-                String count = rs.getString("count");
-                Integer.parseInt(rs.getString("count"));
-                if (Integer.parseInt(rs.getString("count")) > 0){
-                    return true;
-                } else {
-                    return false;
-                }
-            }
-        }
-        // Handle any errors that may have occurred.
-        catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
-
     public JSONArray searchParks(String term,  JSONArray resultArray, int searchLimit){
-
-        ;
 
         String connectionUrl = "jdbc:sqlserver://db.geostor.org:1433;databaseName=asdi;user=adpt;password=Kv3Dc2katEmCBS4tARuo";
 
