@@ -184,6 +184,16 @@ grantInfoWindow.makeResults =  function (){
                 grantContent += "<div class='row'><div class='col-12'><strong>Park Name: </strong><div class='park-elements-div' id='park-hover-for-" + grant.projectnum + "'></div></div></div>" +
                     "<div class='row'><div class='col-md-6 col-sm-12 col-lg-6 col-xl-4'><strong>Award Amount: </strong><span>" + grant.awardamount + "</span></div><div class='col-md-6 col-sm-12 col-lg-6 col-xl-4'><strong>Project Status: </strong><span>" + grant.status + "</span></div><div class='col-md-6 col-sm-12 col-lg-6 col-xl-4'><strong>Project Type: </strong><span>" + grant.projecttype + "</span></div></div>";
 
+                if (grant.hasOwnProperty("phonelog")){
+                    var maxCharLength = 50;
+                    if (grant.phonelog.length < maxCharLength){
+                        grantContent += "<div data-projectnum='" + grant.projectnum + "' class='row phone-log phone-log-truncated phone-" + grant.projectnum + "'><div class='col-12'><strong>Phone Log: </strong>" + grant.phonelog.replace("\n", "<br><br>") + "</div></div>";
+                    } else {
+                        grantContent += "<div data-projectnum='" + grant.projectnum + "' class='row phone-log phone-log-truncated phone-" + grant.projectnum + "'><div class='col-12'><strong>Phone Log: </strong>" + grant.phonelog.substring(0,maxCharLength -1) + "<span class='phone-log-expander' >...more</span></div></div>";
+                        grantContent += "<div data-projectnum='" + grant.projectnum + "' class='row phone-log phone-log-expanded hidden phone-" + grant.projectnum + "'><div class='col-12'><strong>Phone Log: </strong>" + grant.phonelog.replace("\n", "<br><br>") + "<span class='phone-log-trancator' >...less</span></div></div>";
+                    }
+                }
+
                 //depending on the completion status or withrawn status. grant may not have certain properties. do not include in table if they are not needed
                 if (grant.hasOwnProperty("itemsapplication")){
                     if (grant.hasOwnProperty("itemscompleted")){
@@ -193,6 +203,10 @@ grantInfoWindow.makeResults =  function (){
                         grantContent += "<div class='row'><div class='col-12'><strong>Items Completed</strong><p>" + grant.itemscompleted + "</p></div></div>";
                     }
                     grantContent += "<div class='row'><div class='col-12'><strong>Items on Application</strong><p>" + grant.itemsapplication + "</p></div></div>";
+                }
+
+                if (grant.hasOwnProperty("boxlink")){
+                    grantContent += "<div class='row'><div class='col-12'><a target='_blank' href='" + grant.boxlink + "'><button title='Click here for scans of grant contracts' class='grant-box-link'>Contract Scans</button></a></div></div>"
                 }
 
                 grantContent += "</div></div>";//close out the accordon div and boostrap container class
@@ -213,6 +227,14 @@ grantInfoWindow.makeResults =  function (){
                 var displayname = $(this).attr("displayname");
                 grantInfoWindow.displayGrantDetails(displayname, null, "<p>Grants sponsored by</p><h3>" + displayname +  "</h3>")
             });
+
+            $("span.phone-log-trancator, span.phone-log-expander").on("click", function(event){
+                console.log("Expander method called on!");
+                var rowParent = $(this).parent().parent();
+                rowParent.addClass("hidden");
+                rowParent.siblings(".phone-log").removeClass("hidden");
+            });
+
 
             if (data.length === 0 && fullData.hasOwnProperty("park") && fullData.park){
                 parkmap.parkSearch(fullData.park.OBJECTID);

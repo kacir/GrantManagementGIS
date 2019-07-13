@@ -169,6 +169,8 @@ public class grantdetails extends HttpServlet {
             grant.put("status" , res.getString("status"));
             grant.put("itemscompleted" , res.getString("itemscompleted"));
             grant.put("itemsapplication" , res.getString("itemsapplication"));
+            grant.put("phonelog" , res.getString("phonelog"));
+            grant.put("boxlink" , res.getString("boxlink"));
 
             //check to see how many sponsors there are of this particular project and append list to the gramt JSON object
             JSONArray sponsorList = new JSONArray();

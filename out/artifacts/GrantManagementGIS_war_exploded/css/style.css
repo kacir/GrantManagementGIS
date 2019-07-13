@@ -73,6 +73,23 @@ h1 {
     overflow-x: hidden;
 }
 
+span.phone-log-trancator, span.phone-log-expander {
+    color : green;
+}
+
+span.phone-log-trancator:hover, span.phone-log-expander:hover {
+    text-decoration: underline;
+    color : blue;
+    cursor: pointer;
+}
+
+button.grant-box-link {
+    color: white;
+    background-color : green;
+    border-radius: 6px;
+    border : none;
+}
+
 
 /*referring to popup contents*/
 .popup-button{
