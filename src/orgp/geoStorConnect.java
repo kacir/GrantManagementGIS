@@ -12,6 +12,8 @@ import org.json.JSONObject;
 
 public class geoStorConnect {
 
+    public static String connectionUrl = "jdbc:sqlserver://db.geostor.org:1433;databaseName=asdi;user=adpt;password=Kv3Dc2katEmCBS4tARuo";
+
 
     public static void main(String args[]){
         System.out.println("testing!");
@@ -25,7 +27,7 @@ public class geoStorConnect {
 
     public JSONArray searchParks(String term,  JSONArray resultArray, int searchLimit){
 
-        String connectionUrl = "jdbc:sqlserver://db.geostor.org:1433;databaseName=asdi;user=adpt;password=Kv3Dc2katEmCBS4tARuo";
+
 
         try {
             Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
