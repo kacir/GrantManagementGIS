@@ -9,6 +9,13 @@ public class SearchItem implements Comparable<SearchItem>{
     private  Double score;
     private boolean strictMatch;
     private int typeRank = 0;
+    private int hitCount = 1;
+    private Double mergedScore;
+    private Boolean mergedConflicts;
+
+    public void setMergedConflicts(Boolean temp){
+        this.mergedConflicts = temp;
+    }
 
     public static Comparator<SearchItem> arraySorter = new Comparator<SearchItem>(){
         @Override
@@ -26,6 +33,7 @@ public class SearchItem implements Comparable<SearchItem>{
         this.identifier = identifier;
         this.type = type;
         this.score = score;
+        this.mergedScore = score;
         this.strictMatch = strictMatch;
         //give the type of result a type rank so if everything else is equal it can be sorted according to this list
         switch(type){
@@ -68,6 +76,25 @@ public class SearchItem implements Comparable<SearchItem>{
     public int getTypeRank(){
         return this.typeRank;
     }
+    public Double getMergedScore(){
+        return this.mergedScore;
+    }
+
+    public void setMergedScore(Double score){
+        this.mergedScore = score;
+    }
+
+    public SearchItem deepCopy(){
+        try {
+            SearchItem temp = new SearchItem(this.identifier, this.type, this.strictMatch, score);
+            temp.mergedScore = this.mergedScore;
+            return temp;
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
 
     public void printAttributes(){
         System.out.println("Object " + this.identifier);
@@ -76,10 +103,11 @@ public class SearchItem implements Comparable<SearchItem>{
         System.out.println("Strict: " + this.strictMatch);
     }
 
+    @Override
     public int compareTo(SearchItem anotherResult){
-        if (this.score > anotherResult.getScore()){
+        if (this.mergedScore > anotherResult.getScore()){
             return 1;
-        } else if (this.score < anotherResult.getScore()){
+        } else if (this.mergedScore < anotherResult.getScore()){
             return -1;
         } else {
 

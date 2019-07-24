@@ -1,27 +1,18 @@
 package orgp;
 
-
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashSet;
 
-public class searchTypeFind {
+public class SearchSingleTerm {
 
-    public static void main(String[] args) {
+    private ArrayList<SearchItem> results = new ArrayList<SearchItem>();
+    private String searchTerm;
+
+    public static void main(String[] args){
         try {
-            ArrayList<SearchItem> test = searchTypeFind.find("55");
-
-            System.out.println("Array Length is " + test.size());
-
-            //Collections.sort(test, SeachItemSorting);
-            test.sort(SearchItem.arraySorter);
-
-            for (int i = 0; i < test.size(); i++ ){
-                SearchItem temp = test.get(i);
-                System.out.println("Index " + i);
-                temp.printAttributes();
-
-            }
-
+            new SearchSingleTerm("Pool").printResults();
         } catch (Exception e){
             e.printStackTrace();
         }
@@ -29,7 +20,78 @@ public class searchTypeFind {
     }
 
 
-    public static ArrayList find(String searchTerm) throws Exception{
+    public String getSearchTerm() {
+        return searchTerm;
+    }
+
+    //returns if the final product is a percent match
+    public Boolean matchContains100Percent(){
+        return this.results.get(0).getScore() == 1.00;
+    }
+
+    public Boolean isEmpty(){
+        if (this.results.size() == 0){
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public SearchItem getTopResult(){
+        return this.results.get(0);
+    }
+
+    public ArrayList<SearchItem> getTopResults(){
+
+        Double targetScore = this.results.get(0).getScore();
+        ArrayList<SearchItem> topResults = new ArrayList<>();
+
+        for (SearchItem item : this.results){
+            if (item.getScore().equals(targetScore)){
+                topResults.add(item);
+            } else {
+                break;
+            }
+        }
+
+        return topResults;
+    }
+
+    //generates a list of
+    public String[] resultTypesIncomplete(){
+
+        ArrayList<String> temp = new ArrayList<>();
+
+        for (SearchItem item : this.results){
+            temp.add(item.getType());
+        }
+
+        //remove the duplicates by creating a haslist
+        LinkedHashSet<String> hashTemp = new LinkedHashSet<>(temp);
+        //convert
+        String[] finalResult = new String[hashTemp.size()];
+        hashTemp.toArray(finalResult);
+
+
+        return finalResult;
+    }
+
+    //merges two searches together in the hopes they provide an results
+    public SearchSingleTerm merge(SearchSingleTerm anotherSearch) throws Exception{
+        String combindedTerm = this.getSearchTerm() + " " + anotherSearch.getSearchTerm();
+        return new SearchSingleTerm(combindedTerm);
+
+    }
+
+    public void printResults(){
+        System.out.println("These are the final results for search term" + this.searchTerm + "....................................." );
+        for (SearchItem temp : this.results){
+            temp.printAttributes();
+        }
+    }
+
+
+    public SearchSingleTerm(String searchTerm) throws Exception{
 
         //remove white space from beinging and end of the string
         searchTerm = searchTerm.trim().toUpperCase();
@@ -42,8 +104,7 @@ public class searchTypeFind {
             searchTerm = searchTerm.replace("  ", " ");
         }
 
-
-        ArrayList<SearchItem> result = new ArrayList();
+        this.searchTerm = searchTerm;
 
         DBUtility dbutil = new DBUtility();
         //search through the sponsors table
@@ -73,7 +134,7 @@ public class searchTypeFind {
             //add the result to the end product list
             try {
                 SearchItem imp = new SearchItem(sponsorCode, type, strictMatch, score);
-                result.add(imp);
+                this.results.add(imp);
             } catch (Exception e){
                 e.printStackTrace();
             }
@@ -124,15 +185,15 @@ public class searchTypeFind {
                     String[] pastNamesArray = pastNames.split(", ");
                     for (String pastName: pastNamesArray){
                         if (pastName.contains(searchTerm) && pastName.length() > 0){
-                           double possibleScore =  Double.valueOf(searchTerm.length())   / Double.valueOf(pastName.length());
-                           if (possibleScore > score){
-                               score = possibleScore;
-                               if (pastName.indexOf(searchTerm) == 0){
-                                   strictMatch = true;
-                               } else {
-                                   strictMatch = false;
-                               }
-                           }
+                            double possibleScore =  Double.valueOf(searchTerm.length())   / Double.valueOf(pastName.length());
+                            if (possibleScore > score){
+                                score = possibleScore;
+                                if (pastName.indexOf(searchTerm) == 0){
+                                    strictMatch = true;
+                                } else {
+                                    strictMatch = false;
+                                }
+                            }
                         }
                     }
                 }
@@ -140,7 +201,7 @@ public class searchTypeFind {
                 //create the scored object
                 try {
                     SearchItem matchingItem = new SearchItem(objectid, "park", strictMatch, score);
-                    result.add(matchingItem);
+                    this.results.add(matchingItem);
                 } catch (Exception e){
                     e.printStackTrace();
                 }
@@ -172,16 +233,14 @@ public class searchTypeFind {
             }
 
             SearchItem emp = new SearchItem(projectnumber, "Project", strictMatch,score);
-            result.add(emp);
+            this.results.add(emp);
 
         }
 
+        Collections.sort(this.results);
+        Collections.reverse(this.results);
 
         //search through the grants database
         //score each result
-
-
-        return result;
     }
-
 }
