@@ -22,6 +22,16 @@ public class SeachMultipleTermCollection {
     private Boolean resultConflicts;
     private ArrayList<SearchItem> recommendedResult = new ArrayList<>();
 
+    public static void main (String[] args){
+        String[] testString = {"Little Rock", "Riverfront Park" } ;
+
+        SeachMultipleTermCollection testResult = new SeachMultipleTermCollection(testString);
+        testResult.printInternalLists();
+        testResult.printRecommendedResult();
+
+    }
+
+
     public SearchItem getRecommendedResult() {
         return this.recommendedResult.get(0);
     }
@@ -31,6 +41,22 @@ public class SeachMultipleTermCollection {
         for (SearchItem item : this.recommendedResult){
             item.printAttributes();
         }
+    }
+
+    private void printInternalLists(){
+        System.out.println("Counties in search are...........................");
+        for (SearchItem county : this.counties){
+            county.printAttributes();
+        }
+        System.out.println("Cities in search are..............................");
+        for (SearchItem city : this.cities){
+            city.printAttributes();
+        }
+        System.out.println("Parks in search are...............................");
+        for (SearchItem park : this.parks){
+            park.printAttributes();
+        }
+
     }
 
     private DBUtility dbutil = new DBUtility();
@@ -108,6 +134,7 @@ public class SeachMultipleTermCollection {
 
         //generate a result array
         for (int a = 0; a < this.termArray.length; a++){
+            System.out.println("Seaching term for.... " + termArray[a]);
             try {
                 this.resultArray[a] = new SearchSingleTerm(termArray[a]);
             } catch (Exception e){
@@ -117,15 +144,18 @@ public class SeachMultipleTermCollection {
 
         //classify each term into a grouping
         for (SearchSingleTerm singleTermResult : this.resultArray){
+            System.out.println( "Single Term in result Array :'" + singleTermResult.getSearchTerm() + "'" );
             for (SearchItem item : singleTermResult.getTopResults()){
+                System.out.println("Single Term Item type is" + item.getType() );
+
                 switch (item.getType()){
-                    case "park":
+                    case "Park":
                         this.parks.add(item);
                         break;
-                    case "county":
+                    case "County":
                         this.counties.add(item);
                         break;
-                    case "city":
+                    case "City":
                         this.cities.add(item);
                         break;
                         default:

@@ -12,7 +12,7 @@ public class SearchSingleTerm {
 
     public static void main(String[] args){
         try {
-            new SearchSingleTerm("Pool").printResults();
+            new SearchSingleTerm("Riverfront Park").printResults();
         } catch (Exception e){
             e.printStackTrace();
         }
@@ -175,6 +175,7 @@ public class SearchSingleTerm {
                     strictMatch = true;
                 } else if (currentName.contains(searchTerm)){
                     score = Double.valueOf(searchTerm.length()) / Double.valueOf((currentName.length()));
+                    System.out.println("calculated score of park is: " + score );
                     if (currentName.indexOf(searchTerm) == 0){
                         strictMatch = true;
                     }
@@ -200,7 +201,7 @@ public class SearchSingleTerm {
 
                 //create the scored object
                 try {
-                    SearchItem matchingItem = new SearchItem(objectid, "park", strictMatch, score);
+                    SearchItem matchingItem = new SearchItem(objectid, "Park", strictMatch, score);
                     this.results.add(matchingItem);
                 } catch (Exception e){
                     e.printStackTrace();

@@ -40,7 +40,7 @@ public class SearchItem implements Comparable<SearchItem>{
             case "City" :
                 this.typeRank = 1;
                 break;
-            case "park" :
+            case "Park" :
                 this.typeRank = 2;
                 break;
             case "County" :
@@ -52,7 +52,7 @@ public class SearchItem implements Comparable<SearchItem>{
             case "Community" :
                 this.typeRank = 5;
                 break;
-            case "project":
+            case "Project":
                 this.typeRank = 7;
                 break;
 
@@ -97,7 +97,7 @@ public class SearchItem implements Comparable<SearchItem>{
 
 
     public void printAttributes(){
-        System.out.println("Object " + this.identifier);
+        System.out.println("Identifier " + this.identifier);
         System.out.println("table source " + this.type);
         System.out.println("score " + this.score);
         System.out.println("Strict: " + this.strictMatch);

@@ -4,7 +4,9 @@ package orgp;
 public class SearchTypeFind {
 
     public static void main(String[] args) {
-        String term = "Gulley Park";
+        String term = "Little Rock, Riverfront Park";
+
+        findMaster(term).printAttributes();
 
     }
 
@@ -15,28 +17,26 @@ public class SearchTypeFind {
         try {
             SearchSingleTerm fullTerm = new SearchSingleTerm(seachTerm);
             //if the term matches 100% or the term can't be split into multiple characters then split
-            if (!fullTerm.isEmpty() || searchTermArray.length == 1){
+            if (!fullTerm.isEmpty() ){
+                System.out.println("single term searched");
                 return fullTerm.getTopResult();
             } else {
-                //seach for dead terms in the list so they do not kill the total search
-
+                //search for dead terms in the list so they do not kill the total search
+                System.out.println("single term did not make the cut. it needs to be split up");
 
                 if (seachTerm.contains(",")){
                     String[] commaSeperatedList = seachTerm.split(",");
-                    SearchSingleTerm[] commaSearch = new SearchSingleTerm [commaSeperatedList.length];
-                    Boolean searchComplete = true;
-                    for (var i =0; i < commaSearch.length; i++){
-                        commaSearch[i] = new SearchSingleTerm(commaSeperatedList[i]);
-                        if (!commaSearch[i].matchContains100Percent()){
-                            searchComplete = false;
-                        }
-                    }
-                    if (searchComplete){
-                        //find out which items are which in the search
-                    }
+                    SeachMultipleTermCollection commaBasedSearch = new SeachMultipleTermCollection(commaSeperatedList);
+
+                    commaBasedSearch.printRecommendedResult();
+
+                    return commaBasedSearch.getRecommendedResult();
+
+                } else {
+                    System.out.println("None of the conditions were met for an easy match. We are done");
                 }
 
-                //if the seach by comma splitting fails then
+                //if the search by comma splitting fails then
 
 
             }
