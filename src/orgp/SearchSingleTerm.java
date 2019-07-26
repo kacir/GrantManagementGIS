@@ -12,7 +12,7 @@ public class SearchSingleTerm {
 
     public static void main(String[] args){
         try {
-            new SearchSingleTerm("Riverfront Park").printResults();
+            new SearchSingleTerm("little").printResults();
         } catch (Exception e){
             e.printStackTrace();
         }
@@ -55,6 +55,10 @@ public class SearchSingleTerm {
         }
 
         return topResults;
+    }
+
+    public ArrayList<SearchItem> getAllresults(){
+        return this.results;
     }
 
     //generates a list of

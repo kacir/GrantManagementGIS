@@ -1,11 +1,8 @@
 package orgp;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
+import java.util.*;
 import java.sql.ResultSet;
-import java.util.HashMap;
 
 public class SeachMultipleTermCollection {
 
@@ -106,6 +103,19 @@ public class SeachMultipleTermCollection {
 
     }
 
+    private boolean inRecommended(SearchItem item){
+
+        boolean holder = false;
+
+        for (SearchItem y : this.recommendedResult){
+            if (y.getIdentifier().equals(item.getIdentifier()) && y.getType().equals(item.getType())  ){
+                holder = true;
+            }
+        }
+
+        return holder;
+    }
+
     public SeachMultipleTermCollection (String[] termArray){
 
         ArrayList<String> termListArray = new ArrayList(Arrays.asList(termArray));
@@ -145,7 +155,7 @@ public class SeachMultipleTermCollection {
         //classify each term into a grouping
         for (SearchSingleTerm singleTermResult : this.resultArray){
             System.out.println( "Single Term in result Array :'" + singleTermResult.getSearchTerm() + "'" );
-            for (SearchItem item : singleTermResult.getTopResults()){
+            for (SearchItem item : singleTermResult.getAllresults()){
                 System.out.println("Single Term Item type is" + item.getType() );
 
                 switch (item.getType()){
@@ -194,25 +204,25 @@ public class SeachMultipleTermCollection {
 
                                     if (cityAttributes.get("city").equals(parkAttributes.get("city"))){
                                         SearchItem temp = park.deepCopy();
-                                        temp.setMergedScore((park.getScore() + county.getScore() + city.getScore()) / this.resultArray.length );
+                                        temp.setMergedScore((park.getScore() + county.getScore() + city.getScore()) / Double.valueOf(this.resultArray.length) );
                                         temp.setMergedConflicts(false);
                                         this.recommendedResult.add(temp);
                                     } else {
                                         SearchItem temp = city.deepCopy();
-                                        temp.setMergedScore( (county.getScore() + city.getScore()) / this.resultArray.length );
+                                        temp.setMergedScore( (county.getScore() + city.getScore()) / Double.valueOf(this.resultArray.length) );
                                         temp.setMergedConflicts(true);
                                         this.recommendedResult.add(temp);
                                     }
                                 } else {
                                     if (countyAttributes.get("county").equals(parkAttributes.get("county"))){
                                         SearchItem temp = park.deepCopy();
-                                        temp.setMergedScore((park.getScore() + county.getScore()) / this.resultArray.length);
+                                        temp.setMergedScore((park.getScore() + county.getScore()) / Double.valueOf(this.resultArray.length));
                                         temp.setMergedConflicts(true);
                                         this.recommendedResult.add(temp);
                                     } else {
                                         if (cityAttributes.get("city").equals(parkAttributes.get("city"))){
                                             SearchItem temp = park.deepCopy();
-                                            temp.setMergedScore((park.getScore() + city.getScore()) / this.resultArray.length);
+                                            temp.setMergedScore((park.getScore() + city.getScore()) / Double.valueOf(this.resultArray.length));
                                             temp.setMergedConflicts(true);
                                             this.recommendedResult.add(temp);
                                         } else {
@@ -225,7 +235,7 @@ public class SeachMultipleTermCollection {
                                             Collections.reverse(iterationCombo);
 
                                             SearchItem temp = iterationCombo.get(0).deepCopy();
-                                            temp.setMergedScore( temp.getScore() / this.resultArray.length );
+                                            temp.setMergedScore( temp.getScore() / Double.valueOf(this.resultArray.length) );
                                             temp.setMergedConflicts(true);
                                             this.recommendedResult.add(temp);
                                         }
@@ -244,20 +254,26 @@ public class SeachMultipleTermCollection {
 
                         if (countyAttributes.get("county").equals(parkAttributes.get("county"))){
                             SearchItem temp = park.deepCopy();
-                            temp.setMergedScore((temp.getScore() + county.getScore()) / this.resultArray.length );
+                            temp.setMergedScore((temp.getScore() + county.getScore()) / Double.valueOf(this.resultArray.length) );
                             temp.setMergedConflicts(false);
                             this.recommendedResult.add(temp);
                         } else {
                             if (park.getScore() > county.getScore()){
                                 SearchItem temp = park.deepCopy();
-                                temp.setMergedScore(temp.getScore() / this.resultArray.length);
+                                temp.setMergedScore(temp.getScore() / Double.valueOf(this.resultArray.length));
                                 temp.setMergedConflicts(true);
                                 this.recommendedResult.add(temp);
                             } else {
-                                SearchItem temp = county.deepCopy();
-                                temp.setMergedScore(temp.getScore() / this.resultArray.length);
-                                temp.setMergedConflicts(true);
-                                this.recommendedResult.add(temp);
+                                //check to see if the county was already part of the array.
+                                //if its already in there then do not double add it.
+                                if (!inRecommended(county)){
+                                    SearchItem temp = county.deepCopy();
+                                    temp.setMergedScore(temp.getScore() / Double.valueOf(this.resultArray.length) );
+                                    temp.setMergedConflicts(true);
+                                    this.recommendedResult.add(temp);
+                                }
+
+
                             }
                         }
                     }
@@ -320,7 +336,20 @@ public class SeachMultipleTermCollection {
             recommendedResult.add(temp);
         }
 
-        Collections.sort(recommendedResult);
+        //sort everything according to be merged scores
+        Collections.sort(recommendedResult, new Comparator<SearchItem>() {
+            @Override
+            public int compare(SearchItem o1, SearchItem o2) {
+                Double temp = o1.getMergedScore() - o2.getMergedScore();
+                if (temp.equals(0.00)){
+                    return 0;
+                } else if (temp > 0){
+                    return 1;
+                } else {
+                    return -1;
+                }
+            }
+        });
         Collections.reverse(recommendedResult);
 
     }

@@ -1,5 +1,6 @@
 package orgp;
 
+import java.awt.desktop.SystemEventListener;
 import java.util.Comparator;
 
 public class SearchItem implements Comparable<SearchItem>{
@@ -97,17 +98,19 @@ public class SearchItem implements Comparable<SearchItem>{
 
 
     public void printAttributes(){
-        System.out.println("Identifier " + this.identifier);
+        System.out.println("Identifier " + this.identifier + "*********************************************");
         System.out.println("table source " + this.type);
         System.out.println("score " + this.score);
+        System.out.println("Morged Score " + this.mergedScore);
         System.out.println("Strict: " + this.strictMatch);
+        System.out.println("Conflicts " + this.mergedConflicts );
     }
 
     @Override
     public int compareTo(SearchItem anotherResult){
-        if (this.mergedScore > anotherResult.getScore()){
+        if (this.score > anotherResult.getScore()){
             return 1;
-        } else if (this.mergedScore < anotherResult.getScore()){
+        } else if (this.score < anotherResult.getScore()){
             return -1;
         } else {
 
