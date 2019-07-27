@@ -5,8 +5,11 @@ import java.util.Comparator;
 
 public class SearchItem implements Comparable<SearchItem>{
 
+    private String originTerm;
     private String identifier;
     private String type;
+    private String city;
+    private String county;
     private  Double score;
     private boolean strictMatch;
     private int typeRank = 0;
@@ -80,6 +83,29 @@ public class SearchItem implements Comparable<SearchItem>{
     public Double getMergedScore(){
         return this.mergedScore;
     }
+    public boolean originTermSame(SearchItem anotherObj){
+        if (anotherObj.originTerm.equals(this.originTerm)){
+            return true;
+        } else {
+            return false;
+        }
+    }
+    public void setOriginTerm(String that){
+        this.originTerm = that;
+    }
+    public void setCity(String city){
+        this.city = city;
+    }
+    public String getCity(){
+        return this.city;
+    }
+    public void setCounty(String county){
+        this.county = county;
+    }
+
+    public String getCounty() {
+        return county;
+    }
 
     public void setMergedScore(Double score){
         this.mergedScore = score;
@@ -89,6 +115,9 @@ public class SearchItem implements Comparable<SearchItem>{
         try {
             SearchItem temp = new SearchItem(this.identifier, this.type, this.strictMatch, score);
             temp.mergedScore = this.mergedScore;
+            temp.setOriginTerm(this.originTerm);
+            temp.setCity(this.city);
+            temp.setCounty(this.county);
             return temp;
         } catch (Exception e){
             e.printStackTrace();
@@ -104,6 +133,8 @@ public class SearchItem implements Comparable<SearchItem>{
         System.out.println("Morged Score " + this.mergedScore);
         System.out.println("Strict: " + this.strictMatch);
         System.out.println("Conflicts " + this.mergedConflicts );
+        System.out.println("County " + this.county);
+        System.out.println("city " + this.city);
     }
 
     @Override

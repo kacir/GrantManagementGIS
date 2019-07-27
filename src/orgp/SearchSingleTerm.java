@@ -12,7 +12,7 @@ public class SearchSingleTerm {
 
     public static void main(String[] args){
         try {
-            new SearchSingleTerm("little").printResults();
+            new SearchSingleTerm("Little Rock").printResults();
         } catch (Exception e){
             e.printStackTrace();
         }
@@ -120,8 +120,16 @@ public class SearchSingleTerm {
             String sponsorCode = sponsors.getString("sponsorCode");
             String displayname = sponsors.getString("displayname").trim().toUpperCase();
             String type = sponsors.getString("type");
+            String county = sponsors.getString("county");
             Double score = 0.00;
             Boolean strictMatch = false;
+
+            String city;
+            if (type.equals("City")){
+                city = sponsors.getString("displayname");
+            } else {
+                city = null;
+            }
 
             if (displayname.equals(searchTerm)){
                 score = 1.0;
@@ -138,6 +146,9 @@ public class SearchSingleTerm {
             //add the result to the end product list
             try {
                 SearchItem imp = new SearchItem(sponsorCode, type, strictMatch, score);
+                imp.setCity(city);
+                imp.setOriginTerm(searchTerm);
+                imp.setCounty(county);
                 this.results.add(imp);
             } catch (Exception e){
                 e.printStackTrace();
@@ -155,7 +166,7 @@ public class SearchSingleTerm {
 
         //build the sql request for parks matching a specific name
         try (Connection con = DriverManager.getConnection(geoStorConnect.connectionUrl); Statement stmt = con.createStatement()) {
-            String parkSQL = "SELECT [OBJECTID],[currentNam],[pastName] FROM [asdi].[adpt].[OGPARKFOOTPRINTS] WHERE [type] = 'funded park' AND (UPPER([currentNam]) LIKE UPPER('%" + searchTerm + "%') OR UPPER([pastName]) LIKE UPPER('%" + searchTerm + "%'))  ORDER BY [currentNam] ASC;";
+            String parkSQL = "SELECT [OBJECTID],[currentNam],[pastName], [county],[city] FROM [asdi].[adpt].[OGPARKFOOTPRINTS] WHERE [type] = 'funded park' AND (UPPER([currentNam]) LIKE UPPER('%" + searchTerm + "%') OR UPPER([pastName]) LIKE UPPER('%" + searchTerm + "%'))  ORDER BY [currentNam] ASC;";
 
             ResultSet rs = stmt.executeQuery(parkSQL);
 
@@ -164,6 +175,8 @@ public class SearchSingleTerm {
                 //score each result
                 String currentName = rs.getString("currentNam").trim().toUpperCase();
                 String pastNames;
+                String county = rs.getString("county");
+                String city = rs.getString("city");
                 if (rs.getString("pastName") == null){
                     pastNames = "";
                 } else {
@@ -206,6 +219,9 @@ public class SearchSingleTerm {
                 //create the scored object
                 try {
                     SearchItem matchingItem = new SearchItem(objectid, "Park", strictMatch, score);
+                    matchingItem.setOriginTerm(searchTerm);
+                    matchingItem.setCounty(county);
+                    matchingItem.setCity(city);
                     this.results.add(matchingItem);
                 } catch (Exception e){
                     e.printStackTrace();
@@ -238,6 +254,7 @@ public class SearchSingleTerm {
             }
 
             SearchItem emp = new SearchItem(projectnumber, "Project", strictMatch,score);
+            emp.setOriginTerm(searchTerm);
             this.results.add(emp);
 
         }

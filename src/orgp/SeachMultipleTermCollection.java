@@ -1,8 +1,7 @@
 package orgp;
 
-import java.sql.*;
 import java.util.*;
-import java.sql.ResultSet;
+
 
 public class SeachMultipleTermCollection {
 
@@ -20,11 +19,15 @@ public class SeachMultipleTermCollection {
     private ArrayList<SearchItem> recommendedResult = new ArrayList<>();
 
     public static void main (String[] args){
-        String[] testString = {"Little Rock", "Riverfront Park" } ;
+        String[] testString = {"Riverfront", "pulaski" } ;
 
-        SeachMultipleTermCollection testResult = new SeachMultipleTermCollection(testString);
-        testResult.printInternalLists();
-        testResult.printRecommendedResult();
+        try {
+            SeachMultipleTermCollection testResult = new SeachMultipleTermCollection(testString);
+            testResult.printInternalLists();
+            testResult.printRecommendedResult();
+        } catch (Exception e){
+            e.printStackTrace();
+        }
 
     }
 
@@ -58,65 +61,28 @@ public class SeachMultipleTermCollection {
 
     private DBUtility dbutil = new DBUtility();
 
-    private HashMap<String, String> searchPark (String identifier){
 
-        HashMap parkReturn = new HashMap<String, String>();
 
-        try {
-            Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
-        } catch (ClassNotFoundException e){
-            e.printStackTrace();
-        }
-
-        try (Connection con = DriverManager.getConnection(geoStorConnect.connectionUrl); Statement stmt = con.createStatement();) {
-            String parkSQL = "SELECT * FROM [asdi].[adpt].[OGPARKFOOTPRINTS] WHERE [OBJECTID] = " + identifier + ";";
-
-            ResultSet parkAttr = stmt.executeQuery(parkSQL);
-            while (parkAttr.next()){
-                parkReturn.put("city", parkAttr.getString("city").toUpperCase().trim());
-                parkReturn.put("county", parkAttr.getString("county").toUpperCase().trim());
-            }
-
-        } catch (SQLException e){
-            e.printStackTrace();
-        }
-
-        return parkReturn;
-    }
-
-    private HashMap<String, String> searchCityOrCounty(String identifier){
-
-        HashMap cityReturn = new HashMap<String, String>();
-
-        ResultSet cityAttr = dbutil.queryDB("SELECT sponsor, county FROM sponsor WHERE sponsorcode = " + identifier  + ";");
-
-        try {
-            while (cityAttr.next()){
-                cityReturn.put("city" , cityAttr.getString("sponsor").toUpperCase().trim());
-                cityReturn.put("county" , cityAttr.getString("county").toUpperCase().trim());
-            }
-        } catch (SQLException e){
-            e.printStackTrace();
-        }
-
-        return cityReturn;
-
-    }
-
-    private boolean inRecommended(SearchItem item){
+    private void addRecommendedItem(SearchItem item){
 
         boolean holder = false;
 
         for (SearchItem y : this.recommendedResult){
             if (y.getIdentifier().equals(item.getIdentifier()) && y.getType().equals(item.getType())  ){
-                holder = true;
+                if (y.getMergedScore().equals(item.getMergedScore()) ){
+                    holder = true;
+                }
             }
         }
 
-        return holder;
+        //if not in list then add it
+        if (!holder){
+            this.recommendedResult.add(item);
+        }
+
     }
 
-    public SeachMultipleTermCollection (String[] termArray){
+    public SeachMultipleTermCollection (String[] termArray) throws Exception{
 
         ArrayList<String> termListArray = new ArrayList(Arrays.asList(termArray));
 
@@ -195,36 +161,140 @@ public class SeachMultipleTermCollection {
                     for (SearchItem county : this.counties){
                         for (SearchItem city : this.cities){
                             for (SearchItem park : this.parks){
-                                HashMap countyAttributes = searchCityOrCounty(county.getIdentifier());
-                                HashMap cityAttributes = searchCityOrCounty(city.getIdentifier());
-                                HashMap parkAttributes = searchPark(park.getIdentifier());
 
                                 //if all agree on the county location
-                                if (countyAttributes.get("county").equals(cityAttributes.get("county"))){
+                                if (county.getCounty().equals(city.getCounty())){
 
-                                    if (cityAttributes.get("city").equals(parkAttributes.get("city"))){
-                                        SearchItem temp = park.deepCopy();
-                                        temp.setMergedScore((park.getScore() + county.getScore() + city.getScore()) / Double.valueOf(this.resultArray.length) );
-                                        temp.setMergedConflicts(false);
-                                        this.recommendedResult.add(temp);
+                                    if (city.getCity().equals(park.getCity())){
+                                        //condition if they all share the same term
+                                        if (park.originTermSame(county) && county.originTermSame(city)){
+                                            //all three items are sharing the same term, use only the highest scoring one for the final recommendation
+                                            SearchItem temp;
+                                            if (park.getScore() >= county.getScore() && park.getScore() >= city.getScore()){
+                                                temp = park.deepCopy();
+                                                temp.setMergedScore(park.getScore() / Double.valueOf(this.resultArray.length) );
+                                            } else if (county.getScore() >= park.getScore() && county.getScore() >= city.getScore()){
+                                                temp = county.deepCopy();
+                                                temp.setMergedScore(county.getScore() / Double.valueOf(this.resultArray.length));
+                                            } else if (city.getScore() >= park.getScore() && city.getScore() >= county.getScore()) {
+                                                temp = city.deepCopy();
+                                                temp.setMergedScore(city.getScore() / Double.valueOf(this.resultArray.length));
+                                            } else {
+                                                throw new Exception("there should not be an error here");
+                                            }
+                                            temp.setMergedConflicts(false);
+                                            addRecommendedItem(temp);
+
+                                        } else if (park.originTermSame(county)){
+                                            //park and county share term
+                                            SearchItem temp;
+                                            if (park.getScore() > county.getScore()){
+                                                temp = park.deepCopy();
+                                                temp.setMergedScore((park.getScore() + city.getScore()) / Double.valueOf(this.resultArray.length));
+                                                temp.setMergedConflicts(false);
+                                            } else {
+                                                temp = county.deepCopy();
+                                                temp.setMergedConflicts(false);
+                                                temp.setMergedScore((county.getScore() + city.getScore()) / Double.valueOf(this.resultArray.length));
+                                            }
+                                            addRecommendedItem(temp);
+
+                                        } else  if (county.originTermSame(city)){
+                                            //county and city share term
+                                            SearchItem temp;
+                                            if (county.getScore() > city.getScore()){
+                                                temp = county.deepCopy();
+                                                temp.setMergedConflicts(false);
+                                                temp.setMergedScore((park.getScore() + county.getScore()) / Double.valueOf(this.resultArray.length));
+                                            } else {
+                                                temp = city.deepCopy();
+                                                temp.setMergedScore((park.getScore() + city.getScore()) / Double.valueOf(this.resultArray.length));
+                                                temp.setMergedConflicts(false);
+                                            }
+                                            addRecommendedItem(temp);
+
+                                        } else if (city.originTermSame(park)) {
+                                            SearchItem temp;
+                                            if (city.getScore() > park.getScore()){
+                                                temp = city.deepCopy();
+                                                temp.setMergedScore((city.getScore() + county.getScore()) / Double.valueOf(this.resultArray.length));
+                                                temp.setMergedConflicts(false);
+                                            } else {
+                                                temp = park.deepCopy();
+                                                temp.setMergedScore((park.getScore() + county.getScore()) / Double.valueOf(this.resultArray.length));
+                                            }
+                                            addRecommendedItem(temp);
+
+                                        } else {
+                                            //nothing shares a term, each park, city, and county SearchItem is tied to a unique searchTerm
+                                            SearchItem temp = park.deepCopy();
+                                            temp.setMergedScore((park.getScore() + county.getScore() + city.getScore()) / Double.valueOf(this.resultArray.length) );
+                                            temp.setMergedConflicts(false);
+                                            addRecommendedItem(temp);
+                                        }
+
                                     } else {
-                                        SearchItem temp = city.deepCopy();
-                                        temp.setMergedScore( (county.getScore() + city.getScore()) / Double.valueOf(this.resultArray.length) );
-                                        temp.setMergedConflicts(true);
-                                        this.recommendedResult.add(temp);
+                                        //check if city and county have the same term
+                                        SearchItem temp;
+                                        if (city.originTermSame(county)){
+                                            if (city.getScore() > county.getScore()){
+                                                temp = city.deepCopy();
+                                                temp.setMergedScore(city.getScore() / Double.valueOf(this.resultArray.length));
+                                                temp.setMergedConflicts(true);
+                                            } else {
+                                                temp = county.deepCopy();
+                                                temp.setMergedScore(county.getScore() / Double.valueOf(this.resultArray.length));
+                                                temp.setMergedConflicts(true);
+                                            }
+                                        } else {
+                                            temp = city.deepCopy();
+                                            temp.setMergedScore( (county.getScore() + city.getScore()) / Double.valueOf(this.resultArray.length) );
+                                            temp.setMergedConflicts(true);
+                                        }
+                                        addRecommendedItem(temp);
+
                                     }
                                 } else {
-                                    if (countyAttributes.get("county").equals(parkAttributes.get("county"))){
-                                        SearchItem temp = park.deepCopy();
-                                        temp.setMergedScore((park.getScore() + county.getScore()) / Double.valueOf(this.resultArray.length));
-                                        temp.setMergedConflicts(true);
-                                        this.recommendedResult.add(temp);
-                                    } else {
-                                        if (cityAttributes.get("city").equals(parkAttributes.get("city"))){
-                                            SearchItem temp = park.deepCopy();
-                                            temp.setMergedScore((park.getScore() + city.getScore()) / Double.valueOf(this.resultArray.length));
+                                    if (county.getCounty().equals(park.getCounty())){
+                                        SearchItem temp;
+                                        if (park.originTermSame(park)){
+                                            if (county.getScore() > park.getScore()){
+                                                temp = county.deepCopy();
+                                                temp.setMergedScore(county.getScore() / Double.valueOf(this.resultArray.length));
+                                                temp.setMergedConflicts(true);
+                                            } else {
+                                                temp = park.deepCopy();
+                                                temp.setMergedScore(park.getScore() / Double.valueOf(this.resultArray.length));
+                                                temp.setMergedConflicts(true);
+                                            }
+                                        } else {
+                                            temp = park.deepCopy();
+                                            temp.setMergedScore((park.getScore() + county.getScore()) / Double.valueOf(this.resultArray.length));
                                             temp.setMergedConflicts(true);
-                                            this.recommendedResult.add(temp);
+                                        }
+                                        addRecommendedItem(temp);
+
+                                    } else {
+                                        if (city.getCity().equals(park.getCity())){
+                                            SearchItem temp;
+                                            if (city.originTermSame(park)){
+                                                if (city.getScore() > park.getScore()){
+                                                    temp = city.deepCopy();
+                                                    temp.setMergedScore(city.getScore() / Double.valueOf(this.resultArray.length));
+                                                    temp.setMergedConflicts(true);
+                                                } else {
+                                                    temp = park.deepCopy();
+                                                    temp.setMergedScore(park.getScore() / Double.valueOf(this.resultArray.length));
+                                                    temp.setMergedConflicts(true);
+                                                }
+                                            } else {
+                                                temp = park.deepCopy();
+                                                temp.setMergedScore((park.getScore() + city.getScore()) / Double.valueOf(this.resultArray.length));
+                                                temp.setMergedConflicts(true);
+
+                                            }
+                                            addRecommendedItem(temp);
+
                                         } else {
                                             // none of results match, pick whichever has the highest score by adding to list and sorting by score
                                             ArrayList<SearchItem> iterationCombo = new ArrayList<SearchItem>();
@@ -237,7 +307,7 @@ public class SeachMultipleTermCollection {
                                             SearchItem temp = iterationCombo.get(0).deepCopy();
                                             temp.setMergedScore( temp.getScore() / Double.valueOf(this.resultArray.length) );
                                             temp.setMergedConflicts(true);
-                                            this.recommendedResult.add(temp);
+                                            addRecommendedItem(temp);
                                         }
                                     }
 
@@ -249,41 +319,52 @@ public class SeachMultipleTermCollection {
             } else if (this.parks.size() > 0){
                 for (SearchItem county : this.counties){
                     for (SearchItem park : this.parks){
-                        HashMap countyAttributes = searchCityOrCounty(county.getIdentifier());
-                        HashMap parkAttributes = searchPark(park.getIdentifier());
-
-                        if (countyAttributes.get("county").equals(parkAttributes.get("county"))){
-                            SearchItem temp = park.deepCopy();
-                            temp.setMergedScore((temp.getScore() + county.getScore()) / Double.valueOf(this.resultArray.length) );
-                            temp.setMergedConflicts(false);
-                            this.recommendedResult.add(temp);
-                        } else {
-                            if (park.getScore() > county.getScore()){
-                                SearchItem temp = park.deepCopy();
-                                temp.setMergedScore(temp.getScore() / Double.valueOf(this.resultArray.length));
-                                temp.setMergedConflicts(true);
-                                this.recommendedResult.add(temp);
+                        if (county.originTermSame(park)){
+                            SearchItem temp;
+                            if (county.getScore() > park.getScore()){
+                                temp = county.deepCopy();
+                                temp.setMergedScore(county.getScore() / Double.valueOf(this.resultArray.length));
+                                temp.setMergedConflicts(false);
                             } else {
-                                //check to see if the county was already part of the array.
-                                //if its already in there then do not double add it.
-                                if (!inRecommended(county)){
+                                temp = park.deepCopy();
+                                temp.setMergedScore(park.getScore() / Double.valueOf(this.resultArray.length));
+                                temp.setMergedConflicts(false);
+                            }
+                            addRecommendedItem(temp);
+
+                        } else {
+                            if (county.getCounty().equals(park.getCounty())){
+                                SearchItem temp = park.deepCopy();
+                                temp.setMergedScore((temp.getScore() + county.getScore()) / Double.valueOf(this.resultArray.length) );
+                                temp.setMergedConflicts(false);
+                                addRecommendedItem(temp);
+                            } else {
+                                if (park.getScore() > county.getScore()){
+                                    SearchItem temp = park.deepCopy();
+                                    temp.setMergedScore(temp.getScore() / Double.valueOf(this.resultArray.length));
+                                    temp.setMergedConflicts(true);
+                                    addRecommendedItem(temp);
+                                } else {
+                                    //check to see if the county was already part of the array.
+                                    //if its already in there then do not double add it.
                                     SearchItem temp = county.deepCopy();
                                     temp.setMergedScore(temp.getScore() / Double.valueOf(this.resultArray.length) );
                                     temp.setMergedConflicts(true);
-                                    this.recommendedResult.add(temp);
+                                    addRecommendedItem(temp);
+
                                 }
-
-
                             }
                         }
                     }
                 }
 
             } else {
-                SearchItem temp = this.counties.get(0).deepCopy();
-                temp.setMergedScore(temp.getScore() / this.resultArray.length);
-                temp.setMergedConflicts(false);
-                this.recommendedResult.add(temp);
+                for (SearchItem county : counties){
+                    SearchItem temp = county.deepCopy();
+                    temp.setMergedScore(temp.getScore() / this.resultArray.length);
+                    temp.setMergedConflicts(false);
+                    this.recommendedResult.add(temp);
+                }
             }
 
         } else if (this.cities.size() > 0){
@@ -292,28 +373,39 @@ public class SeachMultipleTermCollection {
                 for (SearchItem city : this.cities){
                     for (SearchItem park : this.parks){
 
-                        HashMap parkAttributes = searchPark(park.getIdentifier());
-                        HashMap cityAttributes = searchCityOrCounty(city.getIdentifier());
-
-                        if (parkAttributes.get("city").equals("") || cityAttributes.get("city").equals("")){
-                            //pick the park as the result and calculate a low cumulative score
-                        } else if (parkAttributes.get("city").equals("Unincorporated Area".toUpperCase())){
-                            //choose a city or park based on which has the higher score
-                        } else if (parkAttributes.get("city").equals(cityAttributes.get("city"))) {
-                            //if everything lines up then the city and park match, pick the city
-                            SearchItem temp = park.deepCopy();
-                            temp.setMergedScore((temp.getScore() + city.getScore()) / this.resultArray.length);
-                            temp.setMergedConflicts(false);
-                            recommendedResult.add(temp);
-
-
-                        } else if (!parkAttributes.get("city").equals(cityAttributes.get("city"))){
-                            //the park and city do not match then choose whichever has the highest score
+                        if (park.originTermSame(city)){
+                            SearchItem temp;
                             if (park.getScore() > city.getScore()){
+                                temp = park.deepCopy();
+                                temp.setMergedScore(park.getScore() / Double.valueOf(this.resultArray.length));
+                                temp.setMergedConflicts(false);
+                            } else {
+                                temp = city.deepCopy();
+                                temp.setMergedScore(city.getScore() / Double.valueOf(this.resultArray.length));
+                                temp.setMergedConflicts(false);
+                            }
+                            recommendedResult.add(temp);
+                        } else {
+                            if (park.getCity().equals("") || city.getCity().equals("")){
+                                //pick the park as the result and calculate a low cumulative score
+                            } else if (park.getCity().equals("Unincorporated Area".toUpperCase())){
+                                //choose a city or park based on which has the higher score
+                            } else if (park.getCity().equals(city.getCity())) {
+                                //if everything lines up then the city and park match, pick the city
                                 SearchItem temp = park.deepCopy();
-                                temp.setMergedScore(temp.getScore() / this.resultArray.length);
+                                temp.setMergedScore((temp.getScore() + city.getScore()) / this.resultArray.length);
                                 temp.setMergedConflicts(false);
                                 recommendedResult.add(temp);
+
+
+                            } else if (!park.getCity().equals(city.getCity())){
+                                //the park and city do not match then choose whichever has the highest score
+                                if (park.getScore() > city.getScore()){
+                                    SearchItem temp = park.deepCopy();
+                                    temp.setMergedScore(temp.getScore() / this.resultArray.length);
+                                    temp.setMergedConflicts(false);
+                                    recommendedResult.add(temp);
+                                }
                             }
                         }
                     }
@@ -322,18 +414,22 @@ public class SeachMultipleTermCollection {
 
 
             } else {
-                SearchItem temp = this.cities.get(0).deepCopy();
-                temp.setMergedScore(temp.getScore() / this.resultArray.length);
-                temp.setMergedConflicts(false);
-                recommendedResult.add(temp);
+                for (SearchItem city : cities){
+                    SearchItem temp = city.deepCopy();
+                    temp.setMergedScore(temp.getScore() / this.resultArray.length);
+                    temp.setMergedConflicts(false);
+                    recommendedResult.add(temp);
+                }
             }
 
             //if the only found result were a parks
         } else if (this.parks.size() > 0){
-            SearchItem temp = this.parks.get(0).deepCopy();
-            temp.setMergedScore(temp.getScore() / this.resultArray.length);
-            temp.setMergedConflicts(false);
-            recommendedResult.add(temp);
+            for (SearchItem park : parks){
+                SearchItem temp = park.deepCopy();
+                temp.setMergedScore(temp.getScore() / this.resultArray.length);
+                temp.setMergedConflicts(false);
+                recommendedResult.add(temp);
+            }
         }
 
         //sort everything according to be merged scores

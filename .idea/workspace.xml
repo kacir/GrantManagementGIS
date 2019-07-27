@@ -67,9 +67,9 @@
     <session id="1549296350">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="61" />
+          <entry key="project.closed" value="62" />
           <entry key="project.open.time.10" value="12" />
-          <entry key="project.open.time.11" value="14" />
+          <entry key="project.open.time.11" value="15" />
           <entry key="project.open.time.12" value="4" />
           <entry key="project.open.time.13" value="4" />
           <entry key="project.open.time.15" value="1" />
@@ -79,7 +79,7 @@
           <entry key="project.open.time.7" value="1" />
           <entry key="project.open.time.8" value="6" />
           <entry key="project.open.time.9" value="17" />
-          <entry key="project.opened" value="62" />
+          <entry key="project.opened" value="63" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
@@ -118,7 +118,7 @@
           <entry key="css" value="1467" />
           <entry key="dummy" value="8" />
           <entry key="html" value="1976" />
-          <entry key="java" value="32514" />
+          <entry key="java" value="36843" />
           <entry key="js" value="38703" />
           <entry key="jsp" value="41" />
           <entry key="txt" value="7" />
@@ -128,7 +128,7 @@
         <counts>
           <entry key="CSS" value="1467" />
           <entry key="HTML" value="1983" />
-          <entry key="JAVA" value="32514" />
+          <entry key="JAVA" value="36843" />
           <entry key="JSP" value="41" />
           <entry key="JavaScript" value="38696" />
           <entry key="PLAIN_TEXT" value="15" />
@@ -184,12 +184,11 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/orgp/SeachMultipleTermCollection.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="120">
-              <caret line="22" column="43" selection-start-line="22" selection-start-column="43" selection-end-line="22" selection-end-column="43" />
+            <state relative-caret-position="153">
+              <caret line="21" column="53" selection-start-line="21" selection-start-column="53" selection-end-line="21" selection-end-column="53" />
               <folding>
-                <element signature="imports" expanded="true" />
-                <element signature="method#searchPark#0;class#SeachMultipleTermCollection#0" />
-                <element signature="method#searchCityOrCounty#0;class#SeachMultipleTermCollection#0" />
+                <element signature="e#1062#1063#0" expanded="true" />
+                <element signature="e#1114#1115#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -198,10 +197,21 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/orgp/SearchItem.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1360">
-              <caret line="98" lean-forward="true" selection-start-line="98" selection-end-line="98" />
+            <state relative-caret-position="561">
+              <caret line="129" column="92" selection-start-line="129" selection-start-column="92" selection-end-line="129" selection-end-column="92" />
               <folding>
                 <element signature="imports" expanded="true" />
+                <element signature="method#SearchItem#0;class#SearchItem#0" />
+                <element signature="e#2556#2557#0" expanded="true" />
+                <element signature="e#2589#2590#0" expanded="true" />
+                <element signature="e#2684#2685#0" expanded="true" />
+                <element signature="e#2716#2717#0" expanded="true" />
+                <element signature="e#2745#2746#0" expanded="true" />
+                <element signature="e#2777#2778#0" expanded="true" />
+                <element signature="e#2819#2820#0" expanded="true" />
+                <element signature="e#2855#2856#0" expanded="true" />
+                <element signature="e#2888#2889#0" expanded="true" />
+                <element signature="e#2917#2918#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -222,12 +232,10 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/orgp/SearchSingleTerm.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="700">
-              <caret line="59" column="46" selection-start-line="59" selection-start-column="33" selection-end-line="59" selection-end-column="46" />
+            <state relative-caret-position="476">
+              <caret line="121" column="53" lean-forward="true" selection-start-line="121" selection-start-column="53" selection-end-line="121" selection-end-column="53" />
               <folding>
                 <element signature="imports" expanded="true" />
-                <element signature="e#1398#1399#0" expanded="true" />
-                <element signature="e#1432#1433#0" expanded="true" />
                 <element signature="method#resultTypesIncomplete#0;class#SearchSingleTerm#0" />
               </folding>
             </state>
@@ -247,7 +255,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>addClass</find>
       <find>sponsor-summary</find>
       <find>#sponsor-summary</find>
       <find>sponsor-mini-map</find>
@@ -264,7 +271,6 @@
       <find>less</find>
       <find>result</find>
       <find>seachTerm</find>
-      <find>main</find>
       <find>deep</find>
       <find>merge</find>
       <find>dbutil</find>
@@ -274,9 +280,11 @@
       <find>type</find>
       <find>printA</find>
       <find>Calculated Score of sponsor is</find>
-      <find>new SearchItem</find>
       <find>new Sea</find>
       <find>getTopResult</find>
+      <find>new</find>
+      <find>new SearchItem</find>
+      <find>main</find>
     </findStrings>
     <replaceStrings>
       <replace>parkmap.parkCentroidLayer</replace>
@@ -320,8 +328,8 @@
         <option value="$PROJECT_DIR$/src/orgp/searchTypeFind.java" />
         <option value="$PROJECT_DIR$/src/orgp/SearchItemArrayList.java" />
         <option value="$PROJECT_DIR$/src/orgp/SearchTypeFind.java" />
-        <option value="$PROJECT_DIR$/src/orgp/SearchItem.java" />
         <option value="$PROJECT_DIR$/src/orgp/SearchSingleTerm.java" />
+        <option value="$PROJECT_DIR$/src/orgp/SearchItem.java" />
         <option value="$PROJECT_DIR$/src/orgp/SeachMultipleTermCollection.java" />
       </list>
     </option>
@@ -350,6 +358,8 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="PackagesPane" />
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -485,8 +495,6 @@
           <select />
         </subPane>
       </pane>
-      <pane id="PackagesPane" />
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -761,11 +769,12 @@
       <workItem from="1563843930140" duration="5353000" />
       <workItem from="1563932051310" duration="4139000" />
       <workItem from="1564104195452" duration="4365000" />
+      <workItem from="1564190607000" duration="12184000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="393638000" />
+    <option name="totallyTimeSpent" value="405822000" />
   </component>
   <component name="TodoView" selected-index="3">
     <todo-panel id="selected-file">
@@ -780,18 +789,18 @@
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.63449025" visible="true" weight="0.2857143" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.6334056" visible="true" weight="0.16791044" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Designer" order="2" />
       <window_info id="Image Layers" order="3" />
       <window_info id="UI Designer" order="4" />
       <window_info id="Favorites" order="5" side_tool="true" />
       <window_info id="Capture Tool" order="6" />
-      <window_info id="Web" order="7" sideWeight="0.36550975" side_tool="true" visible="true" weight="0.2857143" />
+      <window_info id="Web" order="7" sideWeight="0.36659437" side_tool="true" visible="true" weight="0.16791044" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.329718" />
-      <window_info anchor="bottom" id="Run" order="2" weight="0.73535794" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.03470716" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.39045554" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.18872017" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" weight="0.329718" />
@@ -1037,37 +1046,45 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/orgp/SearchItem.java">
+    <entry file="file://$PROJECT_DIR$/src/orgp/SearchSingleTerm.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1360">
-          <caret line="98" lean-forward="true" selection-start-line="98" selection-end-line="98" />
+        <state relative-caret-position="476">
+          <caret line="121" column="53" lean-forward="true" selection-start-line="121" selection-start-column="53" selection-end-line="121" selection-end-column="53" />
           <folding>
             <element signature="imports" expanded="true" />
+            <element signature="method#resultTypesIncomplete#0;class#SearchSingleTerm#0" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/orgp/SearchSingleTerm.java">
+    <entry file="file://$PROJECT_DIR$/src/orgp/SearchItem.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="700">
-          <caret line="59" column="46" selection-start-line="59" selection-start-column="33" selection-end-line="59" selection-end-column="46" />
+        <state relative-caret-position="561">
+          <caret line="129" column="92" selection-start-line="129" selection-start-column="92" selection-end-line="129" selection-end-column="92" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#1398#1399#0" expanded="true" />
-            <element signature="e#1432#1433#0" expanded="true" />
-            <element signature="method#resultTypesIncomplete#0;class#SearchSingleTerm#0" />
+            <element signature="method#SearchItem#0;class#SearchItem#0" />
+            <element signature="e#2556#2557#0" expanded="true" />
+            <element signature="e#2589#2590#0" expanded="true" />
+            <element signature="e#2684#2685#0" expanded="true" />
+            <element signature="e#2716#2717#0" expanded="true" />
+            <element signature="e#2745#2746#0" expanded="true" />
+            <element signature="e#2777#2778#0" expanded="true" />
+            <element signature="e#2819#2820#0" expanded="true" />
+            <element signature="e#2855#2856#0" expanded="true" />
+            <element signature="e#2888#2889#0" expanded="true" />
+            <element signature="e#2917#2918#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/orgp/SeachMultipleTermCollection.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="120">
-          <caret line="22" column="43" selection-start-line="22" selection-start-column="43" selection-end-line="22" selection-end-column="43" />
+        <state relative-caret-position="153">
+          <caret line="21" column="53" selection-start-line="21" selection-start-column="53" selection-end-line="21" selection-end-column="53" />
           <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="method#searchPark#0;class#SeachMultipleTermCollection#0" />
-            <element signature="method#searchCityOrCounty#0;class#SeachMultipleTermCollection#0" />
+            <element signature="e#1062#1063#0" expanded="true" />
+            <element signature="e#1114#1115#0" expanded="true" />
           </folding>
         </state>
       </provider>
