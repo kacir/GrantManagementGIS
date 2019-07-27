@@ -17,6 +17,72 @@ public class SearchItem implements Comparable<SearchItem>{
     private Double mergedScore;
     private Boolean mergedConflicts;
 
+    public static void main(String[] args){
+        boolean temp = SearchItem.equalsLocation("mount ida", "mt. ida");
+        System.out.println("result is " + temp);
+    }
+
+    public static String equalizeLocation(String location){
+        //make sure it is compariable in length with another term that has different abbreviations in it.
+        String result;
+
+        if (location == null){
+            return null;
+        }
+
+        result = location.replace("ST. ", "SAINT ")
+                .replace("ST ", "SAINT ")
+                .replace("MT ", "MOUNT ")
+                .replace("MT. ", "MOUNT ");
+
+        return result;
+    }
+
+    public static boolean equalsLocation (String a, String b){
+
+        if (a == null || b == null){
+            return false;
+        }
+
+        String aProcessed = a.trim().toUpperCase();
+        String bProcessed = b.trim().toUpperCase();
+
+        if (aProcessed.equals(bProcessed)){
+            return true;
+        }
+
+        String[] comparableSaint = {"SAINT ", "ST. ", "ST "};
+
+        for (String item : comparableSaint){
+            if (aProcessed.contains(item)){
+                aProcessed = aProcessed.replace(item , "SAINT ");
+            }
+            if (bProcessed.contains(item)){
+                bProcessed = bProcessed.replace(item, "SAINT " );
+            }
+        }
+
+        if (aProcessed.equals(bProcessed)){
+            return true;
+        }
+
+        String[] comparableMount = {"MOUNT " , "MT ", "MT. " };
+        for (String item : comparableMount){
+            if (aProcessed.contains(item)){
+                aProcessed = aProcessed.replace(item, "MOUNT ");
+            }
+            if (bProcessed.contains(item)){
+                bProcessed = bProcessed.replace(item, "MOUNT ");
+            }
+        }
+        if (bProcessed.equals(aProcessed)){
+            return true;
+        }
+
+        //if either of the terms worked then it just does not match
+        return false;
+    }
+
     public void setMergedConflicts(Boolean temp){
         this.mergedConflicts = temp;
     }
@@ -84,11 +150,7 @@ public class SearchItem implements Comparable<SearchItem>{
         return this.mergedScore;
     }
     public boolean originTermSame(SearchItem anotherObj){
-        if (anotherObj.originTerm.equals(this.originTerm)){
-            return true;
-        } else {
-            return false;
-        }
+        return SearchItem.equalsLocation(anotherObj.originTerm, this.originTerm);
     }
     public void setOriginTerm(String that){
         this.originTerm = that;
@@ -135,6 +197,13 @@ public class SearchItem implements Comparable<SearchItem>{
         System.out.println("Conflicts " + this.mergedConflicts );
         System.out.println("County " + this.county);
         System.out.println("city " + this.city);
+    }
+
+    public boolean sameCity(SearchItem anotherObj){
+        return SearchItem.equalsLocation(this.city , anotherObj.getCity());
+    }
+    public boolean sameCounty(SearchItem anotherObj){
+        return SearchItem.equalsLocation(this.county, anotherObj.getCounty());
     }
 
     @Override

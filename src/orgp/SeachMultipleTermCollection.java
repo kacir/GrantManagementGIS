@@ -19,7 +19,7 @@ public class SeachMultipleTermCollection {
     private ArrayList<SearchItem> recommendedResult = new ArrayList<>();
 
     public static void main (String[] args){
-        String[] testString = {"Riverfront", "pulaski" } ;
+        String[] testString = {"Saint Francis ", "City Park"} ;
 
         try {
             SeachMultipleTermCollection testResult = new SeachMultipleTermCollection(testString);
@@ -163,9 +163,9 @@ public class SeachMultipleTermCollection {
                             for (SearchItem park : this.parks){
 
                                 //if all agree on the county location
-                                if (county.getCounty().equals(city.getCounty())){
+                                if ( county.sameCounty(city) ){
 
-                                    if (city.getCity().equals(park.getCity())){
+                                    if ( city.sameCity(park) ){
                                         //condition if they all share the same term
                                         if (park.originTermSame(county) && county.originTermSame(city)){
                                             //all three items are sharing the same term, use only the highest scoring one for the final recommendation
@@ -255,7 +255,7 @@ public class SeachMultipleTermCollection {
 
                                     }
                                 } else {
-                                    if (county.getCounty().equals(park.getCounty())){
+                                    if (county.sameCounty(park) ){
                                         SearchItem temp;
                                         if (park.originTermSame(park)){
                                             if (county.getScore() > park.getScore()){
@@ -275,7 +275,7 @@ public class SeachMultipleTermCollection {
                                         addRecommendedItem(temp);
 
                                     } else {
-                                        if (city.getCity().equals(park.getCity())){
+                                        if (city.sameCity(park)){
                                             SearchItem temp;
                                             if (city.originTermSame(park)){
                                                 if (city.getScore() > park.getScore()){
@@ -333,7 +333,7 @@ public class SeachMultipleTermCollection {
                             addRecommendedItem(temp);
 
                         } else {
-                            if (county.getCounty().equals(park.getCounty())){
+                            if (county.sameCounty(park) ){
                                 SearchItem temp = park.deepCopy();
                                 temp.setMergedScore((temp.getScore() + county.getScore()) / Double.valueOf(this.resultArray.length) );
                                 temp.setMergedConflicts(false);
@@ -390,7 +390,7 @@ public class SeachMultipleTermCollection {
                                 //pick the park as the result and calculate a low cumulative score
                             } else if (park.getCity().equals("Unincorporated Area".toUpperCase())){
                                 //choose a city or park based on which has the higher score
-                            } else if (park.getCity().equals(city.getCity())) {
+                            } else if (park.sameCity(city) ) {
                                 //if everything lines up then the city and park match, pick the city
                                 SearchItem temp = park.deepCopy();
                                 temp.setMergedScore((temp.getScore() + city.getScore()) / this.resultArray.length);
@@ -398,7 +398,7 @@ public class SeachMultipleTermCollection {
                                 recommendedResult.add(temp);
 
 
-                            } else if (!park.getCity().equals(city.getCity())){
+                            } else if ( !park.sameCity(city) ){
                                 //the park and city do not match then choose whichever has the highest score
                                 if (park.getScore() > city.getScore()){
                                     SearchItem temp = park.deepCopy();

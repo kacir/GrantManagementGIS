@@ -12,7 +12,7 @@ public class SearchSingleTerm {
 
     public static void main(String[] args){
         try {
-            new SearchSingleTerm("Little Rock").printResults();
+            new SearchSingleTerm("Searcy County").printResults();
         } catch (Exception e){
             e.printStackTrace();
         }
@@ -113,7 +113,25 @@ public class SearchSingleTerm {
         DBUtility dbutil = new DBUtility();
         //search through the sponsors table
         String sponsorSQL = "SELECT sponsorcode, sponsor, displayname, county, type ";
-        sponsorSQL += "FROM sponsor WHERE (type = 'Community' OR type = 'City' OR type = 'County' OR type = 'State') AND UPPER(displayname) LIKE UPPER('%" + searchTerm + "%');";
+        sponsorSQL += "FROM sponsor WHERE (type = 'Community' OR type = 'City' OR type = 'County' OR type = 'State') ";
+
+        //treat the SQL differently if the input term contains something that can be construed in several different string abbreviations
+        if (searchTerm.contains("SAINT ") || searchTerm.contains("ST. ") || searchTerm.contains("ST ")) {
+            String searchTermSaint = searchTerm.replace("ST. ", "SAINT ").replace("ST " , "SAINT ");
+            String searchTermST = searchTerm.replace("ST ", "SAINT ").replaceFirst("ST. " , "SAINT ");
+            String searchTermSTPeriod = searchTerm.replace("SAINT ", "ST. ").replace("ST " , "ST. ");
+
+            sponsorSQL += " AND (UPPER(displayname) LIKE UPPER('%" + searchTermSaint  + "%') OR UPPER(displayname) LIKE UPPER('%" + searchTermST + "%') OR UPPER(displayname) LIKE UPPER('%" + searchTermSTPeriod + "%'))";
+        } else if (searchTerm.contains("MOUNT ") || searchTerm.contains("MT ") || searchTerm.contains("MT. ")){
+            String searchTermMOUNT = searchTerm.replace("MT. ", "MOUNT ").replace("MT ", "MOUNT ");
+            String searchTermMT = searchTerm.replace("MT. ", "MT ").replace("MOUNT ", "MT ");
+            String searchTermMTPeriod = searchTerm.replace("MT ", "MT. ").replace("MOUNT ", "MT. ");
+            sponsorSQL += " AND (UPPER(displayname) LIKE UPPER('%" + searchTermMOUNT + "%') OR UPPER(displayname) LIKE UPPER('%" + searchTermMT + "%') OR UPPER(displayname) LIKE UPPER('%" + searchTermMTPeriod + "%'))";
+        } else {
+            sponsorSQL += " AND UPPER(displayname) LIKE UPPER('%" + searchTerm + "%');";
+        }
+        System.out.println("sponsor SQL");
+        System.out.println(sponsorSQL);
         ResultSet sponsors = dbutil.queryDB(sponsorSQL);
 
         while (sponsors.next()){
@@ -131,17 +149,19 @@ public class SearchSingleTerm {
                 city = null;
             }
 
-            if (displayname.equals(searchTerm)){
+            if ( SearchItem.equalsLocation(displayname, searchTerm)){
                 score = 1.0;
                 strictMatch = true;
-            } else if (displayname.contains(searchTerm)){
-                score = Double.valueOf(searchTerm.length()) / Double.valueOf(displayname.length());
+            } else if ( SearchItem.equalizeLocation(displayname).contains(SearchItem.equalizeLocation(searchTerm))){
+                score = Double.valueOf( SearchItem.equalizeLocation(searchTerm).length()) / Double.valueOf(SearchItem.equalizeLocation(displayname).length());
                 System.out.println("Calculated Score of sponsor is " + score);
                 if (displayname.indexOf(searchTerm) == 0){
                     strictMatch = true;
                 } else {
                     strictMatch = false;
                 }
+            } else {
+                throw new Exception("search item was not added to the list. It did not meet the criteria");
             }
             //add the result to the end product list
             try {
