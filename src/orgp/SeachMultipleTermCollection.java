@@ -19,7 +19,7 @@ public class SeachMultipleTermCollection {
     private ArrayList<SearchItem> recommendedResult = new ArrayList<>();
 
     public static void main (String[] args){
-        String[] testString = {"Saint Francis ", "City Park"} ;
+        String[] testString = {"Mt. Ida City Park", "Mount Ida"} ;
 
         try {
             SeachMultipleTermCollection testResult = new SeachMultipleTermCollection(testString);

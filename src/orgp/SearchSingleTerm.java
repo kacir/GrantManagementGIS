@@ -12,7 +12,7 @@ public class SearchSingleTerm {
 
     public static void main(String[] args){
         try {
-            new SearchSingleTerm("Searcy County").printResults();
+            new SearchSingleTerm("Mt Ida").printResults();
         } catch (Exception e){
             e.printStackTrace();
         }
@@ -186,7 +186,28 @@ public class SearchSingleTerm {
 
         //build the sql request for parks matching a specific name
         try (Connection con = DriverManager.getConnection(geoStorConnect.connectionUrl); Statement stmt = con.createStatement()) {
-            String parkSQL = "SELECT [OBJECTID],[currentNam],[pastName], [county],[city] FROM [asdi].[adpt].[OGPARKFOOTPRINTS] WHERE [type] = 'funded park' AND (UPPER([currentNam]) LIKE UPPER('%" + searchTerm + "%') OR UPPER([pastName]) LIKE UPPER('%" + searchTerm + "%'))  ORDER BY [currentNam] ASC;";
+            String parkSQL = "SELECT [OBJECTID],[currentNam],[pastName], [county],[city] FROM [asdi].[adpt].[OGPARKFOOTPRINTS] WHERE [type] = 'funded park' AND ";
+            //treat the SQL differently if the input term contains something that can be construed in several different string abbreviations
+            if (searchTerm.contains("SAINT ") || searchTerm.contains("ST. ") || searchTerm.contains("ST ")) {
+                String searchTermSaint = searchTerm.replace("ST. ", "SAINT ").replace("ST ", "SAINT ");
+                String searchTermST = searchTerm.replace("ST ", "SAINT ").replaceFirst("ST. ", "SAINT ");
+                String searchTermSTPeriod = searchTerm.replace("SAINT ", "ST. ").replace("ST ", "ST. ");
+
+                parkSQL += " ( UPPER([currentNam]) LIKE UPPER('%" + searchTermSaint + "%') OR UPPER([currentNam]) LIKE UPPER('%" + searchTermST + "%') OR UPPER([currentNam]) LIKE UPPER('%" + searchTermSTPeriod + "%') OR" ;
+                parkSQL += " UPPER([pastName]) LIKE UPPER('%" + searchTermSaint + "%') OR UPPER([pastName]) LIKE UPPER('%" + searchTermST + "%') OR UPPER([pastName]) LIKE UPPER('%" + searchTermSTPeriod + "%') )" ;
+            } else if (searchTerm.contains("MOUNT ") || searchTerm.contains("MT ") || searchTerm.contains("MT. ")){
+                String searchTermMOUNT = searchTerm.replace("MT. ", "MOUNT ").replace("MT ", "MOUNT ");
+                String searchTermMT = searchTerm.replace("MT. ", "MT ").replace("MOUNT ", "MT ");
+                String searchTermMTPeriod = searchTerm.replace("MT ", "MT. ").replace("MOUNT ", "MT. ");
+
+                parkSQL += " ( UPPER([currentNam]) LIKE UPPER('%" + searchTermMOUNT + "%') OR UPPER([currentNam]) LIKE UPPER('%" + searchTermMT + "%') OR UPPER([currentNam]) LIKE UPPER('%" + searchTermMTPeriod + "%') OR" ;
+                parkSQL += " UPPER([pastName]) LIKE UPPER('%" + searchTermMOUNT + "%') OR UPPER([pastName]) LIKE UPPER('%" + searchTermMT + "%') OR UPPER([pastName]) LIKE UPPER('%" + searchTermMTPeriod + "%') )" ;
+            } else {
+                parkSQL += " (UPPER([currentNam]) LIKE UPPER('%" + searchTerm + "%') OR UPPER([pastName]) LIKE UPPER('%" + searchTerm + "%')) ";
+            }
+            parkSQL += " ORDER BY [currentNam] ASC;";
+            System.out.println("park sql");
+            System.out.println(parkSQL);
 
             ResultSet rs = stmt.executeQuery(parkSQL);
 
@@ -207,10 +228,10 @@ public class SearchSingleTerm {
                 Boolean strictMatch = false;
 
                 //search through and rank the current park name
-                if (currentName.equals(searchTerm)){
+                if (SearchItem.equalsLocation(currentName, searchTerm) ){
                     score = 1.0;
                     strictMatch = true;
-                } else if (currentName.contains(searchTerm)){
+                } else if (SearchItem.equalizeLocation(currentName).contains(SearchItem.equalizeLocation(searchTerm)) ){
                     score = Double.valueOf(searchTerm.length()) / Double.valueOf((currentName.length()));
                     System.out.println("calculated score of park is: " + score );
                     if (currentName.indexOf(searchTerm) == 0){
@@ -222,7 +243,7 @@ public class SearchSingleTerm {
                 if (pastNames.length() > 0 && !pastNames.equals(" ") && !pastNames.equals(", ")) {
                     String[] pastNamesArray = pastNames.split(", ");
                     for (String pastName: pastNamesArray){
-                        if (pastName.contains(searchTerm) && pastName.length() > 0){
+                        if ( SearchItem.equalizeLocation(pastName).contains(SearchItem.equalizeLocation(searchTerm)) && pastName.length() > 0){
                             double possibleScore =  Double.valueOf(searchTerm.length())   / Double.valueOf(pastName.length());
                             if (possibleScore > score){
                                 score = possibleScore;
