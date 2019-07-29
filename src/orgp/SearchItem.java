@@ -23,7 +23,7 @@ public class SearchItem implements Comparable<SearchItem>{
     }
 
     public static String equalizeLocation(String location){
-        //make sure it is compariable in length with another term that has different abbreviations in it.
+        //make sure it is comparable in length with another term that has different abbreviations in it.
         String result;
 
         if (location == null){
@@ -197,6 +197,7 @@ public class SearchItem implements Comparable<SearchItem>{
         System.out.println("Conflicts " + this.mergedConflicts );
         System.out.println("County " + this.county);
         System.out.println("city " + this.city);
+        System.out.println("origin term " + this.originTerm);
     }
 
     public boolean sameCity(SearchItem anotherObj){

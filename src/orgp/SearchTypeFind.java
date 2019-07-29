@@ -2,17 +2,21 @@ package orgp;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 
 public class SearchTypeFind {
 
     public static void main(String[] args) {
-        String term = "Little Rock Riverfront Park";
-        //findMaster(term).printAttributes();
+        String term = "fayetteville Walker Park";
+        System.out.println("Master result is: ");
+        findMaster(term).printAttributes();
 
+        /*
         String[] termArray = term.split(" ");
         ArrayList<String[]> result = buildTermComboMaster(termArray);
 
         System.out.println("Completed");
+        */
 
     }
 
@@ -188,7 +192,17 @@ public class SearchTypeFind {
 
                 } else if(seachTerm.contains(" ")){
                     //go through every possible combination of of the terms
-                    //then pick whichever combo has the highest score
+                    //make sense of those
+                    ArrayList<String[]> termCombos = buildTermComboMaster(searchTermArray);
+                    ArrayList<SeachMultipleTermCollection> resultList = new ArrayList<>();
+                    for (String[] combo : termCombos){
+                        SeachMultipleTermCollection temp = new SeachMultipleTermCollection(combo);
+                        resultList.add(temp);
+                    }
+                    //then pick whichever combo has the highest score via sorting method
+                    Collections.sort(resultList);
+                    Collections.reverse(resultList);
+                    return resultList.get(0).getRecommendedResult();
 
                 } else {
                     System.out.println("None of the conditions were met for an easy match. We are done");

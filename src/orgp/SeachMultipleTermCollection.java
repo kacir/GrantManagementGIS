@@ -1,9 +1,10 @@
 package orgp;
 
 import java.util.*;
+import java.util.Comparator;
 
 
-public class SeachMultipleTermCollection {
+public class SeachMultipleTermCollection implements Comparable<SeachMultipleTermCollection>{
 
     private static String[] overlyGeneralTerms = {"City", "County", "Park"};
     private String[] termArray;
@@ -31,9 +32,34 @@ public class SeachMultipleTermCollection {
 
     }
 
+    //used for collections sorting
+    @Override
+    public int compareTo (SeachMultipleTermCollection anotherMultiTermSearch){
+
+        if (anotherMultiTermSearch.getRecommendedResult() == null && this.getRecommendedResult() == null){
+            return 0;
+        } else if (this.getRecommendedResult() == null){
+            return -1;
+        } else if (anotherMultiTermSearch.getRecommendedResult() == null){
+            return 1;
+        } else {
+            if (this.getRecommendedResult().getMergedScore() > anotherMultiTermSearch.getRecommendedResult().getMergedScore()){
+                return 1;
+            } else if (this.getRecommendedResult().getMergedScore() < anotherMultiTermSearch.getRecommendedResult().getMergedScore()) {
+                return -1;
+            } else {
+                return 0;
+            }
+        }
+    }
+
 
     public SearchItem getRecommendedResult() {
-        return this.recommendedResult.get(0);
+        if (this.recommendedResult.size() > 0){
+            return this.recommendedResult.get(0);
+        } else {
+            return null;
+        }
     }
 
     public void printRecommendedResult(){
