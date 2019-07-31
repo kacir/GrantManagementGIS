@@ -7,7 +7,7 @@ import java.util.Collections;
 public class SearchTypeFind {
 
     public static void main(String[] args) {
-        String term = "fayetteville Walker Park";
+        String term = "Haskell Baseball Park, Haskell, Saline County";
         System.out.println("Master result is: ");
         findMaster(term).printAttributes();
 
@@ -206,10 +206,8 @@ public class SearchTypeFind {
 
                 } else {
                     System.out.println("None of the conditions were met for an easy match. We are done");
+                    return null;
                 }
-
-                //if the search by comma splitting fails then
-
 
             }
         } catch (Exception e){

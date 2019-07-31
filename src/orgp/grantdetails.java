@@ -8,13 +8,15 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.awt.*;
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 @WebServlet("/api/grantdetails")
 public class grantdetails extends HttpServlet {
+
+    private DBUtility dbutil = new DBUtility();
+
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
     }
@@ -56,23 +58,40 @@ public class grantdetails extends HttpServlet {
             System.out.println("Project numbers list was missing from request");
         }
 
+        JSONObject fullDataset = new JSONObject();
+
+        //perform a term search
+        if (projectNumbersArray.length > 0){
+            fullDataset = processProjectNumbersRequest(projectNumbersArray);
+        } else {
+            SearchItem recommendedItem = SearchTypeFind.findMaster(term);
+            if (! (recommendedItem == null)){
+                if (recommendedItem.getType().equals("City") || recommendedItem.getType().equals("County") ||  recommendedItem.getType().equals("State") || recommendedItem.getType().equals("Community") ){
+                    fullDataset = processSponsorRequest(recommendedItem.getIdentifier());
+                } else if (recommendedItem.getType().equals("Park")) {
+                    fullDataset = processParkRequest(recommendedItem.getIdentifier());
+                } else if (recommendedItem.getType().equals("Project")){
+                    fullDataset = processProjectNumberRequest(term);
+                }
+
+            }
+        }
+
         //send the data back to the end user
-        JSONObject fullDataset = processRequest(term, projectNumbersArray);
+
         response.getWriter().write(fullDataset.toString());
     }
 
     //function does the main legwork for constructing sql strings based on the post processed serlvet parameters
-    protected  JSONObject processRequest(String projectnumberOrSponsor, String[] projectNumbersArray){
+    protected  JSONObject processSponsorRequest(String uniqueIdentifier){
         JSONObject fullDataset = new JSONObject();
 
-        DBUtility dbutil = new DBUtility();
         //regardless of how the project grant details are found they will be appended to this JSON list
         JSONArray projectsDetailsList = new JSONArray();
 
-        //string used to search useing the search term assuming the input is a sponsor name
-        String sqlGrantDetailsViaSponsor = "SELECT * FROM grantdisplay WHERE UPPER(displayname) = UPPER('" + projectnumberOrSponsor +"') ORDER BY year DESC;";
-        //string used to search using the search term assuming the input is a project number
-        String sqlGrantDetailsViaProjectNumber = "SELECT * FROM grantdisplay WHERE UPPER(projectnum) = UPPER('" + projectnumberOrSponsor + "') ORDER BY year DESC;";
+        //string used to search the search term assuming the input is a sponsor name
+        String sqlGrantDetailsViaSponsor = "SELECT * FROM grantdisplay WHERE sponsorcode = '" + uniqueIdentifier +"' ORDER BY year DESC;";
+
         try {
             projectsDetailsList = processGrantDetailsQuery(projectsDetailsList, sqlGrantDetailsViaSponsor, dbutil);
             //embed sponsor details to the fullDataset Object if a sponsor is clear
@@ -81,7 +100,7 @@ public class grantdetails extends HttpServlet {
             sqlSponsorDetail += " FROM sponsor AS sp LEFT JOIN ";
             sqlSponsorDetail += " (SELECT imp.sponsorcode, COUNT(imp.projectnum) AS projcount, SUM(awardamount) AS awardsum FROM sponsor_to_grant AS imp JOIN grants ON imp.projectnum = grants.projectnumber GROUP BY imp.sponsorcode) AS ct ";
             sqlSponsorDetail += " ON sp.sponsorcode = ct.sponsorcode ";
-            sqlSponsorDetail += " WHERE Upper(displayname) = UPPER('" + projectnumberOrSponsor + "') LIMIT 1; ";
+            sqlSponsorDetail += " WHERE sp.sponsorcode = '" + uniqueIdentifier + "' LIMIT 1; ";
 
 
             ResultSet res = dbutil.queryDB(sqlSponsorDetail);
@@ -104,42 +123,7 @@ public class grantdetails extends HttpServlet {
                 fullDataset.put("sponsorDetails", sponsorDetails);
             }
 
-            projectsDetailsList = processGrantDetailsQuery(projectsDetailsList, sqlGrantDetailsViaProjectNumber, dbutil);
-
-            String combinedSQL = "SELECT *, projectnumber AS projectnum FROM grants WHERE ";
-            for (int i = 0; i < projectNumbersArray.length; i++){
-                System.out.println("Project Number that is addressed by search is '" + projectNumbersArray[i] + "'");
-                String orContainer;
-                if (i == 0){
-                    orContainer = "";
-                } else {
-                    orContainer = " OR ";
-                }
-
-                String itemClause = orContainer + " ( UPPER(projectnumber) = UPPER('" + projectNumbersArray[i] + "'))";
-                combinedSQL += itemClause;
-                //String sqlArrayItem = "SELECT *, projectnumber AS projectnum FROM grants WHERE UPPER(projectnumber) = UPPER('" + projectNumbersArray[i] + "') ORDER BY year DESC;";
-                //projectsDetailsList = processGrantDetailsQuery(projectsDetailsList, sqlArrayItem, dbutil);
-            }
-            if (projectNumbersArray.length > 0){
-                combinedSQL += " ORDER BY year DESC;";
-                System.out.println("combined SQL");
-                System.out.println(combinedSQL);
-                projectsDetailsList = processGrantDetailsQuery(projectsDetailsList, combinedSQL, dbutil);
-            }
-
-            fullDataset.put("grants", projectsDetailsList);
-
-            if (projectsDetailsList.length() == 0){
-                geoStorConnect parkSearch = new geoStorConnect();
-                JSONArray parkresult = parkSearch.searchParks(projectnumberOrSponsor, projectsDetailsList, 1);
-                if (parkresult.length() > 0){
-                    JSONObject park = parkresult.getJSONObject(0);
-                    fullDataset.put("park" , park);
-                    projectsDetailsList.remove(0);
-                }
-            }
-
+            fullDataset.put("grants" , projectsDetailsList);
 
         } catch (SQLException e){
             e.printStackTrace();
@@ -150,45 +134,127 @@ public class grantdetails extends HttpServlet {
         return fullDataset;
     }
 
+    protected  JSONObject processProjectNumberRequest(String projectNumber){
+        JSONObject fullDataset = new JSONObject();
+        JSONArray projectsDetailsList = new JSONArray();
+
+        String sqlGrantDetailsViaProjectNumber = "SELECT * FROM grantdisplay WHERE UPPER(projectnum) = UPPER('" + projectNumber + "') ORDER BY year DESC;";
+
+
+        projectsDetailsList = processGrantDetailsQuery(projectsDetailsList, sqlGrantDetailsViaProjectNumber, dbutil);
+
+        try {
+            fullDataset.put("grants", projectsDetailsList);
+        } catch (JSONException e){
+            e.printStackTrace();
+        }
+
+
+        return fullDataset;
+
+    }
+
+    protected  JSONObject processParkRequest(String identifier){
+
+        JSONObject fullDataset = new JSONObject();
+        JSONArray projectsDetailsList = new JSONArray();
+        JSONArray parkResult = new JSONArray();
+
+
+        geoStorConnect parkSearch = new geoStorConnect();
+        parkResult = parkSearch.searchParks(identifier, parkResult, 1);
+        try {
+            if (parkResult.length() > 0){
+                JSONObject park = parkResult.getJSONObject(0);
+                fullDataset.put("park" , park);
+                fullDataset.put("grants", projectsDetailsList);
+            }
+        } catch (JSONException e){
+            e.printStackTrace();
+        }
+
+        return fullDataset;
+
+    }
+
+    protected JSONObject processProjectNumbersRequest(String[] projectNumbersArray) {
+
+        JSONObject fullDataset = new JSONObject();
+        JSONArray projectsDetailsList = new JSONArray();
+
+        String combinedSQL = "SELECT *, projectnumber AS projectnum FROM grants WHERE ";
+        for (int i = 0; i < projectNumbersArray.length; i++){
+            System.out.println("Project Number that is addressed by search is '" + projectNumbersArray[i] + "'");
+            String orContainer;
+            if (i == 0){
+                orContainer = "";
+            } else {
+                orContainer = " OR ";
+            }
+
+            String itemClause = orContainer + " ( UPPER(projectnumber) = UPPER('" + projectNumbersArray[i] + "'))";
+            combinedSQL += itemClause;
+        }
+        if (projectNumbersArray.length > 0){
+            combinedSQL += " ORDER BY year DESC;";
+            System.out.println("combined SQL");
+            System.out.println(combinedSQL);
+            projectsDetailsList = processGrantDetailsQuery(projectsDetailsList, combinedSQL, dbutil);
+        }
+
+        try {
+            fullDataset.put("grants", projectsDetailsList);
+        } catch (JSONException e){
+            e.printStackTrace();
+        }
+
+
+        return fullDataset;
+    }
+
 
     //This method is used three times - using a different query SQL but the same results field and table - the times are
     //individual grant #, and sponsor name
-    protected  JSONArray processGrantDetailsQuery (JSONArray projectsDetailsList, String sql, DBUtility db) throws SQLException, JSONException{
+    protected  JSONArray processGrantDetailsQuery (JSONArray projectsDetailsList, String sql, DBUtility db) {
         System.out.println("following is SQL code submitted " + sql);
 
-        ResultSet res = db.queryDB(sql);
-        while (res.next()){
-            JSONObject grant = new JSONObject();
-            grant.put("projectnum" , res.getString("projectnum"));
-            grant.put("year" , res.getString("year"));
-            grant.put("awardamount" , res.getString("awardamount"));
-            grant.put("projecttype" , res.getString("projecttype"));
-            grant.put("county" , res.getString("county"));
-            grant.put("projectname" , res.getString("projectname"));
-            grant.put("granttype" , res.getString("granttype"));
-            grant.put("status" , res.getString("status"));
-            grant.put("itemscompleted" , res.getString("itemscompleted"));
-            grant.put("itemsapplication" , res.getString("itemsapplication"));
-            grant.put("phonelog" , res.getString("phonelog"));
-            grant.put("boxlink" , res.getString("boxlink"));
+        try {
+            ResultSet res = db.queryDB(sql);
+            while (res.next()) {
+                JSONObject grant = new JSONObject();
+                grant.put("projectnum", res.getString("projectnum"));
+                grant.put("year", res.getString("year"));
+                grant.put("awardamount", res.getString("awardamount"));
+                grant.put("projecttype", res.getString("projecttype"));
+                grant.put("county", res.getString("county"));
+                grant.put("projectname", res.getString("projectname"));
+                grant.put("granttype", res.getString("granttype"));
+                grant.put("status", res.getString("status"));
+                grant.put("itemscompleted", res.getString("itemscompleted"));
+                grant.put("itemsapplication", res.getString("itemsapplication"));
+                grant.put("phonelog", res.getString("phonelog"));
+                grant.put("boxlink", res.getString("boxlink"));
 
-            //check to see how many sponsors there are of this particular project and append list to the gramt JSON object
-            JSONArray sponsorList = new JSONArray();
-            String projectnum = res.getString("projectnum");
-            String sqlSponsorsSearch = "SELECT sponsor.sponsorcode, sponsor.sponsor, sponsor.type, sponsor.displayname FROM sponsor_to_grant AS imp JOIN sponsor ON imp.sponsorcode=sponsor.sponsorcode WHERE imp.projectnum = '" + projectnum + "';";
-            ResultSet sponsorRes = db.queryDB(sqlSponsorsSearch);
-            while (sponsorRes.next()){
-                JSONObject sponsor = new JSONObject();
-                sponsor.put("sponsor", sponsorRes.getString("sponsor"));
-                sponsor.put("type", sponsorRes.getString("type"));
-                sponsor.put("displayname", sponsorRes.getString("displayname"));
-                sponsor.put("sponsorcode", sponsorRes.getString("sponsorcode"));
-                sponsorList.put(sponsor);
+                //check to see how many sponsors there are of this particular project and append list to the gramt JSON object
+                JSONArray sponsorList = new JSONArray();
+                String projectnum = res.getString("projectnum");
+                String sqlSponsorsSearch = "SELECT sponsor.sponsorcode, sponsor.sponsor, sponsor.type, sponsor.displayname FROM sponsor_to_grant AS imp JOIN sponsor ON imp.sponsorcode=sponsor.sponsorcode WHERE imp.projectnum = '" + projectnum + "';";
+                ResultSet sponsorRes = db.queryDB(sqlSponsorsSearch);
+                while (sponsorRes.next()) {
+                    JSONObject sponsor = new JSONObject();
+                    sponsor.put("sponsor", sponsorRes.getString("sponsor"));
+                    sponsor.put("type", sponsorRes.getString("type"));
+                    sponsor.put("displayname", sponsorRes.getString("displayname"));
+                    sponsor.put("sponsorcode", sponsorRes.getString("sponsorcode"));
+                    sponsorList.put(sponsor);
+                }
+                grant.put("sponsorList", sponsorList);
+
+
+                projectsDetailsList.put(grant);
             }
-            grant.put("sponsorList" , sponsorList);
-
-
-            projectsDetailsList.put(grant);
+        } catch (SQLException | JSONException e){
+            e.printStackTrace();
         }
 
         return  projectsDetailsList;
