@@ -19,6 +19,7 @@ h1 {
 .legend-control {
     background-color : rgba(255,255,255,0.9);
     padding: 10px;
+    border-radius: 5px;
 }
 
 .legend-control div svg, .legend-control div img{
@@ -41,9 +42,11 @@ h1 {
 
 #sponsor-search {
     width: 75%;
+    border-radius: 5px;
 }
 #grant-info-search-button{
     width: 6%;
+    border-radius: 5px;
 }
 
 #search-controls-container {
@@ -93,16 +96,26 @@ button.grant-box-link {
 
 /*referring to popup contents*/
 .popup-button{
-    background-color: darkgreen;
+    background-color: rgb(230,230,230);
     border-radius: 15px;
     margin: 2px;
 }
 .popup-button span {
+    color: rgb(100,100,100);
+}
+.popup-button:hover {
+    background-color: black;
+}
+.popup-button span:hover{
     color: white;
 }
+
 .leaflet-popup-content h3 {
     background-color: green;
     color: white;
+    border-radius: 5px;
+    padding-top: 2px;
+    padding-left: 10px;
 }
 table {
     margin-bottom: 10px;
@@ -113,6 +126,14 @@ div.leaflet-popup-content {
 
 #cross-reference-park-to-grant{
     cursor: pointer;
+}
+
+.popup-label-column{
+    font-weight: bold;
+}
+
+h3 {
+    font-size: 20px;
 }
 
 

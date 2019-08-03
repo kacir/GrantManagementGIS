@@ -37,10 +37,10 @@ function parkPopupBuild (feature, latLng) {
 
     var popupText = "<h3>" + feature.properties.currentNam + "</h3><table>";
     if (!(feature.properties.pastName === undefined || feature.properties.pastName === null || feature.properties.pastName === "" || feature.properties.pastName === " ")){
-        popupText = popupText + "<tr><td>Previously:</td><td>" +feature.properties.pastName + "</td></tr>";
+        popupText = popupText + "<tr><td class='popup-label-column'>Previously:</td><td>" +feature.properties.pastName + "</td></tr>";
     }
-    popupText = popupText + "<tr><td>Sponsor:</td><td>" +feature.properties.sponsorshi + "</td></tr>" +
-        "<tr><td>Inspection Date:</td><td>" + new Date(feature.properties.inspDate).toDateString()  + "</td></tr>";
+    popupText = popupText + "<tr><td class='popup-label-column'>Sponsor:</td><td>" +feature.properties.sponsorshi + "</td></tr>" +
+        "<tr><td class='popup-label-column'>Inspection Date:</td><td>" + new Date(feature.properties.inspDate).toDateString()  + "</td></tr>";
 
     //Some features lack federal boundary. Do not include the table row if its not needed.
     if (feature.properties.fed6f3Stat === "has 6(f)3 boundary") {
@@ -65,7 +65,7 @@ function parkPopupBuild (feature, latLng) {
 
                 });
         }
-        popupText = popupText + "<tr><td>LWCF Area:</td><td><span id='lwcf-acres'>" + feature.properties.fedeprojectarea.toString() + "</span> Acres</td></tr>";
+        popupText = popupText + "<tr><td class='popup-label-column'>LWCF Area:</td><td><span id='lwcf-acres'>" + feature.properties.fedeprojectarea.toString() + "</span> Acres</td></tr>";
     }
 
     //Some features lack state boundary. Do not include the table row if its not needed.
@@ -91,11 +91,11 @@ function parkPopupBuild (feature, latLng) {
 
                 });
         }
-        popupText = popupText + "<tr><td>State Area:</td><td><span id='anrc-acres'>" + feature.properties.stateprojectarea.toString() + "</span> Acres</td></tr>";
+        popupText = popupText + "<tr><td class='popup-label-column'>State Area:</td><td><span id='anrc-acres'>" + feature.properties.stateprojectarea.toString() + "</span> Acres</td></tr>";
 
 
     }
-    popupText = popupText + "<tr><td>Total Park Area:</td><td>" + parseFloat(feature.properties.calc_acre).toFixed(2) + " Acres</td></tr></table>";
+    popupText = popupText + "<tr><td class='popup-label-column'>Total Park Area:</td><td>" + parseFloat(feature.properties.calc_acre).toFixed(2) + " Acres</td></tr></table>";
 
     //the on click function is very important. When the button is pressed, the grant info window searches for the grants related to the park that the popup represents
     popupText = popupText + "<div class='container'><div class='row'><div id='cross-reference-park-to-grant' onclick='parkmap.crossReferenceParkToGrant()' OBJECTID='" + feature.properties.OBJECTID + "' class='col popup-button'><span>Grants in Park</span></div>";

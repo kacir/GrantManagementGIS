@@ -307,7 +307,7 @@ grantInfoWindow.makeResults =  function (){
                 var suggestion = {value : data[i].displayname, label : "<strong>" + data[i].displayname + "</strong>" };
                 suggestionList.push(suggestion);
             } else if (data[i].type === "park"){
-                var suggestion = {value : data[i].currentNam, label : "<strong>" + data[i].currentNam + "</strong>, " + data[i].sponsorshi};
+                var suggestion = {value : data[i].currentNam + ", " + data[i].sponsorshi.replace("City of ", "") , label : "<strong>" + data[i].currentNam + "</strong>, " + data[i].sponsorshi.replace("City of ", "")};
                 suggestionList.push(suggestion);
                 if (data[i].hasOwnProperty("pastName") && !(data[i].pastName === " ") && !(data[i].pastName === "") && !(data[i].pastName === null) && !(data[i].pastName === undefined) ){
                     if (data[i].pastName.includes(",")){
@@ -326,7 +326,7 @@ grantInfoWindow.makeResults =  function (){
                 }
             }
         }
-        sponsorSearchinputBox.autocomplete({autoFocus : true, delay : 0 , html: true, minLength: 2, source : suggestionList});
+        sponsorSearchinputBox.autocomplete({autoFocus : true, delay : 50 , html: true, minLength: 3, source : suggestionList});
 
     }).fail(function(){
         console.log("was unable to load auto suggest information");
