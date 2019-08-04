@@ -139,7 +139,7 @@ parkmap.parkSearch = function (OBJECTID){
             console.log(stringNumerList);
 
             //make request to the grant window to search for the grants related to the park.
-            grantInfoWindow.displayGrantDetails(null, stringNumerList, "<p>given on this park</p><h3>" + selectedPark.feature.properties.currentNam + "</h3>");
+            grantInfoWindow.displayGrantDetails(selectedPark.feature.properties.currentNam, {projectNumbers : stringNumerList, searchCatagory : "Park"} );
 
         });
 };

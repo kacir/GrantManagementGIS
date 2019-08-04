@@ -15,21 +15,43 @@ grantInfoWindow.makeResults =  function (){
 
     var sponsorSearchinputBox = $("#sponsor-search");
 
-    grantInfoWindow.displayGrantDetails = function  (sponsor, projectNumbers, searchTitle){
+    grantInfoWindow.displayGrantDetails = function  (searchTerm, options){
+        //options can contain two differnt attributes
+        //projectNumbers which is an array of project numbers to search
+        //searchCatagory which classifies the search accordingly to show the correct title
+
+
         //change the url parameters based on if its a request of a particular sponsor or a particular project number set. need to deal with missing or null inputs to function
         var requestURL;
-        if (!(sponsor === null || sponsor === undefined || sponsor === "" || sponsor === " ")){
-            requestURL = "/api/grantdetails?term=" + sponsor;
-        }
-        if (!(projectNumbers === null || projectNumbers === undefined || projectNumbers === "" || projectNumbers === " ")){
-            requestURL = "/api/grantdetails?projectnumbers=" + projectNumbers;
-        }
-        if (searchTitle === null || searchTitle === undefined || searchTitle === "" || searchTitle === " "){
-            searchTitle = "<h3>Unknown Search</h3>"
+        if (!(searchTerm === null || searchTerm === undefined || searchTerm === "" || searchTerm === " ")){
+            requestURL = "/api/grantdetails?term=" + searchTerm;
+        } else {
+            throw "SearchTerm Variable is null!";
         }
 
+        if (options.hasOwnProperty("projectNumbers")){
+            if (!(options.projectNumbers === null || options.projectNumbers === undefined || options.projectNumbers === "" || options.projectNumbers === " ")){
+                requestURL = "/api/grantdetails?projectnumbers=" + options.projectNumbers;
+            }
+        }
+
+        var searchTitle = "<p>Searching databases for: </p><h3>" + searchTerm + "</h3>";
+        if (options.hasOwnProperty("searchCatagory")){
+            if (options.searchCatagory === null || options.searchCatagory === undefined || options.searchCatagory === "" || options.searchCatagory === " "){
+                options.searchCatagory = "Unknown";
+                searchTitle = "<p>Searching databases for: </p><h3>" + searchTerm + "</h3>";
+            } else if (options.searchCatagory === "sponsor" || options.searchCatagory === "County" ) {
+                searchTitle = "<p>Searching for grants given to: </p><h3>" + searchTerm + "</h3>";
+            } else if (options.searchCatagory === "Park"){
+                searchTitle = "<p>Searching for grants given in this park : </p><h3>" + searchTerm + "</h3>";
+            }
+        } else {
+            options.searchCatagory = "Unknown"
+        }
+        console.log("search title is: " + searchTitle);
         $("#search-title").html(searchTitle);
         sponsorSearchinputBox.val("");
+
 
         //if the accordion exists then get rid of it and all of the contents of the div element
         if (!accordionApplied === false){
@@ -225,7 +247,7 @@ grantInfoWindow.makeResults =  function (){
             $(".join-sponsors").on("click", function(){
                 var sponsorcode = $(this).attr("sponsorcode");
                 var displayname = $(this).attr("displayname");
-                grantInfoWindow.displayGrantDetails(displayname, null, "<p>Grants sponsored by</p><h3>" + displayname +  "</h3>")
+                grantInfoWindow.displayGrantDetails(displayname, {searchCatagory : "Sponsor"});
             });
 
             $("span.phone-log-trancator, span.phone-log-expander").on("click", function(event){
@@ -242,6 +264,17 @@ grantInfoWindow.makeResults =  function (){
                 var parkBounds = selectedPark.getBounds();
                 parkmap.map.flyToBounds(parkBounds);
             }
+
+            //change the title inside of the search title
+            console.log("Options provided for if statement");
+            console.log(options);
+            if (options.searchCatagory === "Park" && !fullData.hasOwnProperty("park")) {
+                $("#search-title").html("<p>Grants given in: </p> <h3>" + searchTerm + "</h3>");
+                console.log("park if statement launched!");
+            } else if (options.hasOwnProperty("searchCatagory") && (options.searchCatagory === "Sponsor" || options.searchCatagory == "Unknown") && fullData.hasOwnProperty("sponsorDetails") && fullData.sponsorDetails.hasOwnProperty("displayname") ){
+                $("#search-title").html("<p>Grants given to: </p> <h3>" + fullData.sponsorDetails.displayname + "</h3>");
+            }
+
 
         }).fail(function(jqXHR, textStatus, error){
             $("#search-error").removeClass("hidden");
@@ -287,14 +320,14 @@ grantInfoWindow.makeResults =  function (){
 
     sponsorSearchinputBox.on("keypress", function(event){
         if (event.key === "Enter"){
-            grantInfoWindow.displayGrantDetails(sponsorSearchinputBox.val(), null, "<p>Grants sponsored by</p><h3>" + sponsorSearchinputBox.val() + "</h3>");
+            grantInfoWindow.displayGrantDetails(sponsorSearchinputBox.val(), {searchCatagory : "Unknown"});
         }
     });
 
 
     var grantinfosearchButton = $("#grant-info-search-button");
     grantinfosearchButton.on("click", function(){
-        grantInfoWindow.displayGrantDetails(sponsorSearchinputBox.val(), null, "<p>Grants sponsored by</p><h3>" + sponsorSearchinputBox.val() + "</h3>");
+        grantInfoWindow.displayGrantDetails(sponsorSearchinputBox.val(),{searchCatagory : "Unknown"});
     });
 
     $.getJSON("/api/autosuggest", function(data){
